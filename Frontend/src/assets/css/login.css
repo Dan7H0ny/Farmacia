@@ -1,0 +1,37 @@
+/* login.css */
+.background-container {
+    background-image: url("../images/Fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .form-container {
+    background-color: #05152d;
+    padding: 32px;
+  }
+  
+  .form-container h1 {
+    margin-bottom: 16px;
+    text-align: center;
+    color: #eeca06;
+  }
+  
+  .form-container .MuiTextField-root {
+    margin-bottom: 16px;
+  }
+  
+  .form-container .MuiButton-root {
+    margin-top: 16px;
+    background-color: white;
+    color: #03112a;
+  }
+  
+  .form-container .MuiTypography-body2 {
+    margin-top: 16px;
+    text-align: center;
+    color: #eeca06;
+  }
+  

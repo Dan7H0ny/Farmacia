@@ -1,0 +1,7 @@
+.content-open {
+  margin-left: 300px; /* Ajusta el margen izquierdo cuando el drawer está abierto */
+}
+
+.content-closed {
+  margin-left: 50px; /* Ajusta el margen izquierdo cuando el drawer está cerrado */
+}

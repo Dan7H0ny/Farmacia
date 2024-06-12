@@ -1,7 +1,24 @@
+.background-container-menu {
+  background-image: url("../images/FondoMenu.png");
+  background-size: contain; /* O un valor específico como '150%' para hacerlo más grande */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #0a2d4b;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Agrega los estilos de transición aquí si es necesario */
+}
+
+.background-container-menu.drawerOpen {
+  width: 95%;
+  /* Agrega otros estilos específicos cuando el cajón está abierto si es necesario */
+}
 .content-open {
-  margin-left: 300px; /* Ajusta el margen izquierdo cuando el drawer está abierto */
+  margin-left: 25%; /* El 50px representa el ancho del menú cuando está cerrado */
 }
 
 .content-closed {
-  margin-left: 50px; /* Ajusta el margen izquierdo cuando el drawer está cerrado */
+  margin-left: 3.5%; /* Ajusta el margen izquierdo cuando el drawer está cerrado */
 }

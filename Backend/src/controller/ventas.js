@@ -29,66 +29,41 @@ router.post('/crear', verificacion, async (req, res) => {
       const productoData = productosData.find(prod => prod._id.equals(item.producto));
       return {
         producto: productoData._id,
-        cantidad: item.cantidad,
-        precio: item.precio,
+        cantidad_producto: item.cantidad_producto,
+        precio_producto: item.precio_producto,
       };
     });
-
-    // Recorremos cada producto y actualizamos su cantidad
     for (const producto of productosConPrecio) {
       const productoData = productosData.find(prod => prod._id.equals(producto.producto));
       if (productoData) {
-        let factorMultiplicador;
-
-        switch (productoData.categoria) {
-          case 'Tabletas':
-            factorMultiplicador = 250;
-            break;
-          case 'Jarabe':
-            factorMultiplicador = 1;
-            break;
-          case 'Sueros':
-            factorMultiplicador = 6;
-            break;
-          case 'Dentifricos':
-            factorMultiplicador = 9;
-            break;
-          case 'Supositorios':
-            factorMultiplicador = 12;
-            break;
-          case 'Suplementos':
-            factorMultiplicador = 5;
-            break;
-          default:
-            factorMultiplicador = 1;
-        }
-
-        let capacidadRestante = productoData.capacidad_unitaria;
-        let cajasRestantes = productoData.capacidad_caja;
-
-        if (capacidadRestante < producto.cantidad) {
-          const unidadesExcedentes = producto.cantidad - capacidadRestante;
+        const factorMultiplicador = productoData.categoria.cantidad;
+        let capacidadRestante = productoData.capacidad;
+        let cajasRestantes = productoData.capacidad_pres;
+    
+        if (capacidadRestante < producto.cantidad_producto) {
+          const unidadesExcedentes = producto.cantidad_producto - capacidadRestante;
           cajasRestantes -= Math.ceil(unidadesExcedentes / factorMultiplicador);
           capacidadRestante = factorMultiplicador - (unidadesExcedentes % factorMultiplicador);
         } else {
-          capacidadRestante -= producto.cantidad;
+          capacidadRestante -= producto.cantidad_producto;
         }
-
-        productoData.capacidad_unitaria = capacidadRestante;
-        productoData.capacidad_caja = cajasRestantes;
-
+    
+        productoData.capacidad = capacidadRestante;
+        productoData.capacidad_pres = cajasRestantes;
+        console.log(productoData)
+        // Recorremos cada producto y actualizamos su cantidad
         await productoData.save();
       } else {
         console.log(`El producto ${producto.producto} no se encontró en la base de datos`);
       }
     }
+    console.log(productosConPrecio)
 
- 
     const venta = new Venta({
       cliente,
       productos: productosConPrecio,
       precio_total,
-      fecha_emision: new Date(),
+      fecha_registro: new Date(),
       fecha_actualizacion: new Date(),
       usuario_registra,
       usuario_update,
@@ -160,6 +135,7 @@ router.put('/actualizar/:id',verificacion, async (req, res) => {
     const usuario_update_ = await Usuario.findById(usuario_update);
     if (!productos || productos.length === 0) { return res.status(400).json({ mensaje: 'La lista de productos está vacía' });}
     if (!cliente_) return res.status(400).json({ mensaje: 'El cliente no existe' });
+
     if (!usuario_update_) return res.status(400).json({ mensaje: 'El usuario que actualiza no existe' });
 
     const productosIds = productos.map(item => item.producto);
@@ -167,67 +143,41 @@ router.put('/actualizar/:id',verificacion, async (req, res) => {
 
     if (productosData.length !== productos.length) {
       const missingIds = productosIds.filter(id => !productosData.some(prod => prod._id.equals(id)));
-      return res.status(400).json({ mensaje: `Algunos productos no existen: ${missingIds.join(', ')}` });
+      return res.status(400).json({ mensaje: `Algunos productos no existen si no se soluciona reinicie la pagina: ${missingIds.join(', ')}` });
     }
-
     const productosConPrecio = productos.map(item => {
       const productoData = productosData.find(prod => prod._id.equals(item.producto));
       return {
         producto: productoData._id,
-        cantidad: item.cantidad,
-        precio: item.precio,
+        cantidad_producto: item.cantidad_producto,
+        precio_producto: item.precio_producto,
       };
     });
-
-    // Recorremos cada producto y actualizamos su cantidad
     for (const producto of productosConPrecio) {
       const productoData = productosData.find(prod => prod._id.equals(producto.producto));
       if (productoData) {
-        let factorMultiplicador;
-
-        switch (productoData.categoria) {
-          case 'Tabletas':
-            factorMultiplicador = 250;
-            break;
-          case 'Jarabe':
-            factorMultiplicador = 1;
-            break;
-          case 'Sueros':
-            factorMultiplicador = 6;
-            break;
-          case 'Dentifricos':
-            factorMultiplicador = 9;
-            break;
-          case 'Supositorios':
-            factorMultiplicador = 12;
-            break;
-          case 'Suplementos':
-            factorMultiplicador = 5;
-            break;
-          default:
-            factorMultiplicador = 1;
-        }
-
-        let capacidadRestante = productoData.capacidad_unitaria;
-        let cajasRestantes = productoData.capacidad_caja;
-
-        if (capacidadRestante < producto.cantidad) {
-          const unidadesExcedentes = producto.cantidad - capacidadRestante;
+        const factorMultiplicador = productoData.categoria.cantidad;
+        let capacidadRestante = productoData.capacidad;
+        let cajasRestantes = productoData.capacidad_pres;
+    
+        if (capacidadRestante < producto.cantidad_producto) {
+          const unidadesExcedentes = producto.cantidad_producto - capacidadRestante;
           cajasRestantes -= Math.ceil(unidadesExcedentes / factorMultiplicador);
           capacidadRestante = factorMultiplicador - (unidadesExcedentes % factorMultiplicador);
         } else {
-          capacidadRestante -= producto.cantidad;
+          capacidadRestante -= producto.cantidad_producto;
         }
-
-        productoData.capacidad_unitaria = capacidadRestante;
-        productoData.capacidad_caja = cajasRestantes;
-
+    
+        productoData.capacidad = capacidadRestante;
+        productoData.capacidad_pres = cajasRestantes;
+  
+        // Recorremos cada producto y actualizamos su cantidad
         await productoData.save();
       } else {
         console.log(`El producto ${producto.producto} no se encontró en la base de datos`);
       }
     }
-
+    console.log(productosConPrecio)
     const VentaActualizado = await Venta.findByIdAndUpdate(
       id,
       { 
@@ -246,26 +196,6 @@ router.put('/actualizar/:id',verificacion, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar el Venta' });
-  }
-});
-  
-// Eliminar un Venta
-router.delete('/eliminar/:id',verificacion, async (req, res) => {
-  const { id } = req.params;
-  const { rol } = req.body;
-  try {
-    console.log(rol)
-    if (rol !== 'Administrador') {
-      return res.status(403).json({ mensaje: 'No tiene permisos para eliminar las ventas' });
-    }
-    const Ventaeliminado = await Venta.findByIdAndDelete(id);
-    if (!Ventaeliminado) {
-      return res.status(404).json({ mensaje: 'Venta no encontrado' });
-    }
-    res.json({ mensaje: 'Venta eliminado exitosamente', Ventaeliminado });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al eliminar Venta' });
   }
 });
 

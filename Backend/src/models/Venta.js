@@ -12,11 +12,11 @@ const ventaSchema = new mongoose.Schema({
       ref: 'Producto',
       required: true,
     },
-    cantidad: {
+    cantidad_producto: {
       type: Number,
       required: true
     },
-    precio: {
+    precio_producto: {
       type: Number,
       required: true
     }
@@ -25,7 +25,7 @@ const ventaSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  fecha_emision: {
+  fecha_registro: {
     type: Date,
     required: true
   },

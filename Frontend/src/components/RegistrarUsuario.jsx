@@ -16,6 +16,9 @@ export const RegistrarUsuario = () => {
   const [telefono, setTelefono] = React.useState('');
   const [correo, setCorreo] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [envioIntentado, setEnvioIntentado] =React.useState(false);
+
+  
 
   const obtenerToken = () => {
     // Obtener el token del local storage
@@ -35,6 +38,7 @@ export const RegistrarUsuario = () => {
   ];
   const RegistrarUsuario = (e) => {
     e.preventDefault();
+    setEnvioIntentado(true);
     const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
     if (!token) {
       // Redirigir al login si el token no existe
@@ -50,6 +54,14 @@ export const RegistrarUsuario = () => {
     {
     const Usuario = { nombre, apellido, rol, direccion, telefono, correo, password };
     Usuario.telefono = parseInt(Usuario.telefono);
+    if (telefono.length !== 8 || telefono < 60000000 || telefono > 799999999) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Número de teléfono inválido',
+        text: 'El número de teléfono debe tener 8 dígitos y estar en el rango de 60000000 a 799999999',
+      });
+      return;
+    }
     axios.post('http://localhost:4000/usuario/crear', Usuario, config)
       .then(response => {
         Swal.fire({
@@ -77,12 +89,13 @@ export const RegistrarUsuario = () => {
     setTelefono("");
     setCorreo("");
     setPassword("");
+    setEnvioIntentado(false);
     document.getElementById("Form-1").reset();
   }
   return (
     <div id="caja_contenido" style={{ textAlign: 'left', marginRight: '10px',marginLeft:'10px'}}>
-        <Typography variant="h6" style={{ marginTop: 25, textAlign: 'center',fontSize: '50px', color: '#eeca06', backgroundColor: "#03112a"}}>
-            FORMULARIO DE REGISTRO DE USUARIOS
+        <Typography variant="h6" style={{ marginTop: 10, textAlign: 'center',fontSize: '50px', color: '#eeca06', backgroundColor: "#03112a"}}>
+            Formulario De Registro De Usuarios
         </Typography>
         <Box mt={3} sx={{backgroundColor: "#03112a"}}>
           <form id="Form-1" onSubmit={RegistrarUsuario} >
@@ -94,7 +107,12 @@ export const RegistrarUsuario = () => {
                   label="Ingresar el/los nombre/s del usuario"
                   type='text'
                   value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    // Remover caracteres no permitidos usando una expresión regular
+                    const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
+                    setNombre(newValue);
+                  }}
                   required
                   InputProps={{
                     sx: { color: '#eeca06' },
@@ -113,7 +131,12 @@ export const RegistrarUsuario = () => {
                   label="Ingresar el/los apellido/s del usuario"
                   type='text'
                   value={apellido}
-                  onChange={(e) => setApellido(e.target.value)}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    // Remover caracteres no permitidos usando una expresión regular
+                    const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
+                    setApellido(newValue);
+                  }}
                   required
                   InputProps={{
                     sx: { color: '#eeca06' },
@@ -162,45 +185,52 @@ export const RegistrarUsuario = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={3} sx={{ '& .MuiTextField-root': {backgroundColor: '#060e15' }}}>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            label="Ingrese el número del Usuario"
-                            value={telefono}
-                            type='number'
-                            onChange={(e) => setTelefono(e.target.value)}
-                            required
-                            InputProps={{
-                                sx: { color: '#eeca06' },
-                                startAdornment: (
-                                  <InputAdornment position="start">
-                                    <PhoneAndroid sx={{ color: '#eeca06' }} />
-                                  </InputAdornment>
-                                ),
-                              }}
-                            InputLabelProps={{ sx: { color: '#eeca06' } }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={3} sx={{ '& .MuiTextField-root': {backgroundColor: '#060e15' }}}>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            label="Ingrese el correo del Usuario"
-                            type='email'
-                            value={correo}
-                            onChange={(e) => setCorreo(e.target.value)}
-                            required
-                            InputProps={{
-                                sx: { color: '#eeca06' },
-                                startAdornment: (
-                                  <InputAdornment position="start">
-                                    <Email sx={{ color: '#eeca06' }} />
-                                  </InputAdornment>
-                                ),
-                              }}
-                            InputLabelProps={{ sx: { color: '#eeca06' } }}
-                        />
-                    </Grid>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Ingrese el número del Usuario"
+                  value={telefono}
+                  type='Number'
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    // Si la longitud del número no es exactamente 8 dígitos, restringir el valor a los primeros 8 dígitos
+                    if (inputValue.length !== 9) {
+                        setTelefono(inputValue.slice(0, 9));
+                    }
+                  }}
+                  required
+                  error={envioIntentado && (telefono.length !== 8 || telefono < 60000000 || telefono > 79999999)}
+                  helperText={envioIntentado && (telefono.length !== 8 || telefono < 60000000 || telefono > 79999999) ? 'Número de teléfono inválido' : ''}
+                  InputProps={{
+                      sx: { color: '#eeca06' },
+                      startAdornment: (
+                          <InputAdornment position="start">
+                              <PhoneAndroid sx={{ color: '#eeca06' }} />
+                          </InputAdornment>
+                      ),
+                  }}
+                  InputLabelProps={{ sx: { color: '#eeca06' } }}
+              />
+              </Grid>
+                <Grid item xs={12} sm={3} sx={{ '& .MuiTextField-root': {backgroundColor: '#060e15' }}}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Ingrese el correo del Usuario"
+                    type='email'
+                    value={correo}
+                    onChange={(e) => setCorreo(e.target.value)}
+                    required
+                    InputProps={{
+                      sx: { color: '#eeca06' },
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Email sx={{ color: '#eeca06' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    InputLabelProps={{ sx: { color: '#eeca06' } }}/>
+              </Grid>
                     <Grid item xs={12} sm={3} sx={{ '& .MuiTextField-root': {backgroundColor: '#060e15' }}}>
                         <TextField
                             fullWidth

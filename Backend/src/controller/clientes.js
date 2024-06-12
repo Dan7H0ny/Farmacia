@@ -4,12 +4,17 @@ const Cliente = require('../models/Cliente');
 const verificacion = require('../middlewares/verificacion');
 
 // Crear un cliente
-router.post('/crear',verificacion, async (req, res) => {
-  const { nombre, apellido, nit_ci_cex, fecha_registro } = req.body;
+router.post('/crear', verificacion, async (req, res) => {
+  let { nombre, apellido, correo, telefono, sexo, nit_ci_cex } = req.body;
+  correo = correo && correo.trim() !== '' ? correo : 's/n';
+  telefono = telefono && telefono.trim() !== '' ? telefono : '00000000';
   try {
+    const fechaActual = new Date();
     const nitDuplicado = await Cliente.findOne({ nit_ci_cex });
-    if (nitDuplicado) { return res.status(400).json({ mensaje: 'El NIT/CI/CEX ya está registrado.' });}
-    const cliente = new Cliente({ nombre, apellido, nit_ci_cex, fecha_registro });
+    if (nitDuplicado) {
+      return res.status(400).json({ mensaje: 'El NIT/CI/CEX ya está registrado.' });
+    }
+    const cliente = new Cliente({ nombre, apellido, correo, telefono, sexo, nit_ci_cex, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
     await cliente.save();
     res.status(201).json({ mensaje: 'Cliente creado exitosamente', cliente });
   } catch (error) {
@@ -17,6 +22,7 @@ router.post('/crear',verificacion, async (req, res) => {
     res.status(500).json({ mensaje: 'Error al crear cliente' });
   }
 });
+
 
 // Obtener todos los clientes
 router.get('/mostrar',verificacion, async (req, res) => {
@@ -35,7 +41,7 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
   try {
     const cliente = await Cliente.findById(id);
     if (!cliente) {
-      return res.status(404).json({ mensaje: 'Usuarioo no encontrado' });
+      return res.status(404).json({ mensaje: 'Cliente no encontrado' });
     }
     res.json(cliente);
   } catch (error) {
@@ -60,39 +66,24 @@ router.get('/buscarci/:nit_ci_cex',verificacion, async (req, res) => {
 });
 
 // Actualizar un cliente
-router.put('/actualizar/:id',verificacion, async (req, res) => {
+router.put('/actualizar/:id', verificacion, async (req, res) => {
   const { id } = req.params;
-  const { nombre, apellido, nit_ci_cex } = req.body;
+  let { nombre, apellido, correo, telefono, sexo, nit_ci_cex } = req.body;
   try {
-    const cliente = await Cliente.findByIdAndUpdate(id, { nombre, apellido, nit_ci_cex }, { new: true });
-    if (!cliente) {
+    const fechaActual = new Date();
+    let updateFields = { nombre, apellido, sexo, nit_ci_cex, fecha_actualizacion: fechaActual };
+    if (correo !== 's/n') {updateFields.correo = correo;}
+    if (telefono !== '00000000') {updateFields.telefono = telefono;}
+    const clienteActualizado = await Cliente.findByIdAndUpdate(id, updateFields, { new: true });
+    if (!clienteActualizado) {
       return res.status(404).json({ mensaje: 'Cliente no encontrado' });
     }
-    res.json({ mensaje: 'Cliente actualizado exitosamente', cliente });
+    res.json({ mensaje: 'Cliente actualizado exitosamente', clienteActualizado });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar cliente' });
   }
 });
 
-// Eliminar un cliente
-router.delete('/eliminar/:id',verificacion, async (req, res) => {
-  const { id } = req.params;
-  const { rol } = req.body;
-  try {
-    console.log("nuevo", rol)
-    if (rol !== 'Administrador') {
-      return res.status(403).json({ mensaje: 'No tiene permisos para eliminar clientes' });
-    }
-    const cliente = await Cliente.findByIdAndDelete(id);
-    if (!cliente) {
-      return res.status(404).json({ mensaje: 'Cliente no encontrado' });
-    }
-    res.json({ mensaje: 'Cliente eliminado exitosamente', cliente });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al eliminar cliente' });
-  }
-});
 
 module.exports = router

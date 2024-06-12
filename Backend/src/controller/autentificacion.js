@@ -11,11 +11,11 @@ router.post('/login', async (req, res) => {
   try {
     const usuarioEncontrado  = await Usuario.findOne({ correo });
     if (!usuarioEncontrado ) {
-      return res.status(401).json({ mensaje: 'Usuario incorrecto' });
+      return res.status(401).json({ mensaje: 'Credenciales incorrectas' });
     }
     const match = await bcryptjs.compare(password, usuarioEncontrado.password);
     if (!match) {
-      return res.status(401).json({ mensaje: 'contraseña incorrecta' });
+      return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
     }
 
     const payload = {

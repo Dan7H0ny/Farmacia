@@ -3,6 +3,7 @@ import React, { } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { useAutenticarContexto  } from './contextos/autenticar';
+import { RegistrarComplementos  } from './components/RegistrarComplementos';
 
 import { RestablecerPassword } from './components/RestablecerPassword';
 import { Login } from './components/Login';
@@ -46,6 +47,7 @@ function App() {
               <Route exact path="/Menu/Administrador/Cliente/Listar" element={<ListarCliente/>}/>
               <Route exact path="/Menu/Administrador/Proveedor/Registrar" element={<RegistrarProveedor/>}/>
               <Route exact path="/Menu/Administrador/Proveedor/Listar" element={<ListarProveedor/>}/>
+              <Route exact path="/Menu/Administrador/Complemento/Registrar" element={<RegistrarComplementos/>}/>
               <Route exact path="/Menu/Administrador/Producto/Registrar" element={<RegistrarProducto/>}/>
               <Route exact path="/Menu/Administrador/Producto/Listar" element={<ListarProducto/>}/>
               <Route exact path="/Menu/Administrador/Venta/Registrar" element={<RegistrarVenta/>}/>
@@ -60,6 +62,7 @@ function App() {
               <Route exact path="/Menu/Cajero/Venta/Listar" element={<ListarVenta/>}/>
             </Route>
           )}
+
           {rol !== 'Administrador' && rol !== 'Cajero' && (
             <Route path="*" element={<Navigate to="/login" />} />
           )}

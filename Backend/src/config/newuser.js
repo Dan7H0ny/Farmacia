@@ -5,6 +5,7 @@ const bcryptjs = require('bcryptjs')
 const primerUsuario = async function(callback) {
   try {
     const usuarios = await Usuario.find({})
+    const fechaActual = new Date();
     const hashedPassword = await bcryptjs.hash( process.env.PRIMER_PASSWORD, 10);
     if (usuarios.length == 0) {
       await Usuario.create({
@@ -13,8 +14,23 @@ const primerUsuario = async function(callback) {
         rol: 'Administrador',
         direccion: 'Av. Blanco Galindo',
         telefono: 75966914,
-        correo: 'admin@123',
-        password: hashedPassword
+        correo: 'amamanih_cb@est.emi.edu.bo',
+        password: hashedPassword,
+        estado: true,
+        fecha_registro: fechaActual,
+        fecha_actualizacion: fechaActual
+      })
+      await Usuario.create({
+        nombre: 'Empleado',
+        apellido: 'Cajero',
+        rol: 'Cajero',
+        direccion: 'Av. Plaza Colon',
+        telefono: 75975967,
+        correo: 'loqendoa759@gmail.com',
+        password: hashedPassword,
+        estado: true,
+        fecha_registro: fechaActual,
+        fecha_actualizacion: fechaActual
       })
       console.log('Creado usuario admin exitosamente')
     }

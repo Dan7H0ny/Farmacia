@@ -10,29 +10,33 @@ const productoSchema = new mongoose.Schema({
     required: false
   },
   categoria: {
-    type: String,
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Categoria'
+  },
+  tipo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tipo'
   },
   proveedor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Proveedor'
   },
-  capacidad_caja: {
+  cantidad: {
     type: Number,
     required: true,
     min: 0
   },
-  capacidad_unitaria: {
-    type: Number,
-    required: false,
-    min: 0
-  },
-  precio_por_menor: {
+  capacidad: {
     type: Number,
     required: true,
     min: 0
   },
-  precio_por_mayor: {
+  capacidad_pres: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  precio: {
     type: Number,
     required: true,
     min: 0
@@ -40,6 +44,10 @@ const productoSchema = new mongoose.Schema({
   usuario: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Usuario'
+  },
+  estado: {
+    type: Boolean,
+    required: true
   },
   fecha_caducidad: {
     type: Date,

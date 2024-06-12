@@ -28,6 +28,18 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
+  },
+  estado: {
+    type: Boolean,
+    required: true
+  },
+  fecha_registro: {
+    type: Date,
+    required: true
+  },
+  fecha_actualizacion: {
+    type: Date,
+    required: true
   }
 });
 const Usuario = mongoose.model('Usuario', userSchema);

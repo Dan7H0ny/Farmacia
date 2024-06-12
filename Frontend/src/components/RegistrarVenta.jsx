@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Typography, TextField, Button, Box , Grid, InputAdornment, TableCell, TableHead, Table, TableRow, TableBody, TableContainer, Paper  } from '@mui/material';
+import { Typography, TextField, Button, Box , Grid, InputAdornment, TableCell, TableHead, Table, TableRow, TableBody, TableContainer, Paper, TablePagination  } from '@mui/material';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,17 +8,22 @@ import {DateRange, AddCircleOutlineOutlined, RemoveCircleOutlineOutlined, Search
 export const RegistrarVenta = () => {
   const location = useLocation();
   const ventaData = location.state?.ventaData;
-  const [cliente, setCliente] = useState([]);
+  const [clientes, setClientes] = useState([]);
   const [id_cliente, setIdCliente] = useState('');
-  const [ci_nit_cex, setCINITCEX] = useState('');
-  const [producto, setProducto] = useState([]);
+  const [productos, setProductos] = useState([]);
   const [id_producto, setIdProducto] = useState([]);
   const [productoAñadido, setProductoAñadido] = useState([]);
-  const [nombre_producto, setNombreProducto] = useState('');
   const [cantidad, setCantidad] = useState('');
   const [precio_total, setPrecioTotal] = useState(0);
   const usuario_registra_ = localStorage.getItem('id');
   const usuario_update_ = localStorage.getItem('id');
+
+  const [buscar, setBuscar] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [buscarProducto, setBuscarProducto] = useState('');
+  const [currentProducto, setCurrentProducto] = useState(0);
+  const [rowsPerProducto, setRowsPerProducto] = useState(5);
   
   const navigate = useNavigate();
   const obtenerToken = () => {
@@ -41,20 +46,21 @@ export const RegistrarVenta = () => {
       const productosUpdate = ventaData.productos.map(item => ({
         nombre: item.producto.nombre,
         proveedor: item.producto.proveedor,
-        cantidad: item.cantidad,
-        precio_por_menor: item.producto.precio_por_menor,
-        precio: item.precio,
+        cantidad_producto: item.cantidad_producto,
+        precio: item.producto.precio,
+        precio_producto: item.precio_producto,
         _id: item.producto._id,
       }));
       const prodocitoIds = ventaData.productos.map(item => ({
         producto: item.producto._id,
-        cantidad: item.cantidad,
-        precio: item.precio,
+        cantidad_producto: item.cantidad_producto,
+        precio_producto: item.precio_producto,
       }));
       setIdCliente(ventaData.cliente)
       setProductoAñadido(productosUpdate)
       setPrecioTotal(ventaData.precio_total)
       setIdProducto(prodocitoIds)
+      console.log(productosUpdate)
     }
   }, [ventaData, navigate]);
 
@@ -77,7 +83,7 @@ export const RegistrarVenta = () => {
     };
     axios.get('http://localhost:4000/producto/mostrar', config)
       .then(response => {
-        setProducto(response);
+        setProductos(response);
       })
       .catch(error => {
         Swal.fire({
@@ -108,7 +114,7 @@ export const RegistrarVenta = () => {
     };
     axios.get('http://localhost:4000/cliente/mostrar', config)
       .then(response => {
-        setCliente(response);
+        setClientes(response);
       })
       .catch(error => {
         Swal.fire({
@@ -155,6 +161,7 @@ export const RegistrarVenta = () => {
       });
     }
   };
+
   const editarVenta = (e) => {
     e.preventDefault();
 
@@ -197,32 +204,6 @@ export const RegistrarVenta = () => {
       });
     }
   };
-  const botonBuscarCliente = () => {
-    const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
-    if (!token) {
-      // Redirigir al login si el token no existe
-      Swal.fire({
-        icon: 'error',
-        title: 'El token es invalido',
-        text: "error",
-      });
-      navigate('/Menu/Administrador')
-    }
-    else{
-    axios.get(`http://localhost:4000/cliente/buscarci/${ci_nit_cex}`, configInicial)
-      .then(response => {
-        setCliente(response);
-        setCINITCEX("");
-      })
-      .catch(error => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al buscar al cliente',
-          text: error.mensaje,
-        });
-      });
-    }
-  };
   const botonAgregarCliente = (cliente) => {
     const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
       if (!token) {
@@ -235,10 +216,14 @@ export const RegistrarVenta = () => {
         navigate('/Menu/Administrador')
       }
       else{
-    const clienteActual = cliente;
-    axios.get(`http://localhost:4000/cliente/buscar/${clienteActual._id}`, configInicial)
+    axios.get(`http://localhost:4000/cliente/buscar/${cliente._id}`, configInicial)
       .then(response => {
         setIdCliente(response);
+        Swal.fire({
+          icon: 'success',
+          title: 'Cliente Agregado',
+          text: 'El siguiente cliente ha sido agregado al carrito: ' + cliente.nombre + '  ' + cliente.apellido,
+        });
       })
       .catch(error => {
         Swal.fire({
@@ -249,34 +234,8 @@ export const RegistrarVenta = () => {
       });
   };
   }
-  const botonBuscarProducto = () => {
-    const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
-    if (!token) {
-      // Redirigir al login si el token no existe
-      Swal.fire({
-        icon: 'error',
-        title: 'El token es invalido',
-        text: "error",
-      });
-      navigate('/Menu/Administrador')
-    }
-    else{
-    axios.get(`http://localhost:4000/producto/buscarnombre/${nombre_producto}`, configInicial)
-      .then(response => {
-        setProducto(response);
-        setNombreProducto("");
-      })
-      .catch(error => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al buscar el producto',
-          text: error.mensaje,
-        });
-      });
-    }
-  };
 
-  const botonAgregarProducto = (index) => {
+  const botonAgregarProducto = (producto) => {
     const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
     if (!token) {
       // Redirigir al login si el token no existe
@@ -287,9 +246,9 @@ export const RegistrarVenta = () => {
       });
       navigate('/Menu/Administrador');
     } else {  
-      const productoActual = producto[index];
+      console.log(producto)
       // Verificar si el producto ya está añadido
-      const productoYaAñadido = productoAñadido.some(p => p._id === productoActual._id);
+      const productoYaAñadido = productoAñadido.some(p => p._id === producto._id);
       if (productoYaAñadido) {
         Swal.fire({
           icon: 'warning',
@@ -297,16 +256,17 @@ export const RegistrarVenta = () => {
           text: 'Este producto ya está en el carrito',
         });
       } else {
-        axios.get(`http://localhost:4000/producto/buscar/${productoActual._id}`, configInicial)
+        axios.get(`http://localhost:4000/producto/buscar/${producto._id}`, configInicial)
           .then(response => {
-            const precioProducto = response.precio_por_menor * (cantidad[productoActual._id] || 1);
-            const cantidadProducto = cantidad[productoActual._id] || 1;
-            const productoConCantidad = { ...response, cantidad: cantidadProducto, precio: precioProducto};
-            const idproductos_2 = { producto: response._id, cantidad: cantidadProducto, precio: precioProducto};
+            const precioProducto = response.precio * (cantidad[producto._id] || 1);
+            const cantidadProducto = cantidad[producto._id] || 1;
+            const productoConCantidad = { ...response, cantidad_producto: cantidadProducto, precio_producto: precioProducto};
+            const idproductos_2 = { producto: response._id, cantidad_producto: cantidadProducto, precio_producto: precioProducto};
             setProductoAñadido(prevProductos => [...prevProductos, productoConCantidad]);
             setIdProducto(prevProductos => [...prevProductos, idproductos_2])
-            const precioTotalActualizado = [...productoAñadido, productoConCantidad].reduce((total, producto) => total + producto.precio, 0);
+            const precioTotalActualizado = [...productoAñadido, productoConCantidad].reduce((total, producto) => total + producto.precio_producto, 0);
             setPrecioTotal(precioTotalActualizado);
+            console.log(productoAñadido)
           })
           .catch(error => {
             Swal.fire({
@@ -322,11 +282,12 @@ export const RegistrarVenta = () => {
   const handleCantidadChange = (id, value) => {
     setCantidad(prev => ({ ...prev, [id]: value }));
   };
+  
   const botonEliminarProducto = (index) => {
     setProductoAñadido(prevProductos => {
       const nuevosProductos = prevProductos.filter((_, i) => i !== index);
       // Recalcula el precio total después de eliminar un producto
-      const precioTotalActualizado = nuevosProductos.reduce((total, producto) => total + producto.precio, 0);
+      const precioTotalActualizado = nuevosProductos.reduce((total, producto) => total + producto.precio_producto, 0);
       setPrecioTotal(precioTotalActualizado);
       return nuevosProductos;
     });
@@ -337,111 +298,171 @@ export const RegistrarVenta = () => {
     setIdCliente("");
     setProductoAñadido([]);
   }
+
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setCurrentPage(0);
+  };
+
+  const filteredClientes = clientes.filter(cliente =>
+    cliente.nombre.toLowerCase().includes(buscar.toLowerCase())
+  );  
+
+  const paginatedClientes = filteredClientes.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
+
+  const handleChangeProducto = (event, newPage) => {
+    setCurrentProducto(newPage);
+  };
+
+  const handleChangeRowsPerProducto = (event) => {
+    setRowsPerProducto(parseInt(event.target.value, 10));
+    setCurrentProducto(0);
+  };
+
+  const filteredProductos = productos.filter(producto =>
+    producto.nombre.toLowerCase().includes(buscarProducto.toLowerCase())
+  );  
+
+  const paginatedProductos = filteredProductos.slice(currentProducto * rowsPerProducto, currentProducto * rowsPerProducto + rowsPerProducto);
+
   return (
-  <div id="caja_contenido" style={{ textAlign: 'left', marginRight: '0px', marginLeft: '0px' }}>
+  <div id="caja_contenido" style={{ textAlign: 'left', marginRight: '2%', marginLeft: '2%' }}>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={4.5}>
+        <Grid item xs={12} sm={12}>
           <Typography variant="h6" style={{ marginTop: 10, textAlign: 'center', fontSize: '30px', color: '#eeca06', backgroundColor: "#03112a", padding: '10px' }}>
             LISTA DE CLIENTES
           </Typography>
+          <Grid item xs={12} sm={12} sx={{marginTop: 2, '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
             <TextField
-              fullWidth
+              label="Nombre del cliente"
               variant="outlined"
-              label="Buscar el cliente por ci/nit/cex"
-              value={ci_nit_cex}
-              type='number'
+              fullWidth
+              size="large"
+              type='text'
+              value={buscar}
+              onChange={(e) => setBuscar(e.target.value)}
               required
-              onChange={(e) => setCINITCEX(e.target.value)}
               InputProps={{
+              sx: { color: '#eeca06' },
                 startAdornment: (
                   <InputAdornment position="start">
                     <Search sx={{ color: '#eeca06' }} />
                   </InputAdornment>
-                ),
-                sx: { color: '#eeca06', backgroundColor: '#060e15' }
-              }}
+                  ),
+                }}
               InputLabelProps={{ sx: { color: '#eeca06' } }} />
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button variant="contained" sx={{ backgroundColor: 'green', '&amp;:hover': { backgroundColor: 'darkgreen' } }} onClick={botonBuscarCliente}>
-                Buscar
-              </Button>
-            </Box>
-          <TableContainer component={Paper} style={{ maxHeight: '700px', marginTop: '10px' }}>
+          </Grid>
+          <TableContainer component={Paper} style={{ maxHeight: '100%', marginTop: '10px' }}>
             <Table stickyHeader>
-              <TableHead sx={{ '& .MuiTableCell-root': { color: '#eeca06', backgroundColor: "#03112a" } }}>
+              <TableHead sx={{ '& .MuiTableCell-root': { color: '#eeca06', backgroundColor: "#03112a", textAlign: 'center' } }}>
                 <TableRow>
                   <TableCell>#</TableCell>
-                  <TableCell>NOMBRE</TableCell>
-                  <TableCell>APELLIDO</TableCell>
-                  <TableCell>IDENTIFICACION CI/NIT/CEX</TableCell>
-                  <TableCell>AGREGAR</TableCell>
+                  <TableCell>Nombre Completo</TableCell>
+                  <TableCell>Identificacion</TableCell>
+                  <TableCell>Agregar</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody sx={{ '& .MuiTableCell-root': { color: '#eeca06', backgroundColor: "#03112a" } }}>
-                {cliente._id && (
-                  <TableRow >
-                    <TableCell>{1}</TableCell>
-                    <TableCell>{cliente.nombre}</TableCell>
-                    <TableCell>{cliente.apellido}</TableCell>
-                    <TableCell>{cliente.nit_ci_cex}</TableCell>
+              <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': {color: '#eeca06', backgroundColor: "#03112a", textAlign: 'center' } }}>
+                {paginatedClientes.map((x, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
+                    <TableCell>{x.nombre} {x.apellido}</TableCell>
+                    <TableCell>{x.nit_ci_cex}</TableCell>
                     <TableCell className="text-center">
-                      <Button variant="contained" sx={{ backgroundColor: 'green', '&:hover': { backgroundColor: 'darkgreen' } }} onClick={() => botonAgregarCliente(cliente)}>
+                      <Button variant="contained" sx={{ backgroundColor: 'green', '&:hover': { backgroundColor: 'darkgreen' } }} onClick={() => botonAgregarCliente(x)}>
                         <AddCircleOutlineOutlined />
                       </Button>
                     </TableCell>
                   </TableRow>
-                )}
+                ))}
               </TableBody>
             </Table>
+            <TablePagination
+              component="div"
+              count={filteredClientes.length}
+              page={currentPage}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              labelRowsPerPage="Filas por por pagina"
+              labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+              rowsPerPageOptions={[5, 10, 15, 20]}
+              sx={{ 
+                '& .MuiTablePagination-toolbar': {
+                  backgroundColor: "#03112a",
+                  color: '#eeca06',
+                  display: 'flex',
+                  justifyContent: 'center', // Centra el contenido dentro de la toolbar
+                },
+                '& .MuiTablePagination-selectLabel': {
+                  color: '#eeca06',
+                  margin: '0 1%', // Ajusta el margen para centrar
+                },
+                '& .MuiTablePagination-input': {
+                  color: '#eeca06',
+                  margin: '0 1%', // Ajusta el margen para centrar
+                },
+                '& .MuiTablePagination-selectIcon': {
+                  color: '#eeca06',
+                },
+                '& .MuiTablePagination-displayedRows': {
+                  color: '#eeca06',
+                  margin: '0 1%', // Ajusta el margen para centrar
+                },
+                '& .MuiTablePagination-actions': {
+                  color: '#eeca06',
+                }
+              }}
+            />
           </TableContainer>
         </Grid>
-        <Grid item xs={12} sm={7.5}>
+        <Grid item xs={12} sm={12}>
           <Typography variant="h6" style={{ marginTop: 10, textAlign: 'center', fontSize: '30px', color: '#eeca06', backgroundColor: "#03112a", padding: '10px' }}>
             LISTA DE PRODUCTOS
           </Typography>
-          <TextField
-              fullWidth
+          <Grid item xs={12} sm={12} sx={{marginTop: 2, '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
+            <TextField
+              label="Nombre del producto"
               variant="outlined"
-              label="Buscar el nombre del producto"
-              value={nombre_producto}
+              fullWidth
+              size="large"
               type='text'
+              value={buscarProducto}
+              onChange={(e) => setBuscarProducto(e.target.value)}
               required
-              onChange={(e) => setNombreProducto(e.target.value)}
               InputProps={{
+              sx: { color: '#eeca06' },
                 startAdornment: (
                   <InputAdornment position="start">
                     <Search sx={{ color: '#eeca06' }} />
                   </InputAdornment>
-                ),
-                sx: { color: '#eeca06', backgroundColor: '#060e15' }
-              }}
+                  ),
+                }}
               InputLabelProps={{ sx: { color: '#eeca06' } }} />
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button variant="contained" sx={{ backgroundColor: 'green', '&amp;:hover': { backgroundColor: 'darkgreen' }, marginLeft: '10px' }} onClick={botonBuscarProducto}>
-                Buscar
-              </Button>
-            </Box>
-          <TableContainer component={Paper} style={{ maxHeight: '700px', marginTop: '10px' }}>
+          </Grid>
+          <TableContainer component={Paper} style={{ maxHeight: '100%', marginTop: '10px' }}>
             <Table stickyHeader>
-              <TableHead sx={{ '& .MuiTableCell-root': { color: '#eeca06', backgroundColor: "#03112a" } }}>
+              <TableHead sx={{ '& .MuiTableCell-root': { color: '#eeca06', backgroundColor: "#03112a", textAlign: 'center' } }}>
                 <TableRow>
                   <TableCell>#</TableCell>
                   <TableCell>NOMBRE</TableCell>
-                  <TableCell>CATEGORIA</TableCell>
                   <TableCell>PROVEEDOR</TableCell>
                   <TableCell>PRECIO</TableCell>
                   <TableCell>CANTIDAD</TableCell>
                   <TableCell>AGREGAR</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody sx={{ '& .MuiTableCell-root': { color: '#eeca06', backgroundColor: "#03112a" } }}>
-                {producto.map((x, index) => (
+              <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': {color: '#eeca06', backgroundColor: "#03112a", textAlign: 'center' } }}>
+                {paginatedProductos.map((x, index) => (
                   <TableRow key={index}>
-                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
                     <TableCell>{x.nombre}</TableCell>
-                    <TableCell>{x.categoria}</TableCell>
                     <TableCell>{x.proveedor.nombre_marca}</TableCell>
-                    <TableCell>{x.precio_por_menor}</TableCell>
+                    <TableCell>{x.precio}</TableCell>
                     <TableCell>
                       <TextField
                         fullWidth
@@ -462,7 +483,7 @@ export const RegistrarVenta = () => {
                         InputLabelProps={{ sx: { color: '#eeca06' } }} />
                       </TableCell>
                     <TableCell className="text-center">
-                      <Button variant="contained" sx={{ backgroundColor: 'green', '&:hover': { backgroundColor: 'darkgreen' } }} onClick={() => botonAgregarProducto(index)}>
+                      <Button variant="contained" sx={{ backgroundColor: 'green', '&:hover': { backgroundColor: 'darkgreen' } }} onClick={() => botonAgregarProducto(x)}>
                         <AddCircleOutlineOutlined />
                       </Button>
                     </TableCell>
@@ -470,6 +491,44 @@ export const RegistrarVenta = () => {
                 ))}
               </TableBody>
             </Table>
+            <TablePagination
+              component="div"
+              count={filteredProductos.length}
+              page={currentProducto}
+              onPageChange={handleChangeProducto}
+              rowsPerPage={rowsPerProducto}
+              onRowsPerPageChange={handleChangeRowsPerProducto}
+              labelRowsPerPage="Filas por por pagina"
+              labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+              rowsPerPageOptions={[5, 10, 15, 20]}
+              sx={{ 
+                '& .MuiTablePagination-toolbar': {
+                  backgroundColor: "#03112a",
+                  color: '#eeca06',
+                  display: 'flex',
+                  justifyContent: 'center', // Centra el contenido dentro de la toolbar
+                },
+                '& .MuiTablePagination-selectLabel': {
+                  color: '#eeca06',
+                  margin: '0 1%', // Ajusta el margen para centrar
+                },
+                '& .MuiTablePagination-input': {
+                  color: '#eeca06',
+                  margin: '0 1%', // Ajusta el margen para centrar
+                },
+                '& .MuiTablePagination-selectIcon': {
+                  color: '#eeca06',
+                },
+                '& .MuiTablePagination-displayedRows': {
+                  color: '#eeca06',
+                  margin: '0 1%', // Ajusta el margen para centrar
+                },
+                '& .MuiTablePagination-actions': {
+                  color: '#eeca06',
+                }
+              }}
+            />
+
           </TableContainer>
         </Grid>
       </Grid>
@@ -500,8 +559,8 @@ export const RegistrarVenta = () => {
                       <TableCell>{id_cliente.nombre}, {id_cliente.apellido}, {id_cliente.nit_ci_cex} </TableCell>
                       <TableCell>{x.nombre}</TableCell>
                       <TableCell>{x.proveedor.nombre_marca}</TableCell>
-                      <TableCell>{x.cantidad}</TableCell>
-                      <TableCell>{x.precio_por_menor}</TableCell>
+                      <TableCell>{x.cantidad_producto}</TableCell>
+                      <TableCell>{x.precio_producto}</TableCell>
                       <TableCell>{x.precio}</TableCell>
                       <TableCell className="text-center">
                         <Button variant="contained" sx={{ backgroundColor: 'green', '&:hover': { backgroundColor: 'darkgreen' } }} onClick={() => botonEliminarProducto(index)}>

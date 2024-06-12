@@ -5,11 +5,17 @@ const verificacion = require('../middlewares/verificacion');
 
 // Crear un Proveedor
 router.post('/crear',verificacion, async (req, res) => {
-  const { nombre_marca, correo, telefono, sitioweb } = req.body;
+  let { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular } = req.body;
+  correo = correo && correo.trim() !== '' ? correo : 's/n';
+  correo_vendedor = correo_vendedor && correo_vendedor.trim() !== '' ? correo_vendedor : 's/n';
+  sitioweb = sitioweb && sitioweb.trim() !== '' ? sitioweb : 's/n';
+  telefono = telefono && telefono.trim() !== '' ? telefono : '00000000';
+  celular = celular && celular.trim() !== '' ? celular : '00000000';
   try {
-    const newproveedor = new Proveedor({ nombre_marca, correo, telefono, sitioweb });
+    const fechaActual = new Date();
+    const newproveedor = new Proveedor({ nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
     await newproveedor.save();
-    res.json({ mensaje: 'Proveedor creado exitosamente ', newproveedor });
+    res.json({ mensaje: 'Proveedor creado exitosamente ', newproveedor }); 
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al crear el Proveedor' });
@@ -45,32 +51,23 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
 // Actualizar un Proveedor
 router.put('/actualizar/:id',verificacion, async (req, res) => {
   const { id } = req.params;
-  const { nombre_marca, correo, telefono, sitioweb } = req.body;
+  let { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular } = req.body;
   try {
-    const ProveedorActualizado = await Proveedor.findByIdAndUpdate(id,{ nombre_marca, correo, telefono, sitioweb }, { new: true });
-    if (!ProveedorActualizado) {
-      return res.status(404).json({ mensaje: 'Proveedor no encontrado' });
+    console.log(telefono, celular)
+    const fechaActual = new Date();
+    let updateFields = { nombre_marca, correo, sitioweb, nombre_vendedor, correo_vendedor, fecha_actualizacion: fechaActual };
+    if (celular !== '0') {updateFields.celular = celular;}
+    if (telefono !== '00000000') {updateFields.telefono = telefono;}
+    const proveedorActualizado = await Proveedor.findByIdAndUpdate(id, updateFields, { new: true });
+    if (!proveedorActualizado) {
+      return res.status(404).json({ mensaje: 'Cliente no encontrado' });
     }
-    res.json({ mensaje: 'Proveedor actualizado exitosamente ', ProveedorActualizado });
+    res.json({ mensaje: 'Cliente actualizado exitosamente', proveedorActualizado });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar el Proveedor' });
   }
 });
-  
-// Eliminar un Proveedor
-router.delete('/eliminar/:id',verificacion, async (req, res) => {
-  const { id } = req.params;
-  try {
-    const Proveedoreliminado = await Proveedor.findByIdAndDelete(id);
-    if (!Proveedoreliminado) {
-      return res.status(404).json({ mensaje: 'Proveedor no encontrado' });
-    }
-    res.json({ mensaje: 'Proveedor eliminado exitosamente', Proveedoreliminado });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al eliminar Proveedor' });
-  }
-});
+
 
 module.exports = router;

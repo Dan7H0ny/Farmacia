@@ -1,27 +1,25 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import axios from 'axios';
-import { TextField, Button ,Typography, InputAdornment, Grid, Box } from '@mui/material';
+import { TextField, Button ,Typography, InputAdornment, Grid, Box, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-import {PersonAddAlt, Badge } from '@mui/icons-material';
+import {Person, Badge, Email, SupervisedUserCircle, PhoneAndroid } from '@mui/icons-material';
 
 export const RegistrarCliente = ( ) => {
 
   const [ nombre, setNombre ] = useState('');
   const [ apellido, setApellido ] = useState('');
+  const [ correo, setCorreo ] = useState('');
+  const [ telefono, setTelefono ] = useState('');
+  const [ sexo, setSexo ] = useState('');
   const [ nit_ci_cex, setIdentificacion ] = useState('');
-  const [ Fecha, setFecha ] = useState('');
+  const [ envioIntentado, setEnvioIntentado ] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Obtener la fecha actual en la zona horaria local
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    setFecha(formattedDate);
-  }, []);
+  const generos = [
+    { nombre: 'Masculino' },
+    { nombre: 'Femenino' },
+  ];
 
   const obtenerToken = () => {
     // Obtener el token del local storage
@@ -51,7 +49,15 @@ export const RegistrarCliente = ( ) => {
     }
     else
     {
-    const NewClient = { nombre, apellido, nit_ci_cex, fecha_registro: Fecha };
+    const NewClient = { nombre, apellido, correo, telefono, sexo, nit_ci_cex };
+    if (nit_ci_cex.length < 5 || nit_ci_cex.length > 12 ) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Número de teléfono inválido',
+        text: 'El numero es menor a 5 digitos y es mayor a 12 digitos',
+      });
+      return;
+    } 
     axios.post('http://localhost:4000/cliente/crear', NewClient, config)
       .then(response => {
 
@@ -76,11 +82,14 @@ export const RegistrarCliente = ( ) => {
     setNombre("");
     setApellido("");
     setIdentificacion("");
+    setCorreo("");
+    setSexo("");
+    setEnvioIntentado(false);
     document.getElementById("miFormulario").reset();
   }
 
   return (
-    <div id="regTipo" style={{ textAlign: 'left', marginRight: '10px', marginLeft: '10px' }}>
+    <div id="caja_contenido" style={{ textAlign: 'left', marginRight: '10px', marginLeft: '10px' }}>
     <Typography variant="h6" style={{ marginTop: 50, textAlign: 'center', fontSize: '50px', color: '#eeca06', backgroundColor: "#03112a" }}>
       FORMULARIO DE REGISTRO DE CLIENTES
     </Typography>
@@ -94,13 +103,18 @@ export const RegistrarCliente = ( ) => {
             size="large"
             type='text'
             value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              // Remover caracteres no permitidos usando una expresión regular
+                const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
+                setNombre(newValue);
+            }}
             required
             InputProps={{
               sx: { color: '#eeca06' },
               startAdornment: (
                 <InputAdornment position="start">
-                  <PersonAddAlt sx={{ color: '#eeca06' }} />
+                  <Person sx={{ color: '#eeca06' }} />
                 </InputAdornment>
               ),
             }}
@@ -114,17 +128,88 @@ export const RegistrarCliente = ( ) => {
             size="large"
             type='text'
             value={apellido}
-            onChange={(e) => setApellido(e.target.value)}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              // Remover caracteres no permitidos usando una expresión regular
+              const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
+              setApellido(newValue);
+            }}
             required
             InputProps={{
               sx: { color: '#eeca06' },
               startAdornment: (
                 <InputAdornment position="start">
-                  <PersonAddAlt sx={{ color: '#eeca06' }} />
+                  <SupervisedUserCircle sx={{ color: '#eeca06' }} />
                 </InputAdornment>
               ),
             }}
             InputLabelProps={{ sx: { color: '#eeca06' } }} />
+        </Grid>
+        <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
+          <TextField
+            label="Correo del cliente"
+            variant="outlined"
+            fullWidth
+            size="large"
+            type='email'
+            value={correo}
+            onChange={(e) => {setCorreo(e.target.value)}}
+            InputProps={{
+              sx: { color: '#eeca06' },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Email sx={{ color: '#eeca06' }} />
+                </InputAdornment>
+              ),
+            }}
+            InputLabelProps={{ sx: { color: '#eeca06' } }} />
+        </Grid>
+        <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Ingrese el número del Cliente"
+            value={telefono}
+            type='number'
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              // Si la longitud del número es mayor a 8 dígitos, restringir el valor a los primeros 8 dígitos
+              if (inputValue.length > 8) {
+                setTelefono(inputValue.slice(0, 8));
+              } else {
+                setTelefono(inputValue);
+              }
+            }}
+            error={envioIntentado && telefono && (telefono.length !== 8 || telefono < 60000000 || telefono > 79999999)}
+            helperText={envioIntentado && telefono && (telefono.length !== 8 || telefono < 60000000 || telefono > 79999999) ? 'Número de teléfono inválido' : ''}
+            InputProps={{
+              sx: { color: '#eeca06' },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <PhoneAndroid sx={{ color: '#eeca06' }} />
+                </InputAdornment>
+              ),
+            }}
+            InputLabelProps={{ sx: { color: '#eeca06' } }}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <FormControl fullWidth variant="outlined" sx={{ color: '#eeca06', backgroundColor:'#060e15'}}>
+            <InputLabel id="rol-label" sx={{ color: '#eeca06' }}>Seleccione el genero del cliente</InputLabel>
+              <Select
+                labelId="rol-label"
+                value={sexo}
+                onChange={(e) => setSexo(e.target.value)}
+                required
+                sx={{ color: '#eeca06' }}>
+                <MenuItem></MenuItem>
+                {generos.map((g) => (
+                <MenuItem key={g.nombre} value={g.nombre}>
+                  {g.nombre}
+                </MenuItem>
+              ))}  
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
           <TextField
@@ -134,7 +219,15 @@ export const RegistrarCliente = ( ) => {
             size="large"
             type='number'
             value={nit_ci_cex}
-            onChange={(e) => setIdentificacion(e.target.value)}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              // Si la longitud del número no es exactamente 8 dígitos, restringir el valor a los primeros 8 dígitos
+              if (inputValue.length > 12) {
+                // Si es mayor, truncar el valor a la longitud máxima
+                setIdentificacion(inputValue.slice(0, 12));
+              }
+              setIdentificacion(inputValue.slice(0, 12));
+            }}
             required
             InputProps={{
               sx: { color: '#eeca06' },

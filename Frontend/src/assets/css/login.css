@@ -1,0 +1,12 @@
+/* login.css */
+.background-container {
+  background-image: url("../images/Fondo.jpg");
+  background-size: contain; /* O un valor específico como '150%' para hacerlo más grande */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #0a2d4b;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

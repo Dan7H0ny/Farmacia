@@ -1,0 +1,12 @@
+/* En tu archivo CSS */
+.registrar-usuario-form {
+    width: 100%; /* Ancho completo cuando el menú está contraído */
+    transition: width 0.3s; /* Agrega transición suave para el cambio de ancho */
+  }
+  
+  @media (min-width: 350px) { /* Ancho mínimo del menú cuando está expandido */
+    .registrar-usuario-form {
+      width: 250px; /* Ancho reducido cuando el menú está expandido */
+    }
+  }
+  

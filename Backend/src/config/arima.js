@@ -1,0 +1,234 @@
+const ARIMA = require('arima');
+const Producto = require('../models/Producto');
+const Venta = require('../models/Venta');
+
+async function obtenerVentasDiarias() {
+  try {
+    const ventas = await Venta.aggregate([
+      { $unwind: '$productos' },
+      {
+        $group: {
+          _id: {
+            producto: '$productos.producto',
+            fecha: { $dateToString: { format: '%Y-%m-%d', date: '$fecha_registro' } }
+          },
+          totalVentas: { $sum: '$productos.cantidad_producto' }
+        }
+      },
+      { $sort: { '_id.producto': 1, '_id.fecha': 1 } }
+    ]);
+
+    const ventasPorProducto = {};
+
+    ventas.forEach(venta => {
+      const productoId = venta._id.producto;
+      const fechaVenta = venta._id.fecha;
+
+      if (!ventasPorProducto[productoId]) {
+        ventasPorProducto[productoId] = [];
+      }
+
+      // Verificar si la fecha ya ha sido agregada para este producto
+      const indiceFecha = ventasPorProducto[productoId].findIndex(item => item.fecha === fechaVenta);
+
+      if (indiceFecha !== -1) {
+        // Si la fecha ya existe, actualiza el totalVentas para esa fecha
+        ventasPorProducto[productoId][indiceFecha].totalVentas += venta.totalVentas;
+      } else {
+        // Si la fecha no existe, agrega una nueva entrada
+        ventasPorProducto[productoId].push({ fecha: fechaVenta, totalVentas: venta.totalVentas });
+      }
+    });
+
+    return ventasPorProducto;
+  } catch (error) {
+    console.error('Error al obtener las ventas diarias:', error);
+    throw error;
+  }
+}
+
+async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
+  let agotado = false; // Inicializar la variable agotado como false
+  let diaAgotamiento; // Declarar la variable diaAgotamiento
+
+  const datosHistoricos = ventasPorProducto[productoId] || [];
+  if (datosHistoricos.length === 0) {
+    throw new Error(`No hay datos históricos para el producto con ID ${productoId}`);
+  }
+
+  const y = datosHistoricos.map(venta => venta.totalVentas);
+
+  const arima = new ARIMA({ p: 2, d: 1, q: 2, verbose: false });
+  arima.train(y);
+  const predicciones = arima.predict(diasAPredecir);
+
+  const producto = await Producto.findById(productoId);
+  const capacidadTotalInicial = calcularCapacidadTotalInicial(producto);
+
+  const primeraPrediccion = predicciones[0].map(valor => Math.ceil(valor));
+
+  const diaActual = 1;
+  // Asegurarse de que capacidadTotal no sea negativo
+  let capacidadTotal = capacidadTotalInicial;
+
+  if (!agotado && capacidadTotal <= 0) {
+    diaAgotamiento = diaActual;
+    agotado = true; // Marcar el producto como agotado
+  }
+
+  // Calcular el stock restante solo si el producto aún no se ha agotado
+  const stockRestante = agotado ? 0 : Math.max(capacidadTotal, 0);
+  // Sumar las ventas del día actual y actualizar la capacidad total
+  for (let i = 0; i < primeraPrediccion.length; i++) {
+    const ventaDiaActual = primeraPrediccion[i];
+    capacidadTotal -= ventaDiaActual;
+
+    // Verificar si la capacidad total es menor o igual a 0 después de esta iteración
+    if (!agotado && capacidadTotal <= 0) {
+      diaAgotamiento = diaActual + i;
+      agotado = true; // Marcar el producto como agotado
+      break; // Salir del bucle si el producto está agotado
+    }
+  }
+
+  // Devolver solo una predicción por iteración de días
+  return { 
+    nombreProducto: producto.nombre, 
+    prediccion: { ventas: primeraPrediccion, stockRestante }, 
+    diaAgotamiento 
+  };
+}
+
+function calcularCapacidadTotalInicial(producto) {
+  // Verifica si el producto está definido
+  if (!producto) {
+    // Si el producto no está definido, lanza un error
+    throw new Error(`Producto no definido`);
+  }
+  let capacidadTotal = 0;
+  if (producto.capacidad <= 0)
+    {
+      capacidadTotal = producto.capacidad + ( producto.capacidad_pres * producto.cantidad );
+    }
+    else
+    {
+      capacidadTotal = producto.capacidad;
+    }
+
+  return capacidadTotal;
+}
+
+async function predecirVentasParaTodosLosProductosARIMA(diasAPredecir) {
+  try {
+    const ventasPorProducto = await obtenerVentasDiarias();
+  
+    const productos = await Producto.find({});
+    const predicciones = await Promise.all(
+      productos.map(producto => predecirVentas(ventasPorProducto, producto._id, diasAPredecir))
+    );
+  
+    const productosConDiaAgotamiento = predicciones.map(prediccion => ({
+      ...prediccion,
+      diaAgotamiento: prediccion.diaAgotamiento,
+    }));
+  
+    return productosConDiaAgotamiento;
+  } catch (error) {
+    console.error('Error al predecir ventas para todos los productos:', error);
+    throw error;
+  }
+}
+
+async function predecirVentasParaUnProducto(diasAPredecir, nombre_producto) {
+  try {
+    const ventasPorProducto = await obtenerVentasDiarias();
+
+    const productos = await Producto.find({ nombre: { $regex: new RegExp(nombre_producto, 'i') } })
+      .populate('proveedor', 'nombre_marca')
+      .populate('usuario', 'nombre apellido rol correo');
+    if (!productos || productos.length === 0) {
+      return res.status(404).json({ mensaje: 'Producto no encontrado' });
+    }
+    const predicciones = await Promise.all(
+      productos.map(producto => predecirVentas(ventasPorProducto, producto._id, diasAPredecir))
+    );
+    const productosConDiaAgotamiento = predicciones.map(prediccion => ({
+      ...prediccion,
+      diaAgotamiento: prediccion.diaAgotamiento,
+    }));
+    return productosConDiaAgotamiento;
+  } catch (error) {
+    console.error('Error al predecir ventas para todos los productos:', error);
+    throw error;
+  }
+}
+
+async function obtenerVentasDiariasPorCategoria(categoriaId) {
+  try {
+    const ventas = await Venta.aggregate([
+      { $unwind: '$productos' },
+      { $lookup: { from: 'productos', localField: 'productos.producto', foreignField: '_id', as: 'producto' } },
+      { $unwind: '$producto' },
+      { $match: { 'producto.categoria': categoriaId } },
+      {
+        $group: {
+          _id: {
+            producto: '$productos.producto',
+            fecha: { $dateToString: { format: '%Y-%m-%d', date: '$fecha_registro' } }
+          },
+          totalVentas: { $sum: '$productos.cantidad_producto' }
+        }
+      },
+      { $sort: { '_id.producto': 1, '_id.fecha': 1 } }
+    ]);
+
+    const ventasPorProducto = {};
+
+    ventas.forEach(venta => {
+      const productoId = venta._id.producto;
+      const fechaVenta = venta._id.fecha;
+
+      if (!ventasPorProducto[productoId]) {
+        ventasPorProducto[productoId] = [];
+      }
+
+      const indiceFecha = ventasPorProducto[productoId].findIndex(item => item.fecha === fechaVenta);
+
+      if (indiceFecha !== -1) {
+        ventasPorProducto[productoId][indiceFecha].totalVentas += venta.totalVentas;
+      } else {
+        ventasPorProducto[productoId].push({ fecha: fechaVenta, totalVentas: venta.totalVentas });
+      }
+    });
+
+    return ventasPorProducto;
+  } catch (error) {
+    console.error('Error al obtener las ventas diarias por categoría:', error);
+    throw error;
+  }
+}
+
+
+async function predecirVentasPorCategoriaARIMA(diasAPredecir, categoria) {
+  try {
+    const ventasPorCategoria = await obtenerVentasDiariasPorCategoria(categoria);
+  
+    const productos = await Producto.find({ categoria: categoria });
+    const predicciones = await Promise.all(
+      productos.map(producto => predecirVentas(ventasPorCategoria, producto._id, diasAPredecir))
+    );
+  
+    const productosConDiaAgotamiento = predicciones.map(prediccion => ({
+      ...prediccion,
+      diaAgotamiento: prediccion.diaAgotamiento,
+    }));
+  
+    return productosConDiaAgotamiento;
+  } catch (error) {
+    console.error('Error al predecir ventas por categoría:', error);
+    throw error;
+  }
+}
+
+
+module.exports = { predecirVentasParaTodosLosProductosARIMA, predecirVentasParaUnProducto, predecirVentasPorCategoriaARIMA };

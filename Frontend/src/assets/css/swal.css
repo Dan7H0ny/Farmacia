@@ -1,0 +1,11 @@
+.custom-swal-popup {
+    background-color: #0f1b35;
+    color: #e0ffff;
+    border-radius: 15px;
+    box-shadow: 0px 5px 15px #0000004d;
+}
+  
+.custom-swal-title {
+    color: #e0ffff;
+    font-family: Arial, sans-serif;
+}

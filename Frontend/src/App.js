@@ -5,8 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAutenticarContexto  } from './contextos/autenticar';
 import { RegistrarComplementos  } from './components/RegistrarComplementos';
 
-import { RestablecerPassword } from './components/RestablecerPassword';
-import { Login } from './components/Login';
+import { Login } from './views/Login';
 
 import { MenuAdministrador } from './components/MenuAdministrador';
 import { MenuCajero } from './components/MenuCajero';
@@ -37,7 +36,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route exact path="/login" element={<Login/>}/>
-          <Route exact path="/reset-password" element={<RestablecerPassword/>}/>
           {rol === 'Administrador' && (
             <Route path="/Menu/Administrador" element={<MenuAdministrador/>}>
               <Route exact path="/Menu/Administrador/Dashboard" element={<Dashboard/>}/>

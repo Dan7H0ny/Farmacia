@@ -32,6 +32,7 @@ verificacion.use((req, res, next) => {
           httpOnly: true,
           maxAge: 900000,
         });
+        
         // Asigna el nuevo token al objeto `req` para que otros controladores puedan acceder a él
         req.token = newToken;
       } else {

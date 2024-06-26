@@ -17,7 +17,9 @@ router.post('/login', async (req, res) => {
     if (!match) {
       return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
     }
-
+    if (!usuarioEncontrado.estado ) {
+      return res.status(401).json({ mensaje: 'Usuario inactivo' });
+    }
     const payload = {
       check: true,
       id: usuarioEncontrado._id,
@@ -100,7 +102,6 @@ router.get('/info', verificacion, (req, res) => {
 
 router.post('/enviarpin', async (req, res) => {
   const { correo } = req.body;
-
   try {
     const usuarioEncontrado = await Usuario.findOne({ correo });
     if (!usuarioEncontrado) {

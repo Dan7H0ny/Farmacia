@@ -56,7 +56,6 @@ export const Login = () => {
     axios.post('http://localhost:4000/enviarpin', { correo })
       .then(response => {
         CustomSwal({ icono: 'success', titulo: 'Envio correcto', mensaje: response.mensaje });
-        navigate('/login');
       })
       .catch(error => {
         CustomSwal({ icono: 'error', titulo: 'El envio no se pudo concretar', mensaje: error.mensaje });

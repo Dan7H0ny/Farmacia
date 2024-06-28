@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import axios from 'axios';
 import { useAutenticarContexto } from "../context/auntenticar.js";
 import { useNavigation } from '@react-navigation/native';
-import CustomTextField from '../components/CustomTextField.jsx';
 import CustomSwal from '../components/CustomSwal.jsx';
 import imagen from '../assets/LogoFar.png';
 import { MaterialIcons } from '@expo/vector-icons';

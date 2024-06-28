@@ -68,18 +68,18 @@
   font-size: 12px;
   padding: 10px 25px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 25px;
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin-top: 10px;
   cursor: pointer;
+  border-color: #e2e2e2;
 }
 
 .login-container .container button.hidden {
-  background-color: transparent;
-  border-color: #e2e2e2;
-  color: #e2e2e2;
+  background-color: #e2e2e2;
+  color: #0f1b35;
 }
 
 .login-container .container form {
@@ -210,9 +210,17 @@
 .login-container .container.active .toggle-right {
   transform: translateX(200%);
 }
+.login-container .MuiButton-containedPrimary:hover {
+  background-color: #0f1b35;
+  color: #e2e2e2;
+}
+.login-container .container button.hidden:hover {
+  background-color: #0f1b35;
+  color: #e2e2e2;
+}
 
 /* Añade este bloque de CSS */
-@media (max-width: 750px) {
+@media (width <= 750px) {
   .login-container .container {
     width: 100%; 
     height: auto; 

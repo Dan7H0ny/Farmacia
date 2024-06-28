@@ -24,16 +24,16 @@ export default StyleSheet.create({
   logoContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20, // Espacio debajo del logo
   },
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20, // Espacio debajo del icono
+    marginBottom: 5, // Espacio debajo del icono
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: '70%', // Usa un porcentaje para el ancho
+    height: undefined, // Deja que la altura se ajuste automáticamente
+    aspectRatio: 1, // Mantén la proporción del logo
   },
   title: {
     fontSize: 24,

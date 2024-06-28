@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import CustomTextField from '../components/CustomTextField.jsx';
+import CustomTextField from '../components/CustomTextField';
 import CustomSwal from '../components/CustomSwal.jsx';
 import { Typography, Box, Button } from '@mui/material';
 import { AccountCircle, Email, Password } from '@mui/icons-material';

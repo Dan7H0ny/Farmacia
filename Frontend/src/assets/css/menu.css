@@ -1,24 +1,28 @@
 .background-container-menu {
-  background-image: url("../images/FondoMenu.png");
-  background-size: contain; /* O un valor específico como '150%' para hacerlo más grande */
-  background-repeat: no-repeat;
-  background-position: center;
-  background-color: #0a2d4b;
-  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  /* Agrega los estilos de transición aquí si es necesario */
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(to right, #b6faf9, #6ba9fe);
 }
 
 .background-container-menu.drawerOpen {
-  width: 95%;
+  width: 100%;
+  height: 100%;
   /* Agrega otros estilos específicos cuando el cajón está abierto si es necesario */
 }
+#caja_contenido {
+  flex: 1; /* El contenido principal ocupa el espacio restante */
+  overflow-y: auto; /* Permite desplazamiento vertical si es necesario */
+}
 .content-open {
-  margin-left: 25%; /* El 50px representa el ancho del menú cuando está cerrado */
+  margin-left: 20%; /* El 50px representa el ancho del menú cuando está cerrado */
 }
 
 .content-closed {
-  margin-left: 3.5%; /* Ajusta el margen izquierdo cuando el drawer está cerrado */
+  margin-left: 3%; /* Ajusta el margen izquierdo cuando el drawer está cerrado */
+}
+.background-container-menu .MuiListItemIcon-root {
+  color: red;
 }

@@ -1,0 +1,23 @@
+/* custom-swal-styles.css */
+.custom-swal-popup {
+    background-color: #0f1b35;
+    color: #e0ffff;
+    border-radius: 25px;
+    box-shadow: 0px 5px 15px #0000004d;
+    width: 50%;
+    padding: 20;
+    left: 10%;
+    padding: 10px; /* Ajusta el padding según sea necesario */
+}
+
+.custom-swal-popup .MuiInputLabel-root {
+    color: #0f1b35;
+    font-weight: bold;
+    padding: 12px;
+    text-transform: uppercase; 
+}
+  
+.custom-swal-title {
+    color: #e0ffff;
+    font-family: Arial, sans-serif;
+}

@@ -7,7 +7,7 @@ import { RegistrarComplementos  } from './components/RegistrarComplementos';
 
 import { Login } from './views/Login';
 
-import { MenuAdministrador } from './components/MenuAdministrador';
+import { MenuAdministrador } from './views/MenuAdministrador';
 import { MenuCajero } from './components/MenuCajero';
 
 import { Dashboard } from './components/Dashboard'; 

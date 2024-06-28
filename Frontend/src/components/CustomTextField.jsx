@@ -12,8 +12,9 @@ const CustomTextField = ({ id, label, type, value, onChange, placeholder, requir
       onChange={onChange}
       placeholder={placeholder}
       fullWidth
-      required={true}
+      required={required}
       InputProps={{
+        sx: { color: '#0f1b35' },
         startAdornment: (
           <InputAdornment position="start">
             {icon}

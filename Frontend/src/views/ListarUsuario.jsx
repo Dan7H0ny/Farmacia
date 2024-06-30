@@ -370,7 +370,7 @@ export const ListarUsuario = () => {
   const paginatedClientes = filtrarUsuario.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
 
   return (
-    <div id="caja_contenido" style={{ textAlign: 'left', marginLeft:'-25%', marginRight: '-25%'}}>
+    <div id="caja_contenido" >
       <Typography variant="h6" style={{ marginTop: 10, textAlign: 'center',fontSize: '50px', fontWeight:'1000', color: '#eeca06', backgroundColor: "#03112a"}}>
         Lista De Los Usuarios
       </Typography>

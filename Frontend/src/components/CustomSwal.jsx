@@ -9,9 +9,9 @@ const CustomSwal = ({ icono, titulo, mensaje }) => {
     text: mensaje,
     customClass: {
       popup: 'custom-swal-popup',
-      title: 'custom-swal-title',
+      title: 'login-modal custom-swal-title',
       confirmButton: 'swal2-confirm custom-swal2-confirm',  
-      cancelButton: 'custom-swal2-cancel',
+      cancelButton: 'swal2-cancel custom-swal2-cancel',
     },
   });
 

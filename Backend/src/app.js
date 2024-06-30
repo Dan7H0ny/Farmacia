@@ -31,7 +31,7 @@ mongoose.connect(process.env.BD_CONEXION, {
 }).then(() => {
   console.log('Conectado a la base de datos')
   utiles.primerUsuario(function() {
-    app.listen(process.env.PUERTO_HTTP, () => {
+    app.listen(process.env.PUERTO_HTTP, process.env.PUERTO_IP_URL, () => {
       console.log(`Servidor iniciado en el puerto ${process.env.PUERTO_HTTP}`)
       //primerCliente(() => {
         //console.log('Proceso de creación de ventas completado');

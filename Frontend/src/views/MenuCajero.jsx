@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { Drawer, IconButton, Box, Typography, Grid, Avatar } from '@mui/material';
-import { Inventory2Outlined, MonetizationOnOutlined, MeetingRoom, HomeOutlined, PhoneAndroid, PeopleAltOutlined, Password, 
-  MenuOutlined, Email, Room, BusinessCenter, PhotoCameraFrontOutlined, ManageAccountsOutlined, SupervisedUserCircle, AppRegistrationOutlined, 
-  EditOutlined, Person } from '@mui/icons-material';
+import { Drawer, IconButton, Grid, Box, Typography, Avatar } from '@mui/material';
+import { MonetizationOnOutlined, MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, 
+  BusinessCenter, PhotoCameraFrontOutlined, SupervisedUserCircle, EditOutlined, Person } from '@mui/icons-material';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
@@ -14,17 +13,13 @@ import '../assets/css/swalform.css';
 import CustomSwal from '../components/CustomSwal';
 import CustomMenu from '../components/CustomMenu';
 
-export const MenuAdministrador = () => {
+export const MenuCajero = () => {
   const navigate = useNavigate();
   const { cerrarSesion } = useAutenticarContexto()
   const _id = localStorage.getItem('id');
   const nombre = localStorage.getItem('nombre');
   const rol = localStorage.getItem('rol');
-  const [Usuario, setisUsuario] = useState(false);
-  const [Proveedor, setisProveedor] = useState(false);
   const [Cliente, setisCliente] = useState(false);
-  const [Complemento, setisComplemento] = useState(false);
-  const [Producto, setisProducto] = useState(false);
   const [Venta, setisVenta] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(true);
   
@@ -124,45 +119,29 @@ export const MenuAdministrador = () => {
 }
 };
   
-  const GetUsuario = () => {setisUsuario(!Usuario);};
-  const GetProveedor = () => {setisProveedor(!Proveedor);};
   const GetCliente = () => {setisCliente(!Cliente);};
-  const GetComplemento = () => {setisComplemento(!Complemento);};
-  const GetProducto = () => {setisProducto(!Producto);};
   const GetVenta = () => {setisVenta(!Venta);};
 
   function Dashboard() {navigate(`/Menu/Administrador/Dashboard`);}
 
-  function RegistrarUsuario() {navigate(`/Menu/Administrador/Usuario/Registrar`);}
-  function ListarUsuario() {navigate(`/Menu/Administrador/Usuario/Listar`);}
-
   function RegistrarCliente() {navigate(`/Menu/Administrador/Cliente/Registrar`);}
   function ListarCliente() {navigate(`/Menu/Administrador/Cliente/Listar`);}
-
-  function RegistrarProveedor() {navigate(`/Menu/Administrador/Proveedor/Registrar`);}
-  function ListarProveedor() {navigate(`/Menu/Administrador/Proveedor/Listar`);}
-
-  function RegistrarComplemento() {navigate(`/Menu/Administrador/Complemento/Registrar`);}
-
-  function RegistrarProducto() {navigate(`/Menu/Administrador/Producto/Registrar`);}
-  function ListarProducto() {navigate(`/Menu/Administrador/Producto/Listar`);}
 
   function RegistrarVenta() {navigate(`/Menu/Administrador/Venta/Registrar`);}
   function ListarVenta() {navigate(`/Menu/Administrador/Venta/Listar`);}
 
-  const handleLogout = () => {Logout(); };
+  const handleLogout = () => {
+    // Llama a la función de logout cuando se haga clic en el botón o enlace de "Cerrar sesión"
+    Logout();
+  };
   const toggleDrawer = () => { setDrawerOpen(!drawerOpen); };
-  const toggleUsuario = () => { GetUsuario(!Usuario);};
-  const toggleProveedor = () => { GetProveedor(!Proveedor);};
   const toggleCliente = () => { GetCliente(!Cliente);};
-  const toggleComplemento = () => { GetComplemento(!Complemento);};
-  const toggleProducto = () => { GetProducto(!Producto);};
   const toggleVenta = () => { GetVenta(!Venta);};
 
   const drawerClass = drawerOpen ? 'custom-drawer' : 'custom-drawer drawer-closed';
 
   return (
-  <div className={`background-container-menu`}>
+    <div className={`background-container-menu`}>
     <div id="caja_menu" style={{ textAlign: 'left'}}>
       <Drawer variant="permanent" open={drawerOpen} className={drawerClass} >
         {drawerOpen && (
@@ -186,11 +165,7 @@ export const MenuAdministrador = () => {
           }
         </div>
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <CustomMenu itemName={"Usuario"} itemOpen={Usuario} BtnMostrar={toggleUsuario} BtnRegistrar={RegistrarUsuario} BtnListar={ListarUsuario} drawerOpen={drawerOpen} icon={<PeopleAltOutlined />}/>
-          <CustomMenu itemName={"Proveedor"} itemOpen={Proveedor} BtnMostrar={toggleProveedor} BtnRegistrar={RegistrarProveedor} BtnListar={ListarProveedor} drawerOpen={drawerOpen} icon={<ManageAccountsOutlined />}/>
           <CustomMenu itemName={"Cliente"} itemOpen={Cliente} BtnMostrar={toggleCliente} BtnRegistrar={RegistrarCliente} BtnListar={ListarCliente} drawerOpen={drawerOpen} icon={<PhotoCameraFrontOutlined />}/>
-          <CustomMenu itemName={"Complementos"} itemOpen={Complemento} BtnMostrar={toggleComplemento} BtnRegistrar={RegistrarComplemento} drawerOpen={drawerOpen} icon={<Inventory2Outlined />}/>
-          <CustomMenu itemName={"Producto"} itemOpen={Producto} BtnMostrar={toggleProducto} BtnRegistrar={RegistrarProducto} BtnListar={ListarProducto} drawerOpen={drawerOpen} icon={<AppRegistrationOutlined />}/>
           <CustomMenu itemName={"Venta"} itemOpen={Venta} BtnMostrar={toggleVenta} BtnRegistrar={RegistrarVenta} BtnListar={ListarVenta} drawerOpen={drawerOpen} icon={<MonetizationOnOutlined />}/>
         </div>
         <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '10px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>

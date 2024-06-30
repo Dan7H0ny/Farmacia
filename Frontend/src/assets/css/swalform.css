@@ -1,23 +1,135 @@
 /* custom-swal-styles.css */
-.custom-swal-popup {
+.customs-swal-popup {
     background-color: #0f1b35;
     color: #e0ffff;
     border-radius: 25px;
     box-shadow: 0px 5px 15px #0000004d;
     width: 50%;
-    padding: 20;
-    left: 10%;
     padding: 10px; /* Ajusta el padding según sea necesario */
+    left: 10%;
 }
-
-.custom-swal-popup .MuiInputLabel-root {
-    color: #0f1b35;
+.customs-swal-popup .MuiInputLabel-root {
+    color: #0095b0;
     font-weight: bold;
     padding: 12px;
     text-transform: uppercase; 
 }
-  
-.custom-swal-title {
+
+.menu-modal .custom-swal-title {
     color: #e0ffff;
     font-family: Arial, sans-serif;
+}
+
+.swal2-confirm.custom-swal2-confirm {
+    --color: #2dcf22;
+    --color2: #0f1b35;
+    padding: 0.8em 1.75em;
+    background-color: transparent;
+    border-radius: 6px;
+    border: .3px solid var(--color);
+    transition: .5s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 1;
+    font-weight: bold;
+    font-size: 15px;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+    text-transform: uppercase;
+    color: var(--color);
+}
+
+.swal2-confirm.custom-swal2-confirm::after, 
+.swal2-confirm.custom-swal2-confirm::before {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform: skew(90deg) translate(-50%, -50%);
+    position: absolute;
+    inset: 50%;
+    left: 25%;
+    z-index: -1;
+    transition: .5s ease-out;
+    background-color: var(--color);
+}
+
+.swal2-confirm.custom-swal2-confirm::before {
+    top: -50%;
+    left: -25%;
+    transform: skew(90deg) rotate(180deg) translate(-50%, -50%);
+}
+
+.swal2-confirm.custom-swal2-confirm:hover::before {
+    transform: skew(45deg) rotate(180deg) translate(-40%, -50%);
+}
+
+.swal2-confirm.custom-swal2-confirm:hover::after {
+    transform: skew(45deg) translate(-40%, -50%);
+}
+
+.swal2-confirm.custom-swal2-confirm:hover {
+    color: var(--color2);
+}
+
+.swal2-confirm.custom-swal2-confirm:active {
+    filter: brightness(.7);
+    transform: scale(.98);
+}
+
+.swal2-cancel.custom-swal2-cancel {
+    --color: #cf2222;
+    --color2: #0f1b35;
+    padding: 0.8em 1.75em;
+    background-color: transparent;
+    border-radius: 6px;
+    border: .3px solid var(--color);
+    transition: .5s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 1;
+    font-weight: bold;
+    font-size: 15px;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+    text-transform: uppercase;
+    color: var(--color);
+}
+
+.swal2-cancel.custom-swal2-cancel::after, 
+.swal2-cancel.custom-swal2-cancel::before {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform: skew(90deg) translate(-50%, -50%);
+    position: absolute;
+    inset: 50%;
+    left: 25%;
+    z-index: -1;
+    transition: .5s ease-out;
+    background-color: var(--color);
+}
+
+.swal2-cancel.custom-swal2-cancel::before {
+    top: -50%;
+    left: -25%;
+    transform: skew(90deg) rotate(180deg) translate(-50%, -50%);
+}
+
+.swal2-cancel.custom-swal2-cancel:hover::before {
+    transform: skew(45deg) rotate(180deg) translate(-40%, -50%);
+}
+
+.swal2-cancel.custom-swal2-cancel:hover::after {
+    transform: skew(45deg) translate(-40%, -50%);
+}
+
+.swal2-cancel.custom-swal2-cancel:hover {
+    color: var(--color2);
+}
+
+.swal2-cancel.custom-swal2-cancel:active {
+    filter: brightness(.7);
+    transform: scale(.98);
 }

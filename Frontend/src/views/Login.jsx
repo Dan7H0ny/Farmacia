@@ -22,10 +22,12 @@ export const Login = () => {
     setCorreo('');
     setPassword('');
   };
+  
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://localhost:4000/login', { correo, password })
+    axios.post(`${UrlReact}/login`, { correo, password })
       .then(response => {
         CustomSwal({ icono: 'success', titulo: 'Acceso correcto', mensaje: response.mensaje });
         iniciarSesion(response._id, response.nombre, response.rol, response.token);
@@ -47,13 +49,17 @@ export const Login = () => {
     e.preventDefault();
     Swal.fire({
       title: 'Cargando...',
-      text: 'Por favor, espera mientras verificamos el envio del pin.',
       allowOutsideClick: false,
       didOpen: () => {
-        Swal.showLoading();
+        Swal.showLoading(); 
+        const container = Swal.getPopup();
+        container.style.width = '250px';
+        container.style.height = '125px';  
+        container.style.color = '#0f1b35';
+        container.style.background = '#e2e2e2';
       }
     });
-    axios.post('http://localhost:4000/enviarpin', { correo })
+    axios.post(`${UrlReact}/enviarpin`, { correo })
       .then(response => {
         CustomSwal({ icono: 'success', titulo: 'Envio correcto', mensaje: response.mensaje });
       })

@@ -6,7 +6,7 @@
     box-shadow: 0px 5px 15px #0000004d;
 }
   
-.custom-swal-title {
+.login-modal .custom-swal-title {
     color: #e0ffff;
     font-family: Arial, sans-serif;
 }

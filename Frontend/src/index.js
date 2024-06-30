@@ -6,7 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AutenticarContextoProveedor } from './contextos/autenticar';
 
-axios.defaults.baseURL = 'http://127.0.0.1:3000/'
+axios.defaults.baseURL = 'http://192.168.1.133:3000'
 axios.defaults.headers.common['Authorization'] = `Bearer ${window.localStorage.getItem('token')}`
 axios.defaults.headers.common['Content-Type'] = 'application/json'
 axios.defaults.headers.common['Accept'] = 'application/json'

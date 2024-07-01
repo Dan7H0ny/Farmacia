@@ -1,140 +1,93 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Typography, Table, TableHead, TableRow, TableCell, TableBody, Button, Grid,TablePagination,InputAdornment, TextField, Switch  } from '@mui/material';
-import { Visibility, ModeEdit, Search} from '@mui/icons-material';
+import {  Grid, Box, InputLabel } from '@mui/material';
+import { Search, Person, Email, PhoneAndroid, Room, Password, SupervisedUserCircle, Group, CalendarMonth, Cancel, CheckCircle} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import '../assets/css/listarUsuario.css';
-import styled from 'styled-components';
+import { createRoot } from 'react-dom/client';
+import CustomRegisterUser from '../components/CustomRegisterUser';
+import '../assets/css/menu.css';
+import CustomTypography from '../components/CustomTypography';
+import CustomSwal from '../components/CustomSwal.jsx';
+import CustomActualizarUser from '../components/CustomActualizarUser';
+import CustomTabla from '../components/CustomTabla';
 
-const CustomSwitch = styled(Switch)`
-  .MuiSwitch-switchBase.Mui-checked {
-    color: #eeca06;
-  }
-  .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
-    background-color: #eeca06;
-  }
-`;
+const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+const token = obtenerToken();
+const configInicial = { headers: { Authorization: `Bearer ${token}` }};
 
 export const ListarUsuario = () => {
   const [usuarios, setUsuario] = useState([]);
   const [buscar, setBuscar] = useState('');
-  const [currentPage, setCurrentPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  
   const navigate = useNavigate();
-  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
   const roles = [{ nombre: 'Administrador' }, { nombre: 'Cajero' }, ];
-  const token = obtenerToken();
-  const configInicial = { headers: { Authorization: `Bearer ${token}` }};
+  
   useEffect(() => {
-    const token = obtenerToken();
-    if (!token) {
-      // Redirigir al login si el token no existe
-      Swal.fire({icon: 'error',title: 'El token es invalido',text: "Error al obtener el token de acceso",});
-      navigate('/Menu/Administrador')
-      return;
-    }
-    const config = {headers: {Authorization: `Bearer ${token}`}};
-    axios.get('http://localhost:4000/usuario/mostrar', config)
+    axios.get(`${UrlReact}/usuario/mostrar`, configInicial)
       .then(response => {
-        const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
         if (!token) {
-          // Redirigir al login si el token no existe
-          Swal.fire({icon: 'error',title: 'El token es invalido',text: "error",});
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
           navigate('/Menu/Administrador')
         }
-        else
-        {
-          setUsuario(response);
-        }
+        else {setUsuario(response);}
       })
-      .catch(error => {
-        console.log(error);
-      });
+      .catch(error => { console.log(error);});
   }, [navigate]);
 
   const botonActualizar = (usuario) => {
-    const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
+    console.log(usuario)
     if (!token) {
-    // Redirigir al login si el token no existe
-      Swal.fire({icon: 'error',title: 'El token es invalido',text: "error",});
+      CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
       navigate('/Menu/Administrador')
     }
     else{
-    axios.get(`http://localhost:4000/usuario/buscar/${usuario._id}`, configInicial)
+    axios.get(`${UrlReact}/usuario/buscar/${usuario._id}`, configInicial)
     .then(response => {
-      // Acciones a realizar con los datos del usuario encontrado
       const { _id, nombre, apellido, rol, direccion, telefono, correo } = response;
-      const selectOptions = roles.map(rols => `
-        <option value="${rols.nombre}" ${rols.nombre === rol ? 'selected' : ''}>${rols.nombre}</option>
-      `).join('');
+      const container = document.createElement('div');
+      const root = createRoot(container);
+      root.render(
+        <Grid container spacing={2}>
+          <CustomActualizarUser number={6} id="nombre" label="Nombre" type="text" defaultValue={nombre} required = {true} icon={<Person />} />
+          <CustomActualizarUser number={6} id="apellido" label="Apellido" type="text" defaultValue={apellido} required = {true} icon={<SupervisedUserCircle />} />
+          <CustomActualizarUser number={6} id="correo" label="Correo" type="email" defaultValue={correo} required = {true} icon={<Email />} />
+          <Grid item xs={12} sm={6} sx={{ '& .MuiTextField-root': {backgroundColor: '#0f1b35',  }}}>
 
-      const table = document.createElement('table');
-      table.innerHTML = `
-      <style>
-        .swal-form-group {
-          display: flex;
-          flex-direction: wrap;
-          margin-bottom: 0px;
-          justify-content: space-between;
-        }
-        label {margin-right: 10px; font-weight: bold; }
-        td {padding-right: 10px; text-align: left; }
-      </style>
-          <tr>
-              <td><strong>Nombre del usuario:</strong></td>
-              <td contenteditable="true" id="nombre">${nombre}</td>
-          </tr>
-          <tr>
-              <td><strong>Apellido del usuario:</strong></td>
-              <td contenteditable="true" id="apellido">${apellido}</td>
-          </tr>
-          <tr>
-              <td><strong>Dirección del usuario:</strong></td>
-              <td contenteditable="true" id="direccion">${direccion}</td>
-          </tr>
-          <tr>
-              <td><strong>Teléfono del usuario:</strong></td>
-              <td contenteditable="true" id="telefono">${telefono}</td>
-          </tr>
-          <tr>
-              <td><strong>Correo del usuario:</strong></td>
-              <td contenteditable="true" id="correo">${correo}</td>
-          </tr>
-          <tr>
-              <td><strong>Contraseña del usuario:</strong></td>
-              <td contenteditable="true" id="password"></td>
-          </tr>
-          <tr>
-            <td><strong>Rol del usuario:</strong></td>
-              <td>
-                <select id="rol">
-                  ${selectOptions}
-                </select>
-              </td>
-          </tr>
-      `;
+            <label for="label_id"></label>
+              <select id="rol-label" required>
+              {roles.map(r => (
+                <option key={r.nombre} value={r.nombre} selected={r.nombre === rol}>{r.nombre}</option>
+              ))}
+              </select>
+          </Grid>
+          <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<PhoneAndroid />} />
+          <CustomActualizarUser number={6} id="password" label="Password" type="password" defaultValue={""} required={false} icon={<Password />} />
+          <CustomActualizarUser number={12}id="direccion" label="Direccion" type="text" defaultValue={direccion} required={false} icon={<Room />} />
+        </Grid>
+      );
       Swal.fire({
-          title: 'ACTUALIZAR AL USUARIO',
-          html: table,
+          title: 'EDITAR DATOS DEL USUARIO',
+          html: container,
           showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
           confirmButtonText: 'Actualizar',
           cancelButtonText: 'Cancelar',
           preConfirm: () => {
-              const nombre_ = document.getElementById('nombre').textContent;
-              const apellido_ = document.getElementById('apellido').textContent;
-              const direccion_ = document.getElementById('direccion').textContent;
-              const telefono_ = parseInt(document.getElementById('telefono').textContent);
-              const correo_ = document.getElementById('correo').textContent;
-              const rol_ = document.getElementById('rol').value;
-              let password_ = document.getElementById('password').textContent;
-              return { nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_ };
+            const nombre_ = document.getElementById('nombre').value;
+            const apellido_ = document.getElementById('apellido').value;
+            const correo_ = document.getElementById('correo').value;
+            const rol_ = document.getElementById('rol').value;
+            const direccion_ = document.getElementById('direccion').value;
+            const telefono_ = parseInt(document.getElementById('telefono').textContent);
+            let password_ = document.getElementById('password').textContent;
+            return { nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_ };
           },
           customClass: {
-              container: 'my-swal-container', // Clase personalizada para el contenedor principal
+            popup: 'customs-swal-popup',
+            title: 'customs-swal-title',
+            confirmButton: 'swal2-confirm custom-swal2-confirm',  
+            cancelButton: 'swal2-cancel custom-swal2-cancel',
           },
           didOpen: () => {
             const nombreInput = document.getElementById('nombre');
@@ -149,28 +102,18 @@ export const ListarUsuario = () => {
             });
             telefonoInput.addEventListener('input', function () {
             if (typeof this.textContent !== 'undefined') {
-            // Eliminar cualquier carácter que no sea un dígito
               this.textContent = this.textContent.replace(/[^\d]/g, '');
-              // Verificar si el número tiene más de 8 dígitos
                 if (this.textContent.length > 8) {
-                // Si tiene más de 8 dígitos, truncar el valor a 8 dígitos
                   this.textContent = this.textContent.slice(0, 8);
                 }
               }
           });    
-              // Agregar estilos personalizados al contenedor principal
-              const container = Swal.getPopup();
-              container.style.width = '40%'; // Personalizar el ancho del contenedor
-              container.style.padding = '20px'; // Personalizar el padding del contenedor
-              container.style.marginRight = '0%'; // Márgen derecho de 100px
-              container.style.marginLeft = '0px'; // Márgen izquierdo de 265px
           },
     }).then((result) => {
-      console.log(result)
       if (result.isConfirmed) {
-        const { nombre_, apellido_, direccion_, telefono_, correo_, password_, rol_  } = result.value;
+        const { nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_ } = result.value;
         if (telefono_ >= 60000000 && telefono_ <= 79999999) {
-        axios.put(`http://localhost:4000/usuario/actualizar/${_id}`, {
+          axios.put(`${UrlReact}/usuario/actualizar/${_id}`, {
             nombre: nombre_,
             apellido: apellido_,
             direccion: direccion_,
@@ -197,27 +140,14 @@ export const ListarUsuario = () => {
               }
             });
             setUsuario(usuariosActualizados);
-            Swal.fire({
-              icon: 'success',
-              title: 'Usuario actualizado',
-              text: response.mensaje,
-            });
+            CustomSwal({ icono: 'success', titulo: 'Usuario actualizado', mensaje: response.mensaje });
           })
           .catch((error) => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error al actualizar el Usuario',
-              text: error.mensaje,
-            });
+            CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });
           });
         }
         else {
-          // Si el número de teléfono no está dentro del rango permitido, mostrar un mensaje de error
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'El número de teléfono debe estar entre 60000000 y 79999999',
-          });
+          CustomSwal({ icono: 'error', titulo: 'Error con los numeros del telefono', mensaje: 'El número de teléfono debe estar entre 60000000 y 79999999' });
         }
       }
     });
@@ -229,254 +159,99 @@ export const ListarUsuario = () => {
   };
 
   const botonMostrar = (cliente) => {
-    const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
     if (!token) {
-      // Redirigir al login si el token no existe
-      Swal.fire({
-        icon: 'error',
-        title: 'El token es invalido',
-        text: "error",
-      });
+      CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
       navigate('/Menu/Administrador');
     } else {
-      axios.get(`http://localhost:4000/usuario/buscar/${cliente._id}`, configInicial)
+      axios.get(`${UrlReact}/usuario/buscar/${cliente._id}`, configInicial)
         .then(response => {
-          // Acciones a realizar con los datos del usuario encontrado
           const { nombre, apellido, rol, direccion, telefono, correo, estado, fecha_registro, fecha_actualizacion } = response;
           const fechaRegistro = fecha_registro ? formatDateTime(new Date(fecha_registro)) : '';
           const fechaActualizacion = fecha_actualizacion ? formatDateTime(new Date(fecha_actualizacion)) : '';
 
           function formatDateTime(date) {
-              const optionsDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
-              const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-              const formattedDate = date.toLocaleDateString('es-ES', optionsDate);
-              const formattedTime = date.toLocaleTimeString('es-ES', optionsTime);
-              return `${formattedDate} ${formattedTime}`;
+            const optionsDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const formattedDate = date.toLocaleDateString('es-ES', optionsDate);
+            const formattedTime = date.toLocaleTimeString('es-ES', optionsTime);
+            return `${formattedDate} ${formattedTime}`;
           }
-          const iconoEstado = estado ? '<i class="fas fa-check-circle" style="color:green"></i>' : '<i class="fas fa-times-circle" style="color:red"></i>';
+          let newEstado = '';
+          let estadoIcon = null;
+          if (!estado) {
+            newEstado = 'Inactivo';
+            estadoIcon = <Cancel style={{ color: 'red' }} />;
+          } else {
+            newEstado = 'Activo';
+            estadoIcon = <CheckCircle style={{ color: 'green' }} />;
+          }
+
+          const container = document.createElement('div');
+          const root = createRoot(container);
+          root.render(
+            <Grid container spacing={2}>
+              <CustomActualizarUser number={6} label="Nombre del Usuario" defaultValue={nombre} readOnly = {true} icon={<Person />} />
+              <CustomActualizarUser number={6} label="Apellido del Usuario" defaultValue={apellido} readOnly = {true} icon={<SupervisedUserCircle />} />
+              <CustomActualizarUser number={12} label="Correo del Usuario" defaultValue={correo} readOnly = {true} icon={<Email/>} />
+              <CustomActualizarUser number={12}label="Direccion del Usuario" defaultValue={direccion} readOnly={true} icon={<Room />} />
+              <CustomActualizarUser number={6} label="Rol del Usuario" defaultValue={rol} readOnly = {true} icon={<Group />} />
+              <CustomActualizarUser number={6} label="Telefono del Usuario" defaultValue={telefono} readOnly={true} icon={<PhoneAndroid />} />
+              <CustomActualizarUser number={6} label="Fecha de registro" defaultValue={fechaRegistro} readOnly = {true} icon={<CalendarMonth />} />
+              <CustomActualizarUser number={6} label="Fecha de actualización" defaultValue={fechaActualizacion} readOnly = {true} icon={<CalendarMonth />} />
+              <CustomActualizarUser number={12} label="Estado del Usuario" defaultValue={newEstado} readOnly = {true} icon={estadoIcon} showIconOnly={true} />
+            </Grid>
+          );
           Swal.fire({
             title: 'MOSTRAR USUARIO',
-            html: `
-            <style>
-                .swal-form-group {
-                  display: flex;
-                  flex-direction: wrap;
-                  margin-bottom: 0px;
-                  justify-content: space-between;
-                }
-                label {
-                  margin-right: 10px; /* Espacio entre el label y el input */
-                  font-weight: bold; /* Hacer el texto del label en negrita */
-                }
-                td {
-                  padding-right: 10px; /* Espacio entre el texto y el borde derecho de la celda */
-                  text-align: left; /* Alinear el texto a la izquierda */
-                }
-              </style>
-              <table>
-              <tr>
-                <td><strong>Nombre Completo del Usuario:</strong></td>
-                <td>${nombre}</td>
-              </tr>
-              <tr>
-                <td><strong>Apellido completo del Usuario:</strong></td>
-                <td>${apellido}</td>
-              </tr>
-              <tr>
-                <td><strong>Dirección del usuario:</strong></td>
-                <td>${direccion}</td>
-              </tr>
-              <tr>
-                <td><strong>Teléfono del usuario:</strong></td>
-                <td>${telefono}</td>
-              </tr>
-              <tr>
-                <td><strong>Correo del usuario:</strong></td>
-                <td>${correo}</td>
-              </tr>
-              <tr>
-                <td><strong>Rol del usuario:</strong></td>
-                <td>${rol}</td>
-              </tr>
-              <tr>
-                <td><strong>Estado del usuario:</strong></td>
-                <td>${iconoEstado}</td>
-              </tr>
-               <tr>
-                <td><strong>Fecha de registro del usuario:</strong></td>
-                <td>${fechaRegistro}</td>
-              </tr>
-               <tr>
-                <td><strong>Fecha de actualizacion del usuario:</strong></td>
-                <td>${fechaActualizacion}</td>
-              </tr>
-            </table>
-            `,
-            showCancelButton: false,
-            confirmButtonText: 'Volver',
-            buttonsStyling: false,
+            html: container,
+            confirmButtonText: 'Atras',
             customClass: {
-              confirmButton: 'btn btn-primary',
-              container: 'my-swal-container'
+              popup: 'customs-swal-popup',
+              title: 'customs-swal-title',
+              confirmButton: 'swal2-confirm custom-swal2-confirm',  
+              cancelButton: 'swal2-cancel custom-swal2-cancel',
             },
-            didOpen: () => {
-              // Agregar estilos personalizados al contenedor principal
-              const container = Swal.getPopup();
-              container.style.width = '50%'; // Personalizar el ancho del contenedor
-              container.style.padding = '20px'; // Personalizar el padding del contenedor
-              container.style.marginRight = '100px'; // Márgen derecho de 100px
-              container.style.marginLeft = '330px'; // Márgen izquierdo de 265px
-            }
           });
         })
         .catch(error => {
-          console.log(error.response.data.mensaje);
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: error});
         });
     }
   };  
 
-  const handleSwitchChange = async (event, id, estado) => {
+  const handleSwitchChange = async (event, id) => {
     const nuevoEstado = event.target.checked ? true : false;
     try {
-      await axios.put(`http://localhost:4000/cliente/eliminar/${id}`, { estado: nuevoEstado }, configInicial);
+      await axios.put(`${UrlReact}/usuario/eliminar/${id}`, { estado: nuevoEstado }, configInicial);
       setUsuario((prevUsuarios) =>
         prevUsuarios.map((usuario) =>
           usuario._id === id ? { ...usuario, estado: nuevoEstado } : usuario
         )
       );
-      Swal.fire({
-        icon: 'success',
-        title: 'Estado Actualizado',
-        text: 'El usuario a cambiado de estado ahora esta: ' + (nuevoEstado ? 'activo' : 'inactivo'),
-      });    
+      CustomSwal({ icono: 'success', titulo: 'Estado Actualizado', mensaje: 'El usuario a cambiado de estado ahora esta: ' + (nuevoEstado ? 'activo' : 'inactivo')}); 
     } catch (error) {
       console.error('Error al cambiar el estado del usuario:', error);
     }
   };
 
-  const handleChangePage = (event, newPage) => {
-    setCurrentPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setCurrentPage(0);
-  };
-
-  const filtrarUsuario = usuarios.filter(usuario =>
-    usuario.nombre.toLowerCase().includes(buscar.toLowerCase())
-  );  
-
-  const paginatedClientes = filtrarUsuario.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
-
   return (
-    <div id="caja_contenido" >
-      <Typography variant="h6" style={{ marginTop: 10, textAlign: 'center',fontSize: '50px', fontWeight:'1000', color: '#eeca06', backgroundColor: "#03112a"}}>
-        Lista De Los Usuarios
-      </Typography>
-      <Grid item xs={12} sm={4} sx={{marginTop: 2, '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
-      <TextField
-        label="Nombre del usuario"
-        variant="outlined"
-        fullWidth
-        size="large"
-        type='text'
-        value={buscar}
-        onChange={(e) => setBuscar(e.target.value)}
-        required
-        InputProps={{
-        sx: { color: '#eeca06' },
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search sx={{ color: '#eeca06' }} />
-            </InputAdornment>
-            ),
-          }}
-        InputLabelProps={{ sx: { color: '#eeca06' } }} />
-    </Grid>
-      <div className="table-responsive">
-          <Table className="table table-bordered table-hover"  style={{ marginTop: 10 }}>
-            <TableHead className="text-center" sx={{ '& .MuiTableCell-root': {color: '#eeca06', backgroundColor: "#03112a", textAlign: 'center'} }}>
-              <TableRow >
-                <TableCell>#</TableCell>
-                <TableCell>Nombre</TableCell>
-                <TableCell>Apellido</TableCell>
-                <TableCell>Rol</TableCell>
-                <TableCell>Correo</TableCell>
-                <TableCell>Estado</TableCell>
-                <TableCell>Detalles</TableCell>
-                <TableCell>Editar</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': {color: '#eeca06', backgroundColor: "#03112a" } }}>
-              {paginatedClientes.map((x, index) => (
-                <TableRow key={index}>
-                  <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
-                  <TableCell>{x.nombre}</TableCell>
-                  <TableCell>{x.apellido}</TableCell>
-                  <TableCell>{x.rol}</TableCell>
-                  <TableCell>{x.correo}</TableCell>
-                  <TableCell className="text-center">
-                    <CustomSwitch
-                      checked={x.estado === true}
-                      onChange={(event) => handleSwitchChange(event, x._id, x.estado)}
-                      color="primary"
-                    />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Button variant="contained" onClick={() => botonMostrar(x) }>
-                      <Visibility />
-                    </Button>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Button variant="contained" color="success" onClick={() => botonActualizar(x)}>
-                      <ModeEdit  />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <Grid item xs={12} sm={4} sx={{ marginTop: 2, '& .MuiTextField-root': { color: '#eeca06', backgroundColor: "#03112a" } }}>
-            <TablePagination
-              component="div"
-              count={filtrarUsuario.length}
-              page={currentPage}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              labelRowsPerPage="Filas por por pagina"
-              labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
-              rowsPerPageOptions={[5, 10, 15, 20]}
-              sx={{ 
-                '& .MuiTablePagination-toolbar': {
-                  backgroundColor: "#03112a",
-                  color: '#eeca06',
-                  display: 'flex',
-                  justifyContent: 'center', // Centra el contenido dentro de la toolbar
-                },
-                '& .MuiTablePagination-selectLabel': {
-                  color: '#eeca06',
-                  margin: '0 1%', // Ajusta el margen para centrar
-                },
-                '& .MuiTablePagination-input': {
-                  color: '#eeca06',
-                  margin: '0 1%', // Ajusta el margen para centrar
-                },
-                '& .MuiTablePagination-selectIcon': {
-                  color: '#eeca06',
-                },
-                '& .MuiTablePagination-displayedRows': {
-                  color: '#eeca06',
-                  margin: '0 1%', // Ajusta el margen para centrar
-                },
-                '& .MuiTablePagination-actions': {
-                  color: '#eeca06',
-                }
-              }}
-            />
-          </Grid>
-      </div>
+    <div id="caja_contenido">
+      <Box mt={3}>
+        <CustomTypography text={'Lista De Los Usuarios'} />
+        <form id="Form-1" className="custom-form" style={{ padding: 15}}>
+          <CustomRegisterUser
+            number={12}
+            label="Nombre"  
+            placeholder= 'Buscar el nombre del usuario'
+            type= 'text'
+            value={buscar}
+            onChange={(e) => setBuscar(e.target.value)}
+            required={false}
+            icon={<Search/>}
+          />
+        </form>
+        <CustomTabla usuarios={usuarios} buscar={buscar} handleSwitchChange={handleSwitchChange} botonMostrar={botonMostrar} botonActualizar={botonActualizar}/>
+      </Box>
     </div>
   )
 }

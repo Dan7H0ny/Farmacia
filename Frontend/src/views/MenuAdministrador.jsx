@@ -74,8 +74,6 @@ export const MenuAdministrador = () => {
         title: 'DATOS DEL USUARIO',
         html: container,
         showCancelButton: true,
-        confirmButtonColor: '#e0ffff',
-        cancelButtonColor: '#e0ffff',
         confirmButtonText: 'Actualizar',
         cancelButtonText: 'Cancelar',
         preConfirm: () => {
@@ -163,7 +161,7 @@ export const MenuAdministrador = () => {
 
   return (
   <div className={`background-container-menu`}>
-    <div id="caja_menu" style={{ textAlign: 'left'}}>
+    <div id="caja_menu" style={{ textAlign: 'left', width: '95%'}}>
       <Drawer variant="permanent" open={drawerOpen} className={drawerClass} >
         {drawerOpen && (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '5%', backgroundColor: '#e2e2e2' }}>

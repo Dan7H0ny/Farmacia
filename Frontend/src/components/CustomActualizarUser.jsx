@@ -1,10 +1,14 @@
 import React from 'react';
 import { Grid, TextField, InputAdornment } from '@mui/material';
-
-const CustomActualizarUser = ({ number, id, label, type, defaultValue, placeholder, required, readOnly, icon, ...props }) => {
+const CustomActualizarUser = ({ number, id, label, type, defaultValue, placeholder, required, readOnly, showIconOnly, icon, ...props }) => {
 
   return (
       <Grid item xs={12} sm={number} sx={{ '& .MuiTextField-root': {backgroundColor: '#e2e2e2' }}}>
+        {showIconOnly ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', border: '2px solid #e2e2e2', padding:'1%' }}>
+            <strong>Estado:</strong> {icon}
+          </div>
+        ) : (
         <TextField
           id = {id}
           label = {label}
@@ -24,6 +28,7 @@ const CustomActualizarUser = ({ number, id, label, type, defaultValue, placehold
             ...props.InputProps
           }}
         />
+        )}
       </Grid>
   );
 };

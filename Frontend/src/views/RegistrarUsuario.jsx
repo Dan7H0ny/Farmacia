@@ -26,11 +26,7 @@ export const RegistrarUsuario = () => {
 
   const token = obtenerToken();
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }; 
+  const config = {headers: {Authorization: `Bearer ${token}`}}; 
 
   const roles = [
     { nombre: 'Administrador' },
@@ -107,7 +103,7 @@ export const RegistrarUsuario = () => {
               type= 'text'
               value={direccion}
               onChange={(e) => setDireccion(e.target.value)}
-              required={true}
+              required={false}
               icon={<Room/>}
             />
             <CustomRegisterUser
@@ -117,7 +113,7 @@ export const RegistrarUsuario = () => {
               type= 'Number'
               value={telefono}
               onChange={(e) => {const inputValue = e.target.value; if (inputValue.length !== 9) {setTelefono(inputValue.slice(0, 9));}}}
-              required={true}
+              required={false}
               icon={<PhoneAndroid/>}
             />
             <CustomSelect

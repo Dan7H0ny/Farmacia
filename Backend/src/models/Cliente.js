@@ -17,12 +17,12 @@ const clienteSchema = new mongoose.Schema({
     type: Number,
     required: false,
   },
-  sexo: {
-    type: String,
-    required: true,
-  },
-  nit_ci_cex: {
+  numberIdentity: {
     type: Number,
+    required: true
+  },
+  stringIdentity: {
+    type: String,
     required: true
   },
   fecha_registro: {

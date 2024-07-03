@@ -36,7 +36,7 @@ const productoSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  precio: {
+  precioCompra: {
     type: Number,
     required: true,
     min: 0
@@ -44,10 +44,6 @@ const productoSchema = new mongoose.Schema({
   usuario: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Usuario'
-  },
-  estado: {
-    type: Boolean,
-    required: true
   },
   fecha_caducidad: {
     type: Date,

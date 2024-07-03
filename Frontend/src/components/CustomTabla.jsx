@@ -24,10 +24,17 @@ const CustomTabla = ({ usuarios, buscar, handleSwitchChange, botonMostrar, boton
     setRowsPerPage(parseInt(event.target.value, 10));
     setCurrentPage(0);
   };
-
-  const filtrarDatos = usuarios.filter(d =>
-    d.nombre.toLowerCase().includes(buscar.toLowerCase())
-  );  
+  const filtrarDatos = usuarios.filter(elemento => {
+    if (elemento.nombre.toLowerCase().includes(buscar.toLowerCase())
+      || elemento.apellido.toLowerCase().includes(buscar.toLowerCase())
+      || elemento.correo.toLowerCase().includes(buscar.toLowerCase())
+      || elemento.direccion.toLowerCase().includes(buscar.toLowerCase())
+      || elemento.rol.toLowerCase().includes(buscar.toLowerCase())
+      || elemento.telefono.toString().toLowerCase().includes(buscar.toLowerCase())) {
+      return elemento;
+    }
+    return false;
+  });  
 
   const paginaDatos = filtrarDatos.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
 
@@ -48,7 +55,11 @@ const CustomTabla = ({ usuarios, buscar, handleSwitchChange, botonMostrar, boton
           </TableHead>
           <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': {color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', border: '2px solid #e2e2e2' } }}>
             {paginaDatos.map((x, index) => (
-              <TableRow key={index}>
+              <TableRow key={index}  sx={{
+                '&:hover': {
+                  backgroundColor: "#fff !important", // Cambia aquí el color al que desees
+                },
+              }}>
                 <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
                 <TableCell>{x.nombre}</TableCell>
                 <TableCell>{x.apellido}</TableCell>

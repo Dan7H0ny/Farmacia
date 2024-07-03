@@ -10,12 +10,12 @@ import { Login } from './views/Login';
 import { MenuAdministrador } from './views/MenuAdministrador';
 import { MenuCajero } from './views/MenuCajero';
 
-import { Dashboard } from './components/Dashboard'; 
+import { Dashboard } from './views/Dashboard'; 
 
 import { RegistrarUsuario } from './views/RegistrarUsuario';
 import { ListarUsuario } from './views/ListarUsuario';
 
-import { RegistrarCliente } from './components/RegistrarCliente';
+import { RegistrarCliente } from './views/RegistrarCliente';
 import { ListarCliente } from './components/ListarCliente';
 
 import { RegistrarProveedor } from './components/RegistrarProveedor';

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { Button, Box , Grid, Alert } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Password, Email, PhoneAndroid, Person, SupervisedUserCircle, Room } from '@mui/icons-material';
+import { Password, Email, PhoneAndroid, Person, SupervisedUserCircle, Room, People } from '@mui/icons-material';
 import CustomTypography from '../components/CustomTypography';
 import '../assets/css/menu.css';
 import CustomRegisterUser from '../components/CustomRegisterUser';
@@ -10,7 +10,7 @@ import CustomSelect from '../components/CustomSelect';
 import CustomSwal from '../components/CustomSwal.jsx';
 
 export const RegistrarUsuario = () => {
-  const navigate = useNavigate();
+
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [rol, setRol] = useState('');
@@ -19,6 +19,7 @@ export const RegistrarUsuario = () => {
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
   const [envioIntentado, setEnvioIntentado] = useState(false);
+  const navigate = useNavigate();
 
   const obtenerToken = () => {
     const token = localStorage.getItem('token');
@@ -42,21 +43,35 @@ export const RegistrarUsuario = () => {
     { nombre: 'Cajero' },
   ];
 
-  const RegistrarUsuario = (e) => {
+  const btnRegistrarUsuario = (e) => {
     e.preventDefault();
     if (!token) {
       CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
       navigate('/Menu/Administrador')
       return;
     }
-    if(telefono){
-      if(telefono.length !== 8 || telefono < 60000000 || telefono > 79999999){
-        setEnvioIntentado(true);
+    else{
+      if(telefono){
+        if(telefono.length !== 8 || telefono < 60000000 || telefono > 79999999){
+          setEnvioIntentado(true);
+        }
+        else {
+          setEnvioIntentado(false);
+          const NuevoUsuario = { nombre, apellido, rol, direccion, telefono, correo, password };
+          axios.post(`${UrlReact}/usuario/crear`, NuevoUsuario, config)
+            .then(response => {
+              CustomSwal({ icono: 'success', titulo: 'Usuario Creado', mensaje: response.mensaje});
+              limpiarFormulario();
+            })
+            .catch(error => {
+              CustomSwal({ icono: 'error', titulo: 'Error al crear el usuario', mensaje: error.mensaje});
+            });
+        }
+        return;
       }
-      else {
-        setEnvioIntentado(false);
-        const Usuario = { nombre, apellido, rol, direccion, telefono, correo, password };
-        axios.post(`${UrlReact}/usuario/crear`, Usuario, config)
+      else{
+        const NuevoUsuario = { nombre, apellido, rol, direccion, telefono, correo, password };
+        axios.post(`${UrlReact}/usuario/crear`, NuevoUsuario, config)
           .then(response => {
             CustomSwal({ icono: 'success', titulo: 'Usuario Creado', mensaje: response.mensaje});
             limpiarFormulario();
@@ -64,8 +79,8 @@ export const RegistrarUsuario = () => {
           .catch(error => {
             CustomSwal({ icono: 'error', titulo: 'Error al crear el usuario', mensaje: error.mensaje});
           });
-          }
-      return;
+          return;
+      }    
     }
   };
   
@@ -83,7 +98,7 @@ export const RegistrarUsuario = () => {
     <div id="caja_contenido">
       <Box mt={3}>
         <CustomTypography text={'Registro de Usuarios'} />
-        <form id="Form-1" onSubmit={RegistrarUsuario} className="custom-form">
+        <form id="Form-1" onSubmit={btnRegistrarUsuario} className="custom-form">
           <Grid container spacing={3} >
             <CustomRegisterUser
               number={6}
@@ -148,6 +163,7 @@ export const RegistrarUsuario = () => {
               value={rol}
               onChange={(e) => setRol(e.target.value)}
               roles={roles}
+              icon={<People/>}
             />
             <CustomRegisterUser
               number={6}
@@ -188,7 +204,8 @@ export const RegistrarUsuario = () => {
                 border: '2px solid #e2e2e2',
               },
             }}
-          >Guardar Usuario</Button>
+          >Guardar Usuario
+          </Button>
         </form>
       </Box>
     </div>

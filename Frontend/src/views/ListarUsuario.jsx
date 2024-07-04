@@ -72,7 +72,10 @@ export const ListarUsuario = () => {
               const direccion_ = document.getElementById('direccion').value;
               const telefono_ = parseInt(document.getElementById('telefono').value);
               let password_ = document.getElementById('password').value;
-              console.log(nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_)
+              if (document.getElementById('telefono').value !== "" && (isNaN(telefono_) || telefono_ < 60000000 || telefono_ > 79999999)) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de teléfono válido</div>');
+                return false;
+              }
               return { nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_ };
             },
             customClass: {
@@ -101,60 +104,54 @@ export const ListarUsuario = () => {
 
                 if (telefonoInput) {
                   telefonoInput.addEventListener('input', function () {
-                    if (typeof this.value !== 'undefined') {
-                      this.value = this.value.replace(/[^\d]/g, '');
-                      if (this.value.length > 8) {
-                        this.value = this.value.slice(0, 8);
-                      }
+                    this.value = this.value.replace(/[^\d]/g, '');
+                    if (this.value.length > 8) {
+                      this.value = this.value.slice(0, 8);
                     }
                   });
                 }
-              }, 0); // Ejecutar en el siguiente ciclo del event loop
+              }, 0);
             },
           }).then((result) => {
             if (result.isConfirmed) {
-              const { nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_ } = result.value;
-              if (telefono_ >= 60000000 && telefono_ <= 79999999) {
-                axios.put(`${UrlReact}/usuario/actualizar/${_id}`, {
-                  nombre: nombre_,
-                  apellido: apellido_,
-                  direccion: direccion_,
-                  telefono: telefono_,
-                  correo: correo_,
-                  password: password_,
-                  rol: rol_,
-                }, configInicial)
-                  .then((response) => {
-                    const usuariosActualizados = usuarios.map((usuario) => {
-                      if (usuario._id === _id) {
-                        return {
-                          ...usuario,
-                          nombre: nombre_,
-                          apellido: apellido_,
-                          direccion: direccion_,
-                          telefono: telefono_,
-                          correo: correo_,
-                          password: password_,
-                          rol: rol_,
-                        };
-                      } else {
-                        return usuario;
-                      }
-                    });
-                    setUsuario(usuariosActualizados);
-                    CustomSwal({ icono: 'success', titulo: 'Actualización Exitosa', mensaje: response.mensaje });
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-              } else {
-                CustomSwal({ icono: 'error', titulo: 'Número de Teléfono Incorrecto', mensaje: 'El número de teléfono debe estar entre 60000000 y 79999999.' });
-              }
+              const { nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_ } = result.value;   
+              axios.put(`${UrlReact}/usuario/actualizar/${_id}`, {
+                nombre: nombre_,
+                apellido: apellido_,
+                direccion: direccion_,
+                telefono: telefono_,
+                correo: correo_,
+                password: password_,
+                rol: rol_,
+              }, configInicial)
+              .then((response) => {
+                const usuariosActualizados = usuarios.map((usuario) => {
+                if (usuario._id === _id) {
+                  return {
+                    ...usuario,
+                    nombre: nombre_,
+                    apellido: apellido_,
+                    direccion: direccion_,
+                    telefono: telefono_,
+                    correo: correo_,
+                    password: password_,
+                    rol: rol_,
+                  };
+                } else {
+                  return usuario;
+                }
+                });
+                setUsuario(usuariosActualizados);
+                CustomSwal({ icono: 'success', titulo: 'Actualización Exitosa', mensaje: response.mensaje });
+              })
+              .catch((error) => {
+                CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });
+              });
             }
           });
         })
         .catch(error => {
-          console.log(error);
+          CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });
         });
     }
   };

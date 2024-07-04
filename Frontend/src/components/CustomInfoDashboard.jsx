@@ -31,7 +31,7 @@ const GrowthText = styled(Typography)({
 const CustomInfoDashboard = ({ icon, text, number, porcentaje}) => {
 
   return (
-    <StyledCard >
+    <StyledCard>
       <IconContainer>
         <Avatar sx={{ backgroundColor: '#0f1b35', color: '#e2e2e2', border: '2px solid #e2e2e2', width:'50%', height:'50%'}}>{icon}</Avatar>
       </IconContainer>

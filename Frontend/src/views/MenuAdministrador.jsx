@@ -11,6 +11,7 @@ import { useAutenticarContexto } from '../contextos/autenticar';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import imagen from '../assets/images/LogoFar.png';
 import '../assets/css/swalform.css';
+import '../assets/css/menu.css';
 import CustomSwal from '../components/CustomSwal';
 import CustomMenu from '../components/CustomMenu';
 
@@ -112,13 +113,13 @@ export const MenuAdministrador = () => {
             telefono: telefono_,
             password: password_,
           })
-            .then((response) => {
-              CustomSwal({ icono: 'success', titulo: 'Usuario actualizado', mensaje: response.mensaje });
-              if(password_){Logout()}
-            })
-            .catch((error) => {
-              CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });
-            });
+          .then((response) => {
+            CustomSwal({ icono: 'success', titulo: 'Usuario actualizado', mensaje: response.mensaje });
+            if(password_){Logout()}
+          })
+          .catch((error) => {
+            CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });
+          });
         }
       });
     })

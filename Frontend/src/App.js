@@ -3,7 +3,7 @@ import React, { } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { useAutenticarContexto  } from './contextos/autenticar';
-import { RegistrarComplementos  } from './components/RegistrarComplementos';
+import { RegistrarComplementos  } from './views/RegistrarComplementos';
 
 import { Login } from './views/Login';
 

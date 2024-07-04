@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
 
 const clienteSchema = new mongoose.Schema({
-  nombre: {
-    type: String,
-    required: true,
-  },
-  apellido: {
+  nombreCompleto: {
     type: String,
     required: true,
   },
@@ -16,10 +12,12 @@ const clienteSchema = new mongoose.Schema({
   telefono: {
     type: Number,
     required: false,
+    min: 0,
   },
   numberIdentity: {
     type: Number,
-    required: true
+    required: true,
+    min: 0,
   },
   stringIdentity: {
     type: String,

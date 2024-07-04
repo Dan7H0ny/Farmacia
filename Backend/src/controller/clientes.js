@@ -3,18 +3,15 @@ const router = express.Router();
 const Cliente = require('../models/Cliente');
 const verificacion = require('../middlewares/verificacion');
 
-// Crear un cliente
 router.post('/crear', verificacion, async (req, res) => {
-  let { nombre, apellido, correo, telefono, sexo, nit_ci_cex } = req.body;
-  correo = correo && correo.trim() !== '' ? correo : 's/n';
-  telefono = telefono && telefono.trim() !== '' ? telefono : '00000000';
+  const { nombreCompleto, correo, telefono, numberIdentity, stringIdentity } = req.body;
   try {
     const fechaActual = new Date();
-    const nitDuplicado = await Cliente.findOne({ nit_ci_cex });
+    const nitDuplicado = await Cliente.findOne({ numberIdentity });
     if (nitDuplicado) {
       return res.status(400).json({ mensaje: 'El NIT/CI/CEX ya está registrado.' });
     }
-    const cliente = new Cliente({ nombre, apellido, correo, telefono, sexo, nit_ci_cex, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
+    const cliente = new Cliente({ nombreCompleto, correo, telefono, numberIdentity, stringIdentity, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
     await cliente.save();
     res.status(201).json({ mensaje: 'Cliente creado exitosamente', cliente });
   } catch (error) {
@@ -68,13 +65,10 @@ router.get('/buscarci/:nit_ci_cex',verificacion, async (req, res) => {
 // Actualizar un cliente
 router.put('/actualizar/:id', verificacion, async (req, res) => {
   const { id } = req.params;
-  let { nombre, apellido, correo, telefono, sexo, nit_ci_cex } = req.body;
+  const { nombreCompleto, correo, telefono, numberIdentity, stringIdentity } = req.body;
   try {
     const fechaActual = new Date();
-    let updateFields = { nombre, apellido, sexo, nit_ci_cex, fecha_actualizacion: fechaActual };
-    if (correo !== 's/n') {updateFields.correo = correo;}
-    if (telefono !== '00000000') {updateFields.telefono = telefono;}
-    const clienteActualizado = await Cliente.findByIdAndUpdate(id, updateFields, { new: true });
+    const clienteActualizado = await Cliente.findByIdAndUpdate(id, {nombreCompleto, correo, telefono, numberIdentity, stringIdentity, fecha_actualizacion: fechaActual}, { new: true });
     if (!clienteActualizado) {
       return res.status(404).json({ mensaje: 'Cliente no encontrado' });
     }

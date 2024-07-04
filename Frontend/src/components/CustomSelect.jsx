@@ -1,8 +1,7 @@
 import React from 'react';
 import { Grid, FormControl, InputLabel, Select, MenuItem, InputAdornment } from '@mui/material';
-import { Person } from '@mui/icons-material';
 
-const CustomSelect = ({ number, id, label, value, onChange, roles, ...props }) => {
+const CustomSelect = ({ number, id, label, value, onChange, roles, icon, ...props }) => {
   return (
     <Grid item xs={12} sm={number} sx={{marginTop: 'auto',}}>
       <FormControl fullWidth variant="outlined" sx={{ backgroundColor: '#e2e2e2', borderRadius: 1, mb: 2 }}>
@@ -28,7 +27,7 @@ const CustomSelect = ({ number, id, label, value, onChange, roles, ...props }) =
           label={label}
           startAdornment={
             <InputAdornment position="start" sx={{ color: '#0f1b35' }}>
-              <Person /> {/* Aquí se agrega el icono */}
+              {icon} {/* Aquí se agrega el icono */}
             </InputAdornment>
           }
           sx={{

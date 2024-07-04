@@ -1,253 +1,217 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import { TextField, Button ,Typography, InputAdornment, Grid, Box, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import Swal from 'sweetalert2';
+import { Button, Grid, Box, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import {Person, Badge, Email, SupervisedUserCircle, PhoneAndroid } from '@mui/icons-material';
+import {Person, Badge, Email, Numbers, PhoneAndroid } from '@mui/icons-material';
+import CustomTypography from '../components/CustomTypography';
+import '../assets/css/menu.css';
+import CustomRegisterUser from '../components/CustomRegisterUser';
+import CustomSelect from '../components/CustomSelect';
+import CustomSwal from '../components/CustomSwal.jsx';
+
+const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+const token = obtenerToken();
+const configInicial = { headers: { Authorization: `Bearer ${token}` }};
 
 export const RegistrarCliente = ( ) => {
 
-  const [ nombre, setNombre ] = useState('');
-  const [ apellido, setApellido ] = useState('');
+  const [ nombreCompleto, setNombreCompleto ] = useState('');
   const [ correo, setCorreo ] = useState('');
   const [ telefono, setTelefono ] = useState('');
-  const [ sexo, setSexo ] = useState('');
-  const [ nit_ci_cex, setIdentificacion ] = useState('');
+  const [ numberIdentity, setNumberIdentity ] = useState('');
+  const [ plus, setPlus ] = useState('');
+  const [ stringIdentity, setStringIdentity ] = useState('');
+  const [ complementos, setComplementos ] = useState([]);
   const [ envioIntentado, setEnvioIntentado ] = useState(false);
   const navigate = useNavigate();
 
-  const generos = [
-    { nombre: 'Masculino' },
-    { nombre: 'Femenino' },
-  ];
-
-  const obtenerToken = () => {
-    // Obtener el token del local storage
-    const token = localStorage.getItem('token');
-    return token;
+  const mostrarMensajeValidacion = (mensaje) => {
+    return (
+      <Alert severity="error" sx={{ mt: 1 }}>
+        <div dangerouslySetInnerHTML={{ __html: mensaje }} />
+      </Alert>
+    );
   };
 
-  const token = obtenerToken();
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  };
+  useEffect(() => {
+    const nombre = 'identificaciones'
+    axios.get(`${UrlReact}/complemento/buscarNombre/${nombre}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setComplementos(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate]);
  
-  const botonGuardarCliente = (e) => {
+  const btnRegistrarCliente = (e) => {
     e.preventDefault();
-    const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
     if (!token) {
-      // Redirigir al login si el token no existe
-      Swal.fire({
-        icon: 'error',
-        title: 'El token es invalido',
-        text: 'Error al obtener el token de acceso',
-      });
+      CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
       navigate('/Menu/Administrador')
       return;
     }
     else
     {
-    const NewClient = { nombre, apellido, correo, telefono, sexo, nit_ci_cex };
-    if (nit_ci_cex.length < 5 || nit_ci_cex.length > 12 ) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Número de teléfono inválido',
-        text: 'El numero es menor a 5 digitos y es mayor a 12 digitos',
-      });
-      return;
-    } 
-    axios.post('http://localhost:4000/cliente/crear', NewClient, config)
-      .then(response => {
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Cliente Creado',
-          text: response.mensaje,
-      });
-      limpiarFormulario();
-      })
-      .catch(error => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al crear el cliente',
-          text: error.mensaje,
-      }); 
-      });
+      if(telefono){
+        if(telefono.length !== 12 || numberIdentity.length < 7 || numberIdentity.length > 12){
+          setEnvioIntentado(true);
+        }
+        else {
+          setEnvioIntentado(false);
+          const NuevoCliente = { nombreCompleto, correo, telefono, numberIdentity: numberIdentity + plus, stringIdentity };
+          axios.post(`${UrlReact}/cliente/crear`, NuevoCliente, configInicial)
+            .then(response => {
+              CustomSwal({ icono: 'success', titulo: 'Cliente Creado', mensaje: response.mensaje});
+              limpiarFormulario();
+            })
+            .catch(error => {
+              CustomSwal({ icono: 'error', titulo: 'Error al crear el cliente', mensaje: error.mensaje});
+            });
+        }
+      }
+      else{
+        const NuevoCliente = { nombreCompleto, correo, telefono, numberIdentity: numberIdentity + plus, stringIdentity };
+          axios.post(`${UrlReact}/cliente/crear`, NuevoCliente, configInicial)
+            .then(response => {
+              CustomSwal({ icono: 'success', titulo: 'Cliente Creado', mensaje: response.mensaje});
+              limpiarFormulario();
+            })
+            .catch(error => {
+              CustomSwal({ icono: 'error', titulo: 'Error al crear el cliente', mensaje: error.mensaje});
+            });
+      }        
     }
   }
 
   const limpiarFormulario = () => {
-    setNombre("");
-    setApellido("");
-    setIdentificacion("");
+    setNombreCompleto("");
     setCorreo("");
-    setSexo("");
-    setEnvioIntentado(false);
+    setTelefono("");
+    setNumberIdentity("");
+    setStringIdentity("");
     document.getElementById("miFormulario").reset();
   }
 
   return (
-    <div id="caja_contenido" style={{ textAlign: 'left', marginRight: '10px', marginLeft: '10px' }}>
-    <Typography variant="h6" style={{ marginTop: 50, textAlign: 'center', fontSize: '50px', color: '#eeca06', backgroundColor: "#03112a" }}>
-      FORMULARIO DE REGISTRO DE CLIENTES
-    </Typography>
-    <form id="miFormulario" onSubmit={botonGuardarCliente} style={{ backgroundColor: "#03112a" }}>
-      <Grid container spacing={2} >
-        <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
-          <TextField
-            label="Nombre del cliente"
-            variant="outlined"
-            fullWidth
-            size="large"
-            type='text'
-            value={nombre}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              // Remover caracteres no permitidos usando una expresión regular
+    <div id="caja_contenido">
+      <Box mt={3}>
+        <CustomTypography text={'Registro de Clientes'} />
+        <form id="Form-1" onSubmit={btnRegistrarCliente} className="custom-form">
+          <Grid container spacing={3} >
+            <CustomRegisterUser
+              number={12}
+              label="Nombre Completo" 
+              placeholder= 'Ingrese el nombre completo del cliente'
+              type= 'text'
+              value={nombreCompleto}
+              onChange={(e) => { 
+                const inputValue = e.target.value; 
                 const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
-                setNombre(newValue);
-            }}
-            required
-            InputProps={{
-              sx: { color: '#eeca06' },
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Person sx={{ color: '#eeca06' }} />
-                </InputAdornment>
-              ),
-            }}
-            InputLabelProps={{ sx: { color: '#eeca06' } }} />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
-          <TextField
-            label="Apellido del cliente"
-            variant="outlined"
+                setNombreCompleto(newValue);
+              }}
+              required={true}
+              icon={<Person/>}
+            />
+            <CustomRegisterUser
+              number={6}
+              label="Correo"  
+              placeholder= 'Ingrese el correo del Usuario'
+              type= 'email'
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              required={false}
+              icon={<Email/>}
+            />
+            <CustomRegisterUser
+              number={6}
+              label="Telefono"  
+              placeholder= 'Ingrese el número del Usuario'
+              type= 'Number'
+              value={telefono}
+              onChange={(e) => { 
+                const inputValue = e.target.value;
+                if ( inputValue.length > 8) {
+                  setTelefono(inputValue.slice(0, 8));
+                } 
+                else { 
+                  setTelefono(inputValue);
+                }
+              }}
+              required={false}
+              icon={<PhoneAndroid/>}
+            />
+            <CustomRegisterUser
+              number={6}
+              label="Identidad"  
+              placeholder= 'Ingrese su numero de indentidad'
+              type= 'Number'
+              value={numberIdentity}
+              onChange={(e) => { 
+                const inputValue = e.target.value;
+                if ( inputValue.length > 12) {
+                  setNumberIdentity(inputValue.slice(0, 12));
+                } 
+                else { 
+                  setNumberIdentity(inputValue);
+                }
+              }}
+              required={true}
+              icon={<Numbers/>}
+            />
+            <CustomRegisterUser
+              number={2}
+              label="Plus"  
+              placeholder= '000000'
+              type= 'Number'
+              value={plus}
+              onChange={(e) => { 
+                const inputValue = e.target.value;
+                if ( inputValue.length > 8) {
+                  setPlus(inputValue.slice(0, 15));
+                } 
+                else { 
+                  setPlus(inputValue);
+                }
+              }}
+              required={false}
+              icon={<Numbers/>}
+            />
+            <CustomSelect
+              number ={4}
+              id="select-stringIdentity"
+              label="Seleccione la identificaciones del cliente"
+              value={stringIdentity}
+              onChange={(e) => setStringIdentity(e.target.value)}
+              roles={complementos}
+              icon={<Badge/>}
+            />
+          </Grid>
+          {envioIntentado && mostrarMensajeValidacion("<div>Por favor ingrese un número de teléfono válido </div>")}
+          <Button
             fullWidth
+            variant="contained"
+            color="primary"
             size="large"
-            type='text'
-            value={apellido}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              // Remover caracteres no permitidos usando una expresión regular
-              const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
-              setApellido(newValue);
+            type="submit"
+            sx={{
+              backgroundColor: '#e2e2e2',
+              color: '#0f1b35',
+              marginTop: 2.5,
+              fontWeight: 'bold',
+              '&:hover': {
+                backgroundColor: '#1a7b13',
+                color: '#e2e2e2',
+                border: '2px solid #e2e2e2',
+              },
             }}
-            required
-            InputProps={{
-              sx: { color: '#eeca06' },
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SupervisedUserCircle sx={{ color: '#eeca06' }} />
-                </InputAdornment>
-              ),
-            }}
-            InputLabelProps={{ sx: { color: '#eeca06' } }} />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
-          <TextField
-            label="Correo del cliente"
-            variant="outlined"
-            fullWidth
-            size="large"
-            type='email'
-            value={correo}
-            onChange={(e) => {setCorreo(e.target.value)}}
-            InputProps={{
-              sx: { color: '#eeca06' },
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Email sx={{ color: '#eeca06' }} />
-                </InputAdornment>
-              ),
-            }}
-            InputLabelProps={{ sx: { color: '#eeca06' } }} />
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Ingrese el número del Cliente"
-            value={telefono}
-            type='number'
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              // Si la longitud del número es mayor a 8 dígitos, restringir el valor a los primeros 8 dígitos
-              if (inputValue.length > 8) {
-                setTelefono(inputValue.slice(0, 8));
-              } else {
-                setTelefono(inputValue);
-              }
-            }}
-            error={envioIntentado && telefono && (telefono.length !== 8 || telefono < 60000000 || telefono > 79999999)}
-            helperText={envioIntentado && telefono && (telefono.length !== 8 || telefono < 60000000 || telefono > 79999999) ? 'Número de teléfono inválido' : ''}
-            InputProps={{
-              sx: { color: '#eeca06' },
-              startAdornment: (
-                <InputAdornment position="start">
-                  <PhoneAndroid sx={{ color: '#eeca06' }} />
-                </InputAdornment>
-              ),
-            }}
-            InputLabelProps={{ sx: { color: '#eeca06' } }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth variant="outlined" sx={{ color: '#eeca06', backgroundColor:'#060e15'}}>
-            <InputLabel id="rol-label" sx={{ color: '#eeca06' }}>Seleccione el genero del cliente</InputLabel>
-              <Select
-                labelId="rol-label"
-                value={sexo}
-                onChange={(e) => setSexo(e.target.value)}
-                required
-                sx={{ color: '#eeca06' }}>
-                <MenuItem></MenuItem>
-                {generos.map((g) => (
-                <MenuItem key={g.nombre} value={g.nombre}>
-                  {g.nombre}
-                </MenuItem>
-              ))}  
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { backgroundColor: '#060e15' } }}>
-          <TextField
-            label="CI, NIT, CEX del cliente"
-            variant="outlined"
-            fullWidth
-            size="large"
-            type='number'
-            value={nit_ci_cex}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              // Si la longitud del número no es exactamente 8 dígitos, restringir el valor a los primeros 8 dígitos
-              if (inputValue.length > 12) {
-                // Si es mayor, truncar el valor a la longitud máxima
-                setIdentificacion(inputValue.slice(0, 12));
-              }
-              setIdentificacion(inputValue.slice(0, 12));
-            }}
-            required
-            InputProps={{
-              sx: { color: '#eeca06' },
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Badge sx={{ color: '#eeca06' }} />
-                </InputAdornment>
-              ),
-            }}
-            InputLabelProps={{ sx: { color: '#eeca06' } }} />
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Box display="flex" justifyContent="center">
-          <Button variant="contained" color="primary" size="large" type="submit" sx={{ backgroundColor: '#eeca06', color: '#03112a' }}>
-            Guardar al cliente
+          >Guardar Usuario
           </Button>
-        </Box>
-      </Grid>
-    </form>
-  </div>
+        </form>
+      </Box>
+    </div>
   );
 };

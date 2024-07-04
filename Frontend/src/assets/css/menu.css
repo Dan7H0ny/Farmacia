@@ -18,7 +18,7 @@
   overflow-y: auto; /* Permite desplazamiento vertical si es necesario */
 }
 .content-open {
-  margin-left: 16.5%; /* El 50px representa el ancho del menú cuando está cerrado */
+  margin-left: 17.5%; /* El 50px representa el ancho del menú cuando está cerrado */
 }
 
 .content-closed {
@@ -27,7 +27,7 @@
 .custom-drawer .MuiPaper-root {
   background-color: #0f1b35; 
   border: 2.5px solid #0f1b35; /* Ajusta el grosor del borde */
-  width: 16.5%; /* Ajusta esta parte en JavaScript para el drawer abierto/cerrado */
+  width: 17.5%; /* Ajusta esta parte en JavaScript para el drawer abierto/cerrado */
   transition: width 0.3s;
 }
 

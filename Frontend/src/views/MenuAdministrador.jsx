@@ -16,7 +16,7 @@ import CustomMenu from '../components/CustomMenu';
 
 export const MenuAdministrador = () => {
   const navigate = useNavigate();
-  const { cerrarSesion } = useAutenticarContexto()
+  const { cerrarSesion } = useAutenticarContexto();
   const _id = localStorage.getItem('id');
   const nombre = localStorage.getItem('nombre');
   const rol = localStorage.getItem('rol');
@@ -29,11 +29,7 @@ export const MenuAdministrador = () => {
   const [drawerOpen, setDrawerOpen] = useState(true);
   
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-  function Logout() {
-    cerrarSesion()
-    navigate('/login')
-    return null
-  }
+  function Logout() { cerrarSesion(); navigate('/login'); return null }
   const obtenerToken = () => {
     // Obtener el token del local storage
     const token = localStorage.getItem('token');
@@ -60,15 +56,17 @@ export const MenuAdministrador = () => {
       const container = document.createElement('div');
       const root = createRoot(container);
       root.render(
-        <Grid container spacing={2}>
-          <CustomActualizarUser number={6} label="Nombre" defaultValue={nombre} readOnly = {true} icon={<Person />} />
-          <CustomActualizarUser number={6} label="Apellido" defaultValue={apellido} readOnly = {true} icon={<SupervisedUserCircle />} />
-          <CustomActualizarUser number={6} label="Correo" defaultValue={correo} readOnly = {true} icon={<Email />} />
-          <CustomActualizarUser number={6} label="Rol" defaultValue={rol} readOnly = {true} icon={<BusinessCenter />} />
-          <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<PhoneAndroid />} />
-          <CustomActualizarUser number={6} id="password" label="Password" type="password" defaultValue={""} required={false} icon={<Password />} />
-          <CustomActualizarUser number={12}id="direccion" label="Direccion" type="text" defaultValue={direccion} required={false} icon={<Room />} />
-        </Grid>
+        <form >
+          <Grid container spacing={2}>
+            <CustomActualizarUser number={6} label="Nombre" defaultValue={nombre} readOnly = {true} icon={<Person />} />
+            <CustomActualizarUser number={6} label="Apellido" defaultValue={apellido} readOnly = {true} icon={<SupervisedUserCircle />} />
+            <CustomActualizarUser number={6} label="Correo" defaultValue={correo} readOnly = {true} icon={<Email />} />
+            <CustomActualizarUser number={6} label="Rol" defaultValue={rol} readOnly = {true} icon={<BusinessCenter />} />
+            <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<PhoneAndroid />}/>
+            <CustomActualizarUser number={6} id="password" label="Password" type="password" defaultValue={""} required={false} icon={<Password />} />
+            <CustomActualizarUser number={12}id="direccion" label="Direccion" type="text" defaultValue={direccion} required={false} icon={<Room />} />
+          </Grid>
+        </form>
       );
       Swal.fire({
         title: 'DATOS DEL USUARIO',
@@ -77,9 +75,15 @@ export const MenuAdministrador = () => {
         confirmButtonText: 'Actualizar',
         cancelButtonText: 'Cancelar',
         preConfirm: () => {
+          const telefonoInput = document.getElementById('telefono').value;
+          const telefono_ = parseInt(telefonoInput);
           const direccion_ = document.getElementById('direccion').value;
-          const telefono_ = parseInt(document.getElementById('telefono').value);
           let password_ = document.getElementById('password').value;
+    
+          if (isNaN(telefono_) || telefono_ < 60000000 || telefono_ > 79999999) {
+            Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de teléfono válido </div>');
+            return false;
+          }
           return { direccion_, telefono_, password_ };
         },
         customClass: {
@@ -87,6 +91,7 @@ export const MenuAdministrador = () => {
           title: 'customs-swal-title',
           confirmButton: 'swal2-confirm custom-swal2-confirm',  
           cancelButton: 'swal2-cancel custom-swal2-cancel',
+          validationMessage: 'custom-validation-message'
         },
         didOpen: () => {
           const telefonoInput = document.getElementById('telefono');
@@ -109,6 +114,7 @@ export const MenuAdministrador = () => {
           })
             .then((response) => {
               CustomSwal({ icono: 'success', titulo: 'Usuario actualizado', mensaje: response.mensaje });
+              if(password_){Logout()}
             })
             .catch((error) => {
               CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });

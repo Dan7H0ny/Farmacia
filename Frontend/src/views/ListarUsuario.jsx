@@ -36,6 +36,7 @@ export const ListarUsuario = () => {
       })
       .catch(error => { console.log(error);});
   }, [navigate]);
+  
   const botonActualizar = (usuario) => {
     if (!token) {
       CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso' });

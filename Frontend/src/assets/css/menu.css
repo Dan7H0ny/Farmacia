@@ -75,3 +75,9 @@
   margin: 0 auto;
   background-color: #0f1b35;
 }
+.custom-validation-message {
+  color: #ff0000; /* Color de texto rojo */
+  background-color: #ffe5e5; /* Fondo ligeramente rojo */
+  padding: 0.45%;
+  font-weight: bold;
+}

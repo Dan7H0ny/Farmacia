@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Button, Box , Grid  } from '@mui/material';
+import { Button, Box , Grid, Alert } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Password, Email, PhoneAndroid, Person, SupervisedUserCircle, Room } from '@mui/icons-material';
@@ -18,10 +18,19 @@ export const RegistrarUsuario = () => {
   const [telefono, setTelefono] = useState('');
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
+  const [envioIntentado, setEnvioIntentado] = useState(false);
 
   const obtenerToken = () => {
     const token = localStorage.getItem('token');
     return token;
+  };
+
+  const mostrarMensajeValidacion = (mensaje) => {
+    return (
+      <Alert severity="error" sx={{ mt: 1 }}>
+        <div dangerouslySetInnerHTML={{ __html: mensaje }} />
+      </Alert>
+    );
   };
 
   const token = obtenerToken();
@@ -35,31 +44,31 @@ export const RegistrarUsuario = () => {
 
   const RegistrarUsuario = (e) => {
     e.preventDefault();
-    const token = obtenerToken(); 
     if (!token) {
       CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
       navigate('/Menu/Administrador')
       return;
     }
-    else
-    {
-    const Usuario = { nombre, apellido, rol, direccion, telefono, correo, password };
-    Usuario.telefono = parseInt(Usuario.telefono);
-    if (telefono.length !== 8 || telefono < 60000000 || telefono > 799999999) {
-      CustomSwal({ icono: 'error', titulo: 'Número de teléfono inválido', mensaje: 'El número de teléfono debe tener 8 dígitos y estar en el rango de 60000000 a 799999999'});
+    if(telefono){
+      if(telefono.length !== 8 || telefono < 60000000 || telefono > 79999999){
+        setEnvioIntentado(true);
+      }
+      else {
+        setEnvioIntentado(false);
+        const Usuario = { nombre, apellido, rol, direccion, telefono, correo, password };
+        axios.post(`${UrlReact}/usuario/crear`, Usuario, config)
+          .then(response => {
+            CustomSwal({ icono: 'success', titulo: 'Usuario Creado', mensaje: response.mensaje});
+            limpiarFormulario();
+          })
+          .catch(error => {
+            CustomSwal({ icono: 'error', titulo: 'Error al crear el usuario', mensaje: error.mensaje});
+          });
+          }
       return;
     }
-    axios.post(`${UrlReact}/usuario/crear`, Usuario, config)
-      .then(response => {
-        CustomSwal({ icono: 'success', titulo: 'Usuario Creado', mensaje: response.mensaje});
-        limpiarFormulario();
-      })
-      .catch(error => {
-        CustomSwal({ icono: 'error', titulo: 'Error al crear el usuario', mensaje: error.mensaje});
-      });
-    }
   };
-
+  
   const limpiarFormulario = () => {
     setNombre("");
     setApellido("");
@@ -82,7 +91,11 @@ export const RegistrarUsuario = () => {
               placeholder= 'Ingrese el nombre del usuario'
               type= 'text'
               value={nombre}
-              onChange={(e) => { const inputValue = e.target.value; const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');setNombre(newValue);}}
+              onChange={(e) => { 
+                const inputValue = e.target.value; 
+                const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
+                setNombre(newValue);
+              }}
               required={true}
               icon={<Person/>}
             />
@@ -92,7 +105,11 @@ export const RegistrarUsuario = () => {
               placeholder= 'Ingrese el apellido del usuario'
               type= 'text'
               value={apellido}
-              onChange={(e) => { const inputValue = e.target.value; const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');setApellido(newValue);}}
+              onChange={(e) => { 
+                const inputValue = e.target.value; 
+                const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
+                setApellido(newValue);
+              }}
               required={true}
               icon={<SupervisedUserCircle/>}
             />
@@ -112,7 +129,15 @@ export const RegistrarUsuario = () => {
               placeholder= 'Ingrese el número del Usuario'
               type= 'Number'
               value={telefono}
-              onChange={(e) => {const inputValue = e.target.value; if (inputValue.length !== 9) {setTelefono(inputValue.slice(0, 9));}}}
+              onChange={(e) => { 
+                const inputValue = e.target.value;
+                if ( inputValue.length > 8) {
+                  setTelefono(inputValue.slice(0, 8));
+                } 
+                else { 
+                  setTelefono(inputValue);
+                }
+              }}
               required={false}
               icon={<PhoneAndroid/>}
             />
@@ -145,6 +170,7 @@ export const RegistrarUsuario = () => {
               icon={<Password/>}
             />                
           </Grid>
+          {envioIntentado && mostrarMensajeValidacion("<div>Por favor ingrese un número de teléfono válido </div>")}
           <Button
             fullWidth
             variant="contained"

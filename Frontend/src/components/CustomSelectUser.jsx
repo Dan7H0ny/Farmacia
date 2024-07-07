@@ -6,7 +6,7 @@ const CustomSelectUser = ({ number, id, label, value, roles }) => {
   const [selectedRole, setSelectedRole] = useState(value);
   return (
     <Grid item xs={12} sm={number} sx={{marginTop: 2,}}>
-      <FormControl fullWidth>
+      <FormControl fullWidth variant="outlined" sx={{ backgroundColor: '#e2e2e2', borderRadius: 1, mb: 1 }}>
         <InputLabel id={`${id}-label`} sx={{ color: '#0f1b35' }}>{label}</InputLabel>
         <Select
           id={id}

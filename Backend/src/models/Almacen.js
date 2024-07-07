@@ -5,6 +5,10 @@ const almacenSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Producto'
   },
+  categoria: {
+    type: String,
+    required: false
+  },
   precioVenta: {
     type: Number,
     required: true,

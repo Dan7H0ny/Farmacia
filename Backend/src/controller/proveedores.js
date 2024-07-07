@@ -5,12 +5,7 @@ const verificacion = require('../middlewares/verificacion');
 
 // Crear un Proveedor
 router.post('/crear',verificacion, async (req, res) => {
-  let { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular } = req.body;
-  correo = correo && correo.trim() !== '' ? correo : 's/n';
-  correo_vendedor = correo_vendedor && correo_vendedor.trim() !== '' ? correo_vendedor : 's/n';
-  sitioweb = sitioweb && sitioweb.trim() !== '' ? sitioweb : 's/n';
-  telefono = telefono && telefono.trim() !== '' ? telefono : '00000000';
-  celular = celular && celular.trim() !== '' ? celular : '00000000';
+  const { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular } = req.body;
   try {
     const fechaActual = new Date();
     const newproveedor = new Proveedor({ nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });

@@ -21,7 +21,8 @@ export const RegistrarComplementos = () => {
   const navigate = useNavigate();
 
   const complementos = [
-    { nombre: 'identificaciones' },
+    { nombre: 'IDENTIFICACIONES' },
+    { nombre: 'TIPOS' },
   ];
   
   const btnRegistrarComplemento = (e) => {

@@ -19,9 +19,9 @@ import { RegistrarCliente } from './views/RegistrarCliente';
 import { ListarCliente } from './views/ListarCliente';
 
 import { RegistrarProveedor } from './views/RegistrarProveedor';
-import { ListarProveedor } from './components/ListarProveedor';
+import { ListarProveedor } from './views/ListarProveedor';
 
-import { RegistrarProducto } from './components/RegistrarProducto';
+import { RegistrarProducto } from './views/RegistrarProducto';
 import { ListarProducto } from './components/ListarProducto';
 
 import { RegistrarVenta } from './components/RegistrarVenta';

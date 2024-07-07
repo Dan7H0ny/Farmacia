@@ -4,7 +4,7 @@ import { Grid, FormControl, InputLabel, Select, MenuItem, InputAdornment } from 
 const CustomSelect = ({ number, id, label, value, onChange, roles, icon, ...props }) => {
   return (
     <Grid item xs={12} sm={number} sx={{marginTop: 'auto',}}>
-      <FormControl fullWidth variant="outlined" sx={{ backgroundColor: '#e2e2e2', borderRadius: 1, mb: 2 }}>
+      <FormControl fullWidth variant="outlined" sx={{ backgroundColor: '#e2e2e2', borderRadius: 1, mb: 1 }}>
         <InputLabel
           id={`${id}`}
           sx={{

@@ -88,7 +88,7 @@ export const RegistrarProveedor = () => {
   return (
     <div id="caja_contenido">
       <Box mt={3}>
-        <CustomTypography text={'Registro de Usuarios'} />
+        <CustomTypography text={'Registro de Proveedores'} />
         <form id="Form-1" onSubmit={btnRegistrarProveedor} className="custom-form">
           <Grid container spacing={3}>
             <CustomRegisterUser

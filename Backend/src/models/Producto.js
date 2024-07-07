@@ -5,38 +5,24 @@ const productoSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  tipo: {
+    type: String,
+    required: true
+  },
   descripcion: {
     type: String,
     required: false
-  },
-  categoria: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Categoria'
-  },
-  tipo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Tipo'
   },
   proveedor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Proveedor'
   },
-  cantidad: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  capacidad: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  capacidad_pres: {
-    type: Number,
-    required: true,
-    min: 0
-  },
   precioCompra: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  capacidad_presentacion: {
     type: Number,
     required: true,
     min: 0

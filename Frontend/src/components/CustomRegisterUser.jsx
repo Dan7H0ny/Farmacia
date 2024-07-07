@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, TextField, InputAdornment } from '@mui/material';
 
-const CustomRegisterUser = ({ number, id, label, type, value, onChange, placeholder, required, readOnly, icon, ...props }) => {
+const CustomRegisterUser = ({ number, id, label, type, value, onChange, placeholder, rows, required, multiline, readOnly, icon, ...props }) => {
 
   return (
     <Grid item xs={12} sm={number} sx={{ '& .MuiTextField-root': {backgroundColor: '#0f1b35',  }}}>
@@ -12,6 +12,8 @@ const CustomRegisterUser = ({ number, id, label, type, value, onChange, placehol
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        rows={rows} 
+        multiline = {multiline}
         fullWidth
         required = {required}
         margin="normal"
@@ -26,7 +28,7 @@ const CustomRegisterUser = ({ number, id, label, type, value, onChange, placehol
           ...props.InputProps
         }}
         InputLabelProps={{ sx: { color: '#e2e2e2', position: 'absolute',background: '#0f1b35',padding: '0 25px', textTransform: 'uppercase'}, ...props.InputLabelProps,   }}
-        sx={{ mb: 2, position: 'relative', '& .MuiInputBase-input': {color: '#0f1b35',},...props.sx, }}
+        sx={{ mb: 1, position: 'relative', '& .MuiInputBase-input': {color: '#0f1b35',},...props.sx, }}
       />
     </Grid>
   );

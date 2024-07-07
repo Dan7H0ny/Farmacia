@@ -23,6 +23,14 @@ const clienteSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  usuario_registro: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario'
+  },
+  usuario_actualizacion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario'
+  },
   fecha_registro: {
     type: Date,
     required: true

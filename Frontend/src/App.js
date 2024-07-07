@@ -16,7 +16,7 @@ import { RegistrarUsuario } from './views/RegistrarUsuario';
 import { ListarUsuario } from './views/ListarUsuario';
 
 import { RegistrarCliente } from './views/RegistrarCliente';
-import { ListarCliente } from './components/ListarCliente';
+import { ListarCliente } from './views/ListarCliente';
 
 import { RegistrarProveedor } from './views/RegistrarProveedor';
 import { ListarProveedor } from './components/ListarProveedor';

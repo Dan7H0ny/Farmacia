@@ -168,7 +168,7 @@ export const MenuAdministrador = () => {
 
   return (
   <div className={`background-container-menu`}>
-    <div id="caja_menu" style={{ textAlign: 'left', width: '95%'}}>
+    <div id="caja_menu" style={{ textAlign: 'left', width: '95%', overflowY: 'auto', maxHeight: '100vh'}}>
       <Drawer variant="permanent" open={drawerOpen} className={drawerClass} >
         {drawerOpen && (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '5%', backgroundColor: '#e2e2e2' }}>

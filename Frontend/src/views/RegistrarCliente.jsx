@@ -24,6 +24,7 @@ export const RegistrarCliente = ( ) => {
   const [ stringIdentity, setStringIdentity ] = useState('');
   const [ complementos, setComplementos ] = useState([]);
   const [ envioIntentado, setEnvioIntentado ] = useState(false);
+  const usuario_ = localStorage.getItem('id');
   const navigate = useNavigate();
 
   const mostrarMensajeValidacion = (mensaje) => {
@@ -62,25 +63,27 @@ export const RegistrarCliente = ( ) => {
         }
         else {
           setEnvioIntentado(false);
-          const NuevoCliente = { nombreCompleto, correo, telefono, numberIdentity: numberIdentity + plus, stringIdentity };
+          const NuevoCliente = { nombreCompleto, correo, telefono, numberIdentity: numberIdentity + plus, stringIdentity, usuario_: usuario_ };
           axios.post(`${UrlReact}/cliente/crear`, NuevoCliente, configInicial)
             .then(response => {
               CustomSwal({ icono: 'success', titulo: 'Cliente Creado', mensaje: response.mensaje});
               limpiarFormulario();
             })
             .catch(error => {
+              console.log(error)
               CustomSwal({ icono: 'error', titulo: 'Error al crear el cliente', mensaje: error.mensaje});
             });
         }
       }
       else{
-        const NuevoCliente = { nombreCompleto, correo, telefono, numberIdentity: numberIdentity + plus, stringIdentity };
+        const NuevoCliente = { nombreCompleto, correo, telefono, numberIdentity: numberIdentity + plus, stringIdentity, usuario_: usuario_ };
           axios.post(`${UrlReact}/cliente/crear`, NuevoCliente, configInicial)
             .then(response => {
               CustomSwal({ icono: 'success', titulo: 'Cliente Creado', mensaje: response.mensaje});
               limpiarFormulario();
             })
             .catch(error => {
+              console.log(error)
               CustomSwal({ icono: 'error', titulo: 'Error al crear el cliente', mensaje: error.mensaje});
             });
       }        
@@ -93,7 +96,7 @@ export const RegistrarCliente = ( ) => {
     setTelefono("");
     setNumberIdentity("");
     setStringIdentity("");
-    document.getElementById("miFormulario").reset();
+    document.getElementById("Form-1").reset();
   }
 
   return (

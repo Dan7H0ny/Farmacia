@@ -37,7 +37,7 @@ export const ListarUsuario = () => {
       .catch(error => { console.log(error);});
   }, [navigate]);
   
-  const botonActualizar = (usuario) => {
+  const btnActualizar = (usuario) => {
     if (!token) {
       CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso' });
       navigate('/Menu/Administrador');
@@ -156,7 +156,7 @@ export const ListarUsuario = () => {
     }
   };
 
-  const botonMostrar = (cliente) => {
+  const btnMostrar = (cliente) => {
     if (!token) {
       CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
       navigate('/Menu/Administrador');
@@ -248,7 +248,7 @@ export const ListarUsuario = () => {
             icon={<Search/>}
           />
         </form>
-        <CustomTabla usuarios={usuarios} buscar={buscar} handleSwitchChange={handleSwitchChange} botonMostrar={botonMostrar} botonActualizar={botonActualizar}/>
+        <CustomTabla usuarios={usuarios} buscar={buscar} handleSwitchChange={handleSwitchChange} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
       </Box>
     </div>
   )

@@ -1,19 +1,9 @@
 import React, { useState } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, Grid, Switch, TablePagination, Button, Box } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination, Button, Box } from '@mui/material';
 import { Visibility, ModeEdit } from '@mui/icons-material';
-import styled from 'styled-components';
 import '../assets/css/tabla.css';
 
-const CustomSwitch = styled(Switch)`
-  .MuiSwitch-switchBase.Mui-checked {
-    color: #e2e2e2;
-  }
-  .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
-    background-color: #e2e2e2;
-  }
-`;
-
-const CustomTabla = ({ usuarios, buscar, handleSwitchChange, botonMostrar, botonActualizar }) => {
+const CustomTablaClient = ({ usuarios, buscar, botonMostrar, botonActualizar }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   
@@ -26,15 +16,13 @@ const CustomTabla = ({ usuarios, buscar, handleSwitchChange, botonMostrar, boton
     setCurrentPage(0);
   };
   const filtrarDatos = usuarios.filter(elemento => {
-    const { nombre, apellido, correo, rol } = elemento;
+    const { nombreCompleto, numberIdentity, stringIdentity } = elemento;
     const busqueda = buscar.toLowerCase();
   
-    // Verifica si alguna propiedad del elemento incluye la búsqueda
     return (
-      nombre.toLowerCase().includes(busqueda) ||
-      apellido.toLowerCase().includes(busqueda) ||
-      correo.toLowerCase().includes(busqueda) ||
-      rol.toLowerCase().includes(busqueda)
+      nombreCompleto.toLowerCase().includes(busqueda) ||
+      numberIdentity.toLowerCase().includes(busqueda) ||
+      stringIdentity.toLowerCase().includes(busqueda)
     );
   });
   
@@ -43,34 +31,26 @@ const CustomTabla = ({ usuarios, buscar, handleSwitchChange, botonMostrar, boton
 
   return (
     <Box sx={{ overflowX: 'auto', width: '100%' }}>
-      <Table className="table table-bordered"  style={{ marginTop: '1.5%', border: '2px solid #e2e2e2', }}>
+      <Table className="table table-bordered"  style={{ marginTop: '1.5%', border: '2px solid #e2e2e2' }}>
           <TableHead className="text-center" sx={{ '& .MuiTableCell-root': {color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', fontWeight: 'bold', border: '2px solid #e2e2e2'} }}>
             <TableRow >
               <TableCell>#</TableCell>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Apellido</TableCell>
-              <TableCell>Rol</TableCell>
-              <TableCell>Correo</TableCell>
-              <TableCell>Estado</TableCell>
+              <TableCell>Nombre Completo</TableCell>
+              <TableCell>Numero de Identidad</TableCell>
+              <TableCell>Tipo de Identidad</TableCell>
+              <TableCell>Usuario de Registro</TableCell>
               <TableCell>Detalles</TableCell>
               <TableCell>Editar</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': {color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', border: '2px solid #e2e2e2' },}}>
+          <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': {color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', border: '2px solid #e2e2e2' } }}>
             {paginaDatos.map((x, index) => (
               <TableRow key={index}>
                 <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
-                <TableCell>{x.nombre}</TableCell>
-                <TableCell>{x.apellido}</TableCell>
-                <TableCell>{x.rol}</TableCell>
-                <TableCell>{x.correo}</TableCell>
-                <TableCell>
-                    <CustomSwitch
-                      checked={x.estado === true}
-                      onChange={(event) => handleSwitchChange(event, x._id, x.estado)}
-                      color="primary"
-                    />
-                  </TableCell>
+                <TableCell>{x.nombreCompleto}</TableCell>
+                <TableCell>{x.numberIdentity}</TableCell>
+                <TableCell>{x.stringIdentity}</TableCell>
+                <TableCell>{x.usuario_registro.nombre + ' ' + x.usuario_registro.apellido}</TableCell>
                 <TableCell >
                   <Button variant="contained" onClick={() => botonMostrar(x) } sx={{backgroundColor: "#0f1b35", color:" #e2e2e2", border: '2px solid #e2e2e2'}}>
                     <Visibility />
@@ -128,4 +108,4 @@ const CustomTabla = ({ usuarios, buscar, handleSwitchChange, botonMostrar, boton
   );
 };
 
-export default CustomTabla;
+export default CustomTablaClient;

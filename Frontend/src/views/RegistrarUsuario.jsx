@@ -3,10 +3,10 @@ import { Button, Box , Grid, Alert } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Password, Email, PhoneAndroid, Person, SupervisedUserCircle, Room, People } from '@mui/icons-material';
-import CustomTypography from '../components/CustomTypography';
+import CustomTypography from '../components/CustomTypography.jsx';
 import '../assets/css/menu.css';
-import CustomRegisterUser from '../components/CustomRegisterUser';
-import CustomSelect from '../components/CustomSelect';
+import CustomRegisterUser from '../components/CustomRegisterUser.jsx';
+import CustomSelect from '../components/CustomSelect.jsx';
 import CustomSwal from '../components/CustomSwal.jsx';
 
 export const RegistrarUsuario = () => {

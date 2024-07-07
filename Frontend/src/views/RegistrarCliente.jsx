@@ -3,10 +3,10 @@ import axios from 'axios';
 import { Button, Grid, Box, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import {Person, Badge, Email, Numbers, PhoneAndroid } from '@mui/icons-material';
-import CustomTypography from '../components/CustomTypography';
+import CustomTypography from '../components/CustomTypography.jsx';
 import '../assets/css/menu.css';
-import CustomRegisterUser from '../components/CustomRegisterUser';
-import CustomSelect from '../components/CustomSelect';
+import CustomRegisterUser from '../components/CustomRegisterUser.jsx';
+import CustomSelect from '../components/CustomSelect.jsx';
 import CustomSwal from '../components/CustomSwal.jsx';
 
 const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;

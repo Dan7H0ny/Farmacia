@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {  Grid, Box, } from '@mui/material';
@@ -10,7 +10,7 @@ import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomTablaClient from '../components/CustomTablaClient';
-import CustomSelectUser from '../components/CustomSelectUser';
+import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 
 const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
@@ -23,11 +23,12 @@ export const ListarCliente = () => {
   const [buscar, setBuscar] = useState('');
   const [ complementos, setComplementos ] = useState([]);
   const usuario_ = localStorage.getItem('id');
+  const proveedorRef = useRef();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const nombre = 'identificaciones'
+    const nombre = 'IDENTIFICACIONES'
     axios.get(`${UrlReact}/complemento/buscarNombre/${nombre}`, configInicial)
       .then(response => {
         if (!token) {
@@ -67,7 +68,7 @@ export const ListarCliente = () => {
               <CustomActualizarUser number={6} id="correo" label="Correo" type="email" defaultValue={correo} required={false} icon={<Email />} />
               <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<Phone />} />
               <CustomActualizarUser number={6} id="numberIdentity" label="Numero de Identidad" type="number" defaultValue={numberIdentity} required={true} icon={<Badge />} />
-              <CustomSelectUser number={6} id="identidad-select" label="Seleccione la identidad del cliente:" value={stringIdentity} roles={complementos} />
+              <CustomSelectC number={6} id="identidad-select" label="Seleccione la identidad del cliente" value={stringIdentity._id} roles={complementos} ref={proveedorRef}/>
             </Grid>
           );
           Swal.fire({
@@ -81,7 +82,7 @@ export const ListarCliente = () => {
               const correo_ = document.getElementById('correo').value;
               const telefono_ = parseInt(document.getElementById('telefono').value);
               const numberIdentity_ = parseInt(document.getElementById('numberIdentity').value);
-              const stringIdentity_ = document.getElementById('identidad-select').textContent;
+              const stringIdentity_ = proveedorRef.current.getSelectedRole();
               return { nombreCompleto_, correo_, telefono_, numberIdentity_, stringIdentity_ };
             },
           customClass: {
@@ -188,7 +189,7 @@ export const ListarCliente = () => {
               <CustomActualizarUser number={6} label="Correo del Cliente" defaultValue={correo} readOnly = {true} icon={<Email/>} />
               <CustomActualizarUser number={6} label="Telefono del Cliente" defaultValue={telefono} readOnly={true} icon={<PhoneAndroid />} />
               <CustomActualizarUser number={6} label="Numero de Identidad del Cliente" defaultValue={numberIdentity} readOnly={true} icon={<Numbers />} />
-              <CustomActualizarUser number={6} label="Tipo de Identidad del Cliente" defaultValue={stringIdentity} readOnly={true} icon={<Badge />} />
+              <CustomActualizarUser number={6} label="Tipo de Identidad del Cliente" defaultValue={stringIdentity.nombre} readOnly={true} icon={<Badge />} />
               <CustomActualizarUser number={6} label="Numero del Usuario que Registro" defaultValue={usuario_registro.nombre + ' ' + usuario_registro.apellido} readOnly={true} icon={<Group />} />
               <CustomActualizarUser number={6} label="Numero del Usuario que Actualizo" defaultValue={usuario_actualizacion.nombre + ' ' + usuario_registro.apellido} readOnly={true} icon={<Group />} />
               <CustomActualizarUser number={6} label="Rol del Usuario que Registro" defaultValue={usuario_registro.rol} readOnly={true} icon={<Group />} />

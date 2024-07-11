@@ -3,11 +3,11 @@ import axios from 'axios';
 import { Button, Grid, Box, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import {Person, Badge, Email, Numbers, PhoneAndroid } from '@mui/icons-material';
-import CustomTypography from '../components/CustomTypography.jsx';
+import CustomTypography from '../components/CustomTypography';
 import '../assets/css/menu.css';
-import CustomRegisterUser from '../components/CustomRegisterUser.jsx';
-import CustomSelect from '../components/CustomSelect.jsx';
-import CustomSwal from '../components/CustomSwal.jsx';
+import CustomRegisterUser from '../components/CustomRegisterUser';
+import CustomSelectCom from '../components/CustomSelectCom';
+import CustomSwal from '../components/CustomSwal';
 
 const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
 const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
@@ -183,14 +183,14 @@ export const RegistrarCliente = ( ) => {
               required={false}
               icon={<Numbers/>}
             />
-            <CustomSelect
-              number ={4}
-              id="select-stringIdentity"
-              label="Seleccione la identificaciones del cliente"
+            <CustomSelectCom
+              number={4}
+              id="select-proveedor"
+              label="Seleccione el proveedor"
               value={stringIdentity}
               onChange={(e) => setStringIdentity(e.target.value)}
               roles={complementos}
-              icon={<Badge/>}
+              icon={<Badge />}
             />
           </Grid>
           {envioIntentado && mostrarMensajeValidacion("<div>Por favor ingrese un número de teléfono válido </div>")}

@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {  Box , Grid, Button } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {ProductionQuantityLimits, DateRange, Description, AddBusiness, AllInbox, Inventory} from '@mui/icons-material';
+import {ProductionQuantityLimits, AttachMoney, Description, AddBusiness, AllInbox, Inventory} from '@mui/icons-material';
 import '../assets/css/menu.css';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
@@ -23,7 +23,6 @@ export const RegistrarProducto = () => {
   const [idproveedor, setIdProveedor] = useState([]);
   const [precioCompra, setPrecioCompra] = useState('');
   const [capacidad_presentacion, setCapacidadPres] = useState('');
-  const [fecha_caducidad, setFechaCaducidad] = useState('');
   const usuario_ = localStorage.getItem('id');
   const [ tipos, setTipos ] = useState([]);
   
@@ -63,8 +62,7 @@ export const RegistrarProducto = () => {
     }
     else
     {
-      const data = { nombre, tipo, descripcion, proveedor: idproveedor, precioCompra, capacidad_presentacion, usuario: usuario_, fecha_caducidad };
-      console.log(data)
+      const data = { nombre, tipo, descripcion, proveedor: idproveedor, precioCompra, capacidad_presentacion, usuario_registro: usuario_, usuario_actualizacion: usuario_ };
       axios.post(`${UrlReact}/producto/crear`, data, configInicial)
         .then(response => {
           CustomSwal({ icono: 'success', titulo: 'Producto Creado', mensaje: response.mensaje});
@@ -105,59 +103,45 @@ export const RegistrarProducto = () => {
               required={true}
               icon={<Inventory/>}
             />
-            <Grid container item xs={3} spacing={1} sx={{marginTop: 1}}>
-              <CustomSelectProveedor
-                number={12}
-                id="select-proveedor"
-                label="Seleccione el proveedor"
-                value={idproveedor}
-                onChange={(e) => setIdProveedor(e.target.value)}
-                roles={proveedor}
-                icon={<AddBusiness />}
-              />
-              <CustomRegisterUser
-                number={12}
-                label="Precio" 
-                placeholder= 'Ingrese el precio de la compra'
-                type= 'Number'
-                required={true}
-                value={precioCompra}
-                onChange={(e) => setPrecioCompra(e.target.value)}
-                icon={<Description/>}
-              /> 
-            </Grid>
-            <Grid container item xs={3} spacing={1} sx={{marginTop: 1}}>
-              <CustomSelect
-                number={12}
-                id="select-tipo"
-                label="Seleccione el tipo de presentacion"
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value)}
-                roles={tipos}
-                icon={<AllInbox />}
-              />
-              <CustomRegisterUser
-                number={12}
-                label="Fecha Caducidad" 
-                placeholder= 'Ingrese la fecha de caducidad del producto'
-                type= 'date'
-                value={fecha_caducidad}
-                onChange={(e) => setFechaCaducidad(e.target.value)}
-                required={true}
-                icon={<DateRange/>}
-              />
-            </Grid>
             <CustomRegisterUser
-              number={6}
+              number={12}
               label="Descripcion" 
               placeholder= 'Ingrese la descripcion del producto'
               type= 'text'
-              rows={5}
+              rows={2.5}
               multiline= {true} 
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
               required={false}
               icon={<Description/>}
+            />
+            <CustomRegisterUser
+              number={4}
+              label="Precio" 
+              placeholder= 'Ingrese el precio de la compra'
+              type= 'Number'
+              required={true}
+              value={precioCompra}
+              onChange={(e) => setPrecioCompra(e.target.value)}
+              icon={<AttachMoney/>}
+            /> 
+            <CustomSelect
+              number={4}
+              id="select-tipo"
+              label="Seleccione el tipo de presentacion"
+              value={tipo}
+              onChange={(e) => setTipo(e.target.value)}
+              roles={tipos}
+              icon={<AllInbox />}
+            />
+            <CustomSelectProveedor
+              number={4}
+              id="select-proveedor"
+              label="Seleccione el proveedor"
+              value={idproveedor}
+              onChange={(e) => setIdProveedor(e.target.value)}
+              roles={proveedor}
+              icon={<AddBusiness />}
             />
             </Grid>
             <Button

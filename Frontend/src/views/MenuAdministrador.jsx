@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Drawer, IconButton, Box, Typography, Grid, Avatar } from '@mui/material';
 import { Inventory2Outlined, MonetizationOnOutlined, MeetingRoom, HomeOutlined, PhoneAndroid, PeopleAltOutlined, Password, 
   MenuOutlined, Email, Room, BusinessCenter, PhotoCameraFrontOutlined, ManageAccountsOutlined, SupervisedUserCircle, AppRegistrationOutlined, 
-  EditOutlined, Person } from '@mui/icons-material';
+  EditOutlined, Person, AddBoxOutlined } from '@mui/icons-material';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
@@ -26,19 +26,19 @@ export const MenuAdministrador = () => {
   const [Cliente, setisCliente] = useState(false);
   const [Complemento, setisComplemento] = useState(false);
   const [Producto, setisProducto] = useState(false);
+  const [Almacen, setisAlmacen] = useState(false);
   const [Venta, setisVenta] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(true);
   
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
   function Logout() { cerrarSesion(); navigate('/login'); return null }
   const obtenerToken = () => {
-    // Obtener el token del local storage
     const token = localStorage.getItem('token');
     return token;
   }; 
 
   const botonActualizar = () => {
-    const token = obtenerToken(); // Asegúrate de tener la función obtenerToken para obtener el token
+    const token = obtenerToken(); 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`
@@ -134,6 +134,7 @@ export const MenuAdministrador = () => {
   const GetCliente = () => {setisCliente(!Cliente);};
   const GetComplemento = () => {setisComplemento(!Complemento);};
   const GetProducto = () => {setisProducto(!Producto);};
+  const GetAlmacen = () => {setisAlmacen(!Almacen);};
   const GetVenta = () => {setisVenta(!Venta);};
 
   function Dashboard() {navigate(`/Menu/Administrador/Dashboard`);}
@@ -148,6 +149,7 @@ export const MenuAdministrador = () => {
   function ListarProveedor() {navigate(`/Menu/Administrador/Proveedor/Listar`);}
 
   function RegistrarComplemento() {navigate(`/Menu/Administrador/Complemento/Registrar`);}
+  function RegistrarAlmacen() {navigate(`/Menu/Administrador/Almacen/Registrar`);}
 
   function RegistrarProducto() {navigate(`/Menu/Administrador/Producto/Registrar`);}
   function ListarProducto() {navigate(`/Menu/Administrador/Producto/Listar`);}
@@ -162,6 +164,7 @@ export const MenuAdministrador = () => {
   const toggleCliente = () => { GetCliente(!Cliente);};
   const toggleComplemento = () => { GetComplemento(!Complemento);};
   const toggleProducto = () => { GetProducto(!Producto);};
+  const toggleAlmacen = () => { GetAlmacen(!Almacen);};
   const toggleVenta = () => { GetVenta(!Venta);};
 
   const drawerClass = drawerOpen ? 'custom-drawer' : 'custom-drawer drawer-closed';
@@ -191,11 +194,12 @@ export const MenuAdministrador = () => {
           }
         </div>
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <CustomMenu itemName={"Complementos"} itemOpen={Complemento} BtnMostrar={toggleComplemento} BtnRegistrar={RegistrarComplemento} drawerOpen={drawerOpen} icon={<AddBoxOutlined />}/>
           <CustomMenu itemName={"Usuario"} itemOpen={Usuario} BtnMostrar={toggleUsuario} BtnRegistrar={RegistrarUsuario} BtnListar={ListarUsuario} drawerOpen={drawerOpen} icon={<PeopleAltOutlined />}/>
           <CustomMenu itemName={"Proveedor"} itemOpen={Proveedor} BtnMostrar={toggleProveedor} BtnRegistrar={RegistrarProveedor} BtnListar={ListarProveedor} drawerOpen={drawerOpen} icon={<ManageAccountsOutlined />}/>
           <CustomMenu itemName={"Cliente"} itemOpen={Cliente} BtnMostrar={toggleCliente} BtnRegistrar={RegistrarCliente} BtnListar={ListarCliente} drawerOpen={drawerOpen} icon={<PhotoCameraFrontOutlined />}/>
-          <CustomMenu itemName={"Complementos"} itemOpen={Complemento} BtnMostrar={toggleComplemento} BtnRegistrar={RegistrarComplemento} drawerOpen={drawerOpen} icon={<Inventory2Outlined />}/>
           <CustomMenu itemName={"Producto"} itemOpen={Producto} BtnMostrar={toggleProducto} BtnRegistrar={RegistrarProducto} BtnListar={ListarProducto} drawerOpen={drawerOpen} icon={<AppRegistrationOutlined />}/>
+          <CustomMenu itemName={"Almacen"} itemOpen={Almacen} BtnMostrar={toggleAlmacen} BtnRegistrar={RegistrarAlmacen} drawerOpen={drawerOpen} icon={<Inventory2Outlined />}/>
           <CustomMenu itemName={"Venta"} itemOpen={Venta} BtnMostrar={toggleVenta} BtnRegistrar={RegistrarVenta} BtnListar={ListarVenta} drawerOpen={drawerOpen} icon={<MonetizationOnOutlined />}/>
         </div>
         <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '10px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>

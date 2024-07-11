@@ -43,7 +43,6 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
   }
 });
   
-// Actualizar un Proveedor
 router.put('/actualizar/:id',verificacion, async (req, res) => {
   const { id } = req.params;
   let { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular } = req.body;

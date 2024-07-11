@@ -24,7 +24,8 @@ router.post('/crear', verificacion, async (req, res) => {
 router.get('/mostrar',verificacion, async (req, res) => {
   try {
     const clientes = await Cliente.find({})
-    .populate('usuario_registro', 'nombre apellido');
+    .populate('usuario_registro', 'nombre apellido')
+    .populate('stringIdentity', 'nombre');
     res.json(clientes);
   } catch (error) {
     console.error(error);
@@ -38,7 +39,8 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
   try {
     const cliente = await Cliente.findById(id)
     .populate('usuario_registro', 'nombre apellido rol')
-    .populate('usuario_actualizacion', 'nombre apellido rol');
+    .populate('usuario_actualizacion', 'nombre apellido rol')
+    .populate('stringIdentity', 'nombre');
     if (!cliente) {
       return res.status(404).json({ mensaje: 'Cliente no encontrado' });
     }

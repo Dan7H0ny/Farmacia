@@ -3,7 +3,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination
 import { Visibility, ModeEdit } from '@mui/icons-material';
 import '../assets/css/tabla.css';
 
-const CustomTablaClient = ({ usuarios, buscar, botonMostrar, botonActualizar }) => {
+const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   
@@ -16,16 +16,15 @@ const CustomTablaClient = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
     setCurrentPage(0);
   };
   const filtrarDatos = usuarios.filter(elemento => {
-    const { nombreCompleto, numberIdentity, stringIdentity } = elemento;
+    const { nombre, proveedor, tipo } = elemento;
     const busqueda = buscar.toLowerCase();
   
     return (
-      nombreCompleto.toLowerCase().includes(busqueda) ||
-      numberIdentity.toLowerCase().includes(busqueda) ||
-      stringIdentity.toLowerCase().includes(busqueda)
+      nombre.toLowerCase().includes(busqueda) ||
+      proveedor.nombre_marca.toLowerCase().includes(busqueda)  ||
+      tipo.toLowerCase().includes(busqueda)
     );
   });
-  
 
   const paginaDatos = filtrarDatos.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
 
@@ -35,10 +34,11 @@ const CustomTablaClient = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
           <TableHead className="text-center" sx={{ '& .MuiTableCell-root': {color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', fontWeight: 'bold', border: '2px solid #e2e2e2'} }}>
             <TableRow >
               <TableCell>#</TableCell>
-              <TableCell>Nombre Completo</TableCell>
-              <TableCell>Numero de Identidad</TableCell>
-              <TableCell>Tipo de Identidad</TableCell>
-              <TableCell>Usuario de Registro</TableCell>
+              <TableCell>Producto</TableCell>
+              <TableCell>Proveedor</TableCell>
+              <TableCell>Presentacion</TableCell>
+              <TableCell>Capacidad</TableCell>
+              <TableCell>Precio</TableCell>
               <TableCell>Detalles</TableCell>
               <TableCell>Editar</TableCell>
             </TableRow>
@@ -47,10 +47,11 @@ const CustomTablaClient = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
             {paginaDatos.map((x, index) => (
               <TableRow key={index}>
                 <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
-                <TableCell>{x.nombreCompleto}</TableCell>
-                <TableCell>{x.numberIdentity}</TableCell>
-                <TableCell>{x.stringIdentity.nombre}</TableCell>
-                <TableCell>{x.usuario_registro.nombre + ' ' + x.usuario_registro.apellido}</TableCell>
+                <TableCell>{x.nombre}</TableCell>
+                <TableCell>{x.proveedor.nombre_marca}</TableCell>
+                <TableCell>{x.tipo}</TableCell>
+                <TableCell>{x.capacidad_presentacion}</TableCell>
+                <TableCell>{x.precioCompra}</TableCell>
                 <TableCell >
                   <Button variant="contained" onClick={() => botonMostrar(x) } sx={{backgroundColor: "#0f1b35", color:" #e2e2e2", border: '2px solid #e2e2e2'}}>
                     <Visibility />
@@ -108,4 +109,4 @@ const CustomTablaClient = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
   );
 };
 
-export default CustomTablaClient;
+export default CustomTablaProducto;

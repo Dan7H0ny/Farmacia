@@ -27,13 +27,13 @@ const productoSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  usuario: {
+  usuario_registro: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Usuario'
   },
-  fecha_caducidad: {
-    type: Date,
-    required: true
+  usuario_actualizacion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario'
   },
   fecha_registro: {
     type: Date,

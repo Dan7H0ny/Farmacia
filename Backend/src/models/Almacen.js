@@ -22,6 +22,18 @@ const almacenSchema = new mongoose.Schema({
     type: Boolean,
     required: true
   },
+  fecha_caducidad: {
+    type: Date,
+    required: true
+  },
+  usuario_registro: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario'
+  },
+  usuario_actualizacion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario'
+  },
   fecha_registro: {
     type: Date,
     required: true

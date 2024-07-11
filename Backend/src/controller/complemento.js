@@ -4,7 +4,7 @@ const Complemento = require('../models/Complemento');
 const verificacion = require('../middlewares/verificacion');
 
 router.post('/crear', verificacion, async (req, res) => {
-  const { nombreComplemento, nombre, limiteComplemento } = req.body;
+  const { nombreComplemento, nombre, limiteComplemento } = req.body;  
   try {
     const fechaActual = new Date();
     const complementos = new Complemento({ nombreComplemento, nombre, limiteComplemento, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });

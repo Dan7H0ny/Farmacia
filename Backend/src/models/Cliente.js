@@ -20,8 +20,8 @@ const clienteSchema = new mongoose.Schema({
     min: 0,
   },
   stringIdentity: {
-    type: String,
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Complemento'
   },
   usuario_registro: {
     type: mongoose.Schema.Types.ObjectId,

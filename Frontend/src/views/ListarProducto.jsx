@@ -9,7 +9,7 @@ import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomTablaProducto from '../components/CustomTablaProducto';
-import CustomSelectUser from '../components/CustomSelectUser';
+import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectProvee from '../components/CustomSelectProvee';
 
@@ -26,6 +26,7 @@ export const ListarProducto = () => {
   const usuario_ = localStorage.getItem('id');
   const navigate = useNavigate();
   const proveedorRef = useRef();
+  const tipoRef = useRef();
 
   useEffect(() => {
     axios.get(`${UrlReact}/producto/mostrar`, configInicial )
@@ -81,7 +82,7 @@ export const ListarProducto = () => {
               <CustomActualizarUser number={6} id="capacidad" label="Capacidad de presentacion" type="Number" defaultValue={capacidad_presentacion} required={true} icon={<Inventory />} />
               <CustomActualizarUser number={6} id="precio" label="Precio" type="Number" defaultValue={precioCompra} required={true} icon={<AttachMoney />} />
               <CustomActualizarUser number={12} id="descripcion" label="Descripcion" type="text" defaultValue={descripcion} required={true} icon={<Description />} />
-              <CustomSelectUser number={6} id="tipo-select" label="Seleccione el tipo de presentacion" value={tipo} roles={complementos}/>
+              <CustomSelectC number={6} id="identidad-select" label="Seleccione el tipo de presentacion" value={tipo._id} roles={complementos} ref={tipoRef} icon={<AllInbox />}/>
               <CustomSelectProvee number={6} id="proveedor-select" label="Seleccione el proveedor del producto" value={proveedor._id} roles={proveedores} ref={proveedorRef}/>
             </Grid>
           );
@@ -96,7 +97,7 @@ export const ListarProducto = () => {
               const capacidad_presentacion_ = parseInt(document.getElementById('capacidad').value);
               const precioCompra_ = parseInt(document.getElementById('precio').value);
               const descripcion_ = document.getElementById('descripcion').value;
-              const tipo_ = document.getElementById('tipo-select').textContent;
+              const tipo_ = tipoRef.current.getSelectedRole();
               const proveedor_ = proveedorRef.current.getSelectedRole();
               return { nombre_, capacidad_presentacion_, precioCompra_, descripcion_, tipo_, proveedor_ };
             },
@@ -160,7 +161,7 @@ export const ListarProducto = () => {
               <CustomActualizarUser number={6} label="Nombre del Proveedor" defaultValue={proveedor.nombre_marca} readOnly={true} icon={<AddBusiness />} />
               <CustomActualizarUser number={6} label="Precio" defaultValue={precioCompra} readOnly={true} icon={<AttachMoney />} />
               <CustomActualizarUser number={12} label="Descripcion" defaultValue={descripcion} readOnly={true} icon={<Description />} />
-              <CustomActualizarUser number={6} label="Tipo de presentacion" defaultValue={tipo} readOnly = {true} icon={<AllInbox/>} />
+              <CustomActualizarUser number={6} label="Tipo de presentacion" defaultValue={tipo.nombre} readOnly = {true} icon={<AllInbox/>} />
               <CustomActualizarUser number={6} label="Capacidad de presentacion" defaultValue={capacidad_presentacion} readOnly={true} icon={<Inventory />} />
               <CustomActualizarUser number={6} label="Usuario que registro" defaultValue={`${usuario_registro.nombre} ${usuario_registro.apellido}`} readOnly={true} icon={<Group />} />
               <CustomActualizarUser number={6} label="Usuario que actualizo" defaultValue={`${usuario_actualizacion.nombre} ${usuario_actualizacion.apellido}`} readOnly={true} icon={<Group />} />

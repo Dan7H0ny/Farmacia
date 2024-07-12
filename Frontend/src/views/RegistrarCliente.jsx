@@ -36,7 +36,7 @@ export const RegistrarCliente = ( ) => {
   };
 
   useEffect(() => {
-    const nombre = 'identificaciones'
+    const nombre = 'IDENTIFICACIONES'
     axios.get(`${UrlReact}/complemento/buscarNombre/${nombre}`, configInicial)
       .then(response => {
         if (!token) {
@@ -57,7 +57,7 @@ export const RegistrarCliente = ( ) => {
     }
     else
     {
-      if(telefono){
+      if(!telefono){
         if(telefono.length !== 12 || numberIdentity.length < 7 || numberIdentity.length > 12){
           setEnvioIntentado(true);
         }

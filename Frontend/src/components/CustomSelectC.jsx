@@ -1,8 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Grid, FormControl, InputLabel, Select, MenuItem, InputAdornment } from '@mui/material';
-import { Badge } from '@mui/icons-material';
 
-const CustomSelectC = forwardRef(({ number, id, label, value, roles }, ref) => {
+const CustomSelectC = forwardRef(({ number, id, label, value, roles, icon }, ref) => {
   const [selectedRole, setSelectedRole] = useState(value);
 
   useImperativeHandle(ref, () => ({
@@ -21,7 +20,7 @@ const CustomSelectC = forwardRef(({ number, id, label, value, roles }, ref) => {
           required
           startAdornment={
             <InputAdornment position="start" sx={{ color: '#0f1b35' }}>
-              <Badge /> {/* Aquí se agrega el icono */}
+              {icon}
             </InputAdornment>
           }
           sx={{

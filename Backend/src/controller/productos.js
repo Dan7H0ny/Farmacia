@@ -23,6 +23,7 @@ router.get('/mostrar', verificacion, async (req, res) => {
   try {
     const productosEncontrados = await Producto.find({})
       .populate('proveedor', 'nombre_marca')
+      .populate('tipo', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
       .sort({ fecha_caducidad: 1 });
@@ -39,6 +40,7 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
     
     const producto = await Producto.findById(id)
       .populate('proveedor', 'nombre_marca')
+      .populate('tipo', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
       .sort({ fecha_caducidad: 1 });
@@ -56,9 +58,8 @@ router.get('/buscarnombre/:nombre', verificacion, async (req, res) => {
   const { nombre } = req.params;
   try {
     const productos = await Producto.find({ nombre: { $regex: new RegExp(nombre, 'i') } })
-    .populate('categoria', 'nombre')
     .populate('proveedor', 'nombre_marca')
-    .populate('tipo', 'nombreTipo')
+    .populate('tipo', 'nombre')
     .populate('usuario', 'nombre apellido rol correo').sort({ fecha_caducidad: 1 });
     if (!productos || productos.length === 0) {
       return res.status(404).json({ mensaje: 'Producto no encontrado' });
@@ -82,6 +83,7 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
     }
     const productosEncontrados = await Producto.find({})
       .populate('proveedor', 'nombre_marca')
+      .populate('tipo', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
       .sort({ fecha_caducidad: 1 });

@@ -49,7 +49,7 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar }
                 <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
                 <TableCell>{x.nombre}</TableCell>
                 <TableCell>{x.proveedor.nombre_marca}</TableCell>
-                <TableCell>{x.tipo}</TableCell>
+                <TableCell>{x.tipo.nombre}</TableCell>
                 <TableCell>{x.capacidad_presentacion}</TableCell>
                 <TableCell>{x.precioCompra}</TableCell>
                 <TableCell >

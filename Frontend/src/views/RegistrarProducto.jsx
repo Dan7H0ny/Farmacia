@@ -7,7 +7,7 @@ import '../assets/css/menu.css';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import CustomRegisterUser from '../components/CustomRegisterUser';
-import CustomSelect from '../components/CustomSelect';
+import CustomSelectCom from '../components/CustomSelectCom';
 import CustomSelectProveedor from '../components/CustomSelectProveedor';
 
 const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
@@ -125,7 +125,7 @@ export const RegistrarProducto = () => {
               onChange={(e) => setPrecioCompra(e.target.value)}
               icon={<AttachMoney/>}
             /> 
-            <CustomSelect
+            <CustomSelectCom
               number={4}
               id="select-tipo"
               label="Seleccione el tipo de presentacion"

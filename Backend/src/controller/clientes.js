@@ -76,7 +76,10 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
     if (!clienteActualizado) {
       return res.status(404).json({ mensaje: 'Cliente no encontrado' });
     }
-    res.json({ mensaje: 'Cliente actualizado exitosamente', clienteActualizado });
+    const clientes = await Cliente.find({})
+    .populate('usuario_registro', 'nombre apellido')
+    .populate('stringIdentity', 'nombre');
+    res.json({ mensaje: 'Cliente actualizado exitosamente', clientes });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar cliente' });

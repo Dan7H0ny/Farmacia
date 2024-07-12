@@ -60,6 +60,7 @@ export const ListarCliente = () => {
       axios.get(`${UrlReact}/cliente/buscar/${cliente._id}`, configInicial)
         .then(response => {
           const { _id, nombreCompleto, correo, telefono, numberIdentity, stringIdentity } = response;
+          console.log(complementos)
           const container = document.createElement('div');
           const root = createRoot(container);
           root.render(
@@ -68,7 +69,7 @@ export const ListarCliente = () => {
               <CustomActualizarUser number={6} id="correo" label="Correo" type="email" defaultValue={correo} required={false} icon={<Email />} />
               <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<Phone />} />
               <CustomActualizarUser number={6} id="numberIdentity" label="Numero de Identidad" type="number" defaultValue={numberIdentity} required={true} icon={<Badge />} />
-              <CustomSelectC number={6} id="identidad-select" label="Seleccione la identidad del cliente" value={stringIdentity._id} roles={complementos} ref={proveedorRef}/>
+              <CustomSelectC number={6} id="identidad-select" label="Seleccione la identidad del cliente" value={stringIdentity._id} roles={complementos} ref={proveedorRef} icon={<Badge />}/>
             </Grid>
           );
           Swal.fire({
@@ -134,23 +135,9 @@ export const ListarCliente = () => {
               usuario_actualizacion: usuario_
             }, configInicial)
             .then((response) => {
-              const clienteActualizado = clientes.map((cliente) => {
-              if (cliente._id === _id) {
-                return {
-                  ...cliente,
-                  nombreCompleto: nombreCompleto_,
-                  correo: correo_,
-                  telefono: telefono_,            
-                  numberIdentity: numberIdentity_,
-                  stringIdentity: stringIdentity_,
-                };
-              } else {
-                return cliente;
-              }
-            });
-            setClientes(clienteActualizado);
-            CustomSwal({ icono: 'success', titulo: 'Actualización Exitosa', mensaje: response.mensaje });
-          })
+              setClientes(response.clientes);
+              CustomSwal({ icono: 'success', titulo: 'Actualización Exitosa', mensaje: response.mensaje });
+            })
           .catch((error) => {
             CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });
           });

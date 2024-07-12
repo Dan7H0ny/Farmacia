@@ -6,8 +6,8 @@ const productoSchema = new mongoose.Schema({
     required: true
   },
   tipo: {
-    type: String,
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Complemento'
   },
   descripcion: {
     type: String,

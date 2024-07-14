@@ -4,10 +4,10 @@ const Complemento = require('../models/Complemento');
 const verificacion = require('../middlewares/verificacion');
 
 router.post('/crear', verificacion, async (req, res) => {
-  const { nombreComplemento, nombre, limiteComplemento } = req.body;  
+  const { nombreComplemento, nombre } = req.body;  
   try {
     const fechaActual = new Date();
-    const complementos = new Complemento({ nombreComplemento, nombre, limiteComplemento, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
+    const complementos = new Complemento({ nombreComplemento, nombre, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
     await complementos.save();
     res.status(201).json({ mensaje: `${nombreComplemento} creado exitosamente`, complementos });
   } catch (error) {
@@ -18,7 +18,7 @@ router.post('/crear', verificacion, async (req, res) => {
 
 router.get('/mostrar', verificacion, async (req, res) => {
   try {
-    const complementos = await Complemento.find({}, 'nombreComplemento'); // Solo selecciona el campo nombreComplemento
+    const complementos = await Complemento.find({});
     res.json(complementos);
   } catch (error) {
     console.error(error);
@@ -57,10 +57,10 @@ router.get('/buscarNombre/:nombreComplemento', verificacion, async (req, res) =>
 
 router.put('/actualizar/:id', verificacion, async (req, res) => {
   const { id } = req.params;
-  const { nombreComplemento, nombre, limiteComplemento } = req.body;
+  const { nombreComplemento, nombre } = req.body;
   try {
     const fechaActual = new Date();
-    const complementoActual = await Tipo.findByIdAndUpdate(id, { nombreComplemento, nombre, limiteComplemento, fecha_actualizacion: fechaActual }, { new: true });
+    const complementoActual = await Tipo.findByIdAndUpdate(id, { nombreComplemento, nombre, fecha_actualizacion: fechaActual }, { new: true });
     res.json({ mensaje: `${nombreComplemento} actualizado esitosamente`, complementoActual });
   } catch (error) {
     console.error(error);

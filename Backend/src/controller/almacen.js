@@ -6,7 +6,7 @@ const Almacen = require('../models/Almacen');
 
 router.post('/crear',verificacion, async (req, res) => {
   
-  const { producto, categoria, precioVenta, cantidad_stock, estado, fecha_caducidad, usuario_registro, usuario_actualizacion, fecha_registro, fecha_actualizacion } = req.body;
+  const { producto, categoria, precioVenta, cantidad_stock, estado, fecha_caducidad, usuario } = req.body;
   try {
     const fechaActual = new Date(); 
     const fechaCaducidad = new Date(fecha_caducidad);
@@ -21,7 +21,7 @@ router.post('/crear',verificacion, async (req, res) => {
     const producto_ = await Producto.findById(producto);
     if (!producto_) return res.status(400).json({ mensaje: 'El producto  no existe' }); 
 
-    const almacen = new Almacen({ nombre, tipo, descripcion, proveedor, precioCompra, capacidad_presentacion, usuario_registro, usuario_actualizacion,
+    const almacen = new Almacen({ producto, categoria, precioVenta, cantidad_stock, estado, fecha_caducidad, usuario_registro: usuario, usuario_actualizacion: usuario,
       fecha_caducidad: fechaCaducidad, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
     await almacen.save();
     res.status(201).json({ mensaje: 'Producto creado exitosamente', producto });

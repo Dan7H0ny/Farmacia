@@ -6,8 +6,8 @@ const almacenSchema = new mongoose.Schema({
     ref: 'Producto'
   },
   categoria: {
-    type: String,
-    required: false
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Complemento'
   },
   precioVenta: {
     type: Number,

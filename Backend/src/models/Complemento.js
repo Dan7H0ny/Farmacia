@@ -9,11 +9,6 @@ const complementoSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  limiteComplemento: {
-    type: Number,
-    required: false,
-    default: 0,
-  },
   fecha_registro: {
     type: Date,
     required: true

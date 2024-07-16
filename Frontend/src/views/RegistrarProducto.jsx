@@ -41,7 +41,7 @@ export const RegistrarProducto = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const nombre = 'TIPOS'
+    const nombre = 'Tipo'
     axios.get(`${UrlReact}/complemento/buscarNombre/${nombre}`, configInicial)
       .then(response => {
         if (!token) {

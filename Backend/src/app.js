@@ -17,6 +17,7 @@ app.use(cookieParser());
 
 app.use('/',require('./controller/autentificacion'));
 app.use('/complemento', require('./controller/complemento'));
+app.use('/almacen', require('./controller/almacen'));
 app.use('/usuario', require('./controller/usuarios'));
 app.use('/cliente', require('./controller/clientes'));
 app.use('/proveedor', require('./controller/proveedores'));

@@ -36,7 +36,7 @@ export const RegistrarCliente = ( ) => {
   };
 
   useEffect(() => {
-    const nombre = 'IDENTIFICACIONES'
+    const nombre = 'Identificación'
     axios.get(`${UrlReact}/complemento/buscarNombre/${nombre}`, configInicial)
       .then(response => {
         if (!token) {

@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import { Button ,Alert, Grid, Box } from '@mui/material';
+import { Button, Grid, Box } from '@mui/material';
 import '../assets/css/menu.css';
 import { useNavigate } from 'react-router-dom';
-import {AddBusiness, Email, LocalPhone, Language, SupervisedUserCircle, PhoneAndroid} from '@mui/icons-material';
-import CustomSwal from '../components/CustomSwal.jsx';
-import CustomTypography from '../components/CustomTypography.jsx';
-import CustomRegisterUser from '../components/CustomRegisterUser.jsx';
+import {AddBusiness, Filter9Plus, DateRange, AttachMoney, Search, ProductionQuantityLimits} from '@mui/icons-material';
+import CustomSwal from '../components/CustomSwal';
+import CustomTypography from '../components/CustomTypography';
+import CustomRegisterUser from '../components/CustomRegisterUser';
+import CustomSelectCom from '../components/CustomSelectCom';
+import CustomForm from '../components/CustomForm';
+import CustomSubtitulo from '../components/CustomSubtitulo';
 
 const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
 const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
@@ -14,26 +17,45 @@ const token = obtenerToken();
 const configInicial = { headers: { Authorization: `Bearer ${token}` }};
 
 export const RegistrarAlmacen = () => {
-  const [nombre_marca, setNombreMarca] = useState('');
-  const [correo, setCorreo] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [sitioweb, setSitioWeb] = useState('');
-  const [nombre_vendedor, setNombreVendedor] = useState('');
-  const [correo_vendedor, setCorreoVendedor] = useState('');
-  const [celular, setCelular] = useState('');
-  const [ envioIntentado, setEnvioIntentado ] =useState(false);
+  const [producto, setProducto] = useState([]);
+  const [idproducto, setIdProducto] = useState('');
+  const [datos, setDatos] = useState('');
+  const [complementos, setComplementos] = useState([]);
+  const [categoria, setCategoria] = useState('');
+  const [precioVenta, setPrecioVenta] = useState('');
+  const [cantidad_stock, setCantidad_stock] = useState('');
+  const [fecha_caducidad, setFechaCaducidad] = useState(''); 
+  const usuario_ = localStorage.getItem('id');
+  const [buscar, setBuscar] = useState('')
 
   const navigate = useNavigate();
 
-  const mostrarMensajeValidacion = (mensaje) => {
-    return (
-      <Alert severity="error" sx={{ mt: 1 }}>
-        <div dangerouslySetInnerHTML={{ __html: mensaje }} />
-      </Alert>
-    );
-  };
+  useEffect(() => {
+    const nombre = 'Categoría'
+    axios.get(`${UrlReact}/complemento/buscarNombre/${nombre}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setComplementos(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate]);
 
-  const btnRegistrarProveedor = (e) => {
+  useEffect(() => {
+    axios.get(`${UrlReact}/producto/mostrar`, configInicial )
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setProducto(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate]);
+
+  const btnRegistrarAlmacen= (e) => {
     e.preventDefault();
     if (!token) {
       CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
@@ -42,165 +64,131 @@ export const RegistrarAlmacen = () => {
     } 
     else 
     {
-      if(telefono){
-        if(telefono.length !== 8 || telefono < 60000000 || telefono > 79999999){
-          setEnvioIntentado(true);
-        }
-        else {
-          setEnvioIntentado(false);
-          const miProveedor = { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular};
-          axios.post(`${UrlReact}/proveedor/crear`, miProveedor, configInicial)
-            .then(response => {
-              CustomSwal({ icono: 'success', titulo: 'Proveedor Creado', mensaje: response.mensaje});
-              limpiarFormulario();
-            })
-            .catch(error => {
-              CustomSwal({ icono: 'error', titulo: 'Error al crear el Proveedor', mensaje: error.mensaje});
-            });
-        }
-        return;
-      }
-      else{
-        const miProveedor = { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular};
-        axios.post(`${UrlReact}/proveedor/crear`, miProveedor, configInicial)
-          .then(response => {
-            CustomSwal({ icono: 'success', titulo: 'Proveedor Creado', mensaje: response.mensaje});
-            limpiarFormulario();
-          })
-          .catch(error => {
-            CustomSwal({ icono: 'error', titulo: 'Error al crear el Proveedor', mensaje: error.mensaje});
-          });
-          return;
-      }
+      const mialmacen = { producto:idproducto, categoria, precioVenta, cantidad_stock, fecha_caducidad, usuario: usuario_};
+      axios.post(`${UrlReact}/almacen/crear`, mialmacen, configInicial)
+        .then(response => {
+          CustomSwal({ icono: 'success', titulo: 'Almacen Creado', mensaje: response.mensaje});
+          limpiarFormulario();
+        })
+        .catch(error => {
+          CustomSwal({ icono: 'error', titulo: 'Error al crear el Almacen', mensaje: error.mensaje});
+        });
     }
   }
 
+  const btnAñadir = (producto) => {
+    setDatos(producto)
+    setIdProducto(producto._id)
+  }
+
   const limpiarFormulario = () => {
-    setNombreMarca("");
-    setCorreo("");
-    setTelefono("");
-    setSitioWeb("");
-    setNombreVendedor("");
-    setCorreoVendedor("");
-    setCelular("");
-    document.getElementById("Form-1").reset();
+    setDatos("");
+    setCategoria("");
+    setPrecioVenta("");
+    setCantidad_stock("");
+    setFechaCaducidad("");
   }
   return (
     <div id="caja_contenido">
       <Box mt={3}>
-        <CustomTypography text={'Registro de Proveedores'} />
-        <form id="Form-1" onSubmit={btnRegistrarProveedor} className="custom-form">
-          <Grid container spacing={3}>
-            <CustomRegisterUser
-              number={12}
-              label="Marca" 
-              placeholder= 'Ingrese el nombre de la marca del proveedor'
-              type= 'text'
-              value={nombre_marca}
-              onChange={(e) => { 
-                const inputValue = e.target.value; 
-                const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
-                setNombreMarca(newValue);
-              }}
-              required={true}
-              icon={<AddBusiness/>}
-            />
-            <CustomRegisterUser
-              number={4}
-              label="Correo" 
-              placeholder= 'Ingrese el correo de la marca del proveedor'
-              type= 'email'
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-              required={false}
-              icon={<Email/>}
-            />
-            <CustomRegisterUser
-              number={4}
-              label="Telefono" 
-              placeholder= 'Ingrese el telefono del proveedor'
-              type= 'number'
-              value={telefono}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                if (inputValue.length > 8) {
-                  setTelefono(inputValue.slice(0, 8));
-                } else {
-                  setTelefono(inputValue);
-                }
-              }}
-              required={false}
-              icon={<LocalPhone/>}
-            />
-            <CustomRegisterUser
-              number={4}
-              label="Sitio Web" 
-              placeholder= 'Ingrese el sitio web del proveedor'
-              type= 'text'
-              value={sitioweb}
-              onChange={(e) => setSitioWeb(e.target.value)}
-              required={false}
-              icon={<Language/>}
-            />
-            <CustomRegisterUser
-              number={12}
-              label="Nombre del Vendedor" 
-              placeholder= 'Ingrese el nombre del vendedor del proveedor'
-              type= 'text'
-              value={nombre_vendedor}
-              onChange={(e) => setNombreVendedor(e.target.value)}
-              required={true}
-              icon={<SupervisedUserCircle/>}
-            />
-            <CustomRegisterUser
-              number={6}
-              label="Correo del Vendedor" 
-              placeholder= 'Ingrese el correo del vendedor del proveedor'
-              type= 'text'
-              value={correo_vendedor}
-              onChange={(e) => setCorreoVendedor(e.target.value)}
-              required={false}
-              icon={<Email/>}
-            />
-            <CustomRegisterUser
-              number={6}
-              label="Celular del Vendedor" 
-              placeholder= 'Ingrese el correo del vendedor del proveedor'
-              type= 'number'
-              value={celular}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                if (inputValue.length > 8) {
-                  setCelular(inputValue.slice(0, 8));
-                } else {
-                  setCelular(inputValue);
-                }
-              }}
-              required={false}
-              icon={<PhoneAndroid/>}
-            />
+        <CustomTypography text={'Registro de almacen'} />
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} sx={{marginTop: 'auto',}}>
+            <CustomSubtitulo text={'Elige el producto'} />
+            <form id="Form-2" className="custom-form">
+              <CustomRegisterUser
+                number={12}
+                label="Nombre"  
+                placeholder= 'Buscar el nombre del producto'
+                type= 'text'
+                value={buscar}
+                onChange={(e) => setBuscar(e.target.value)}
+                required={true}
+                icon={<Search/>}
+              />
+              <CustomForm productos={producto} buscar={buscar} btnAñadir={btnAñadir}/>
+            </form>
           </Grid>
-          {envioIntentado && mostrarMensajeValidacion("<div>Por favor ingrese un número de teléfono válido </div>")}
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            size="large"
-            type="submit"
-            sx={{
-              backgroundColor: '#e2e2e2',
-              color: '#0f1b35',
-              marginTop: 2.5,
-              fontWeight: 'bold',
-              '&:hover': {
-                backgroundColor: '#1a7b13',
-                color: '#e2e2e2',
-                border: '2px solid #e2e2e2',
-              },
-            }}
-          >Guardar Proveedor
-          </Button>
-        </form>
+          <Grid item xs={12} sm={6} sx={{marginTop: 'auto',}}>
+            <form id="Form-1" onSubmit={btnRegistrarAlmacen} className="custom-form">
+              <Grid container spacing={2}>
+                <CustomRegisterUser
+                  number={12}
+                  label="Producto" 
+                  placeholder= 'Seleccione el producto de la izquierda'
+                  type= 'text'
+                  rows={5.5}
+                  multiline= {true} 
+                  value={datos?
+                    `Producto:\t\t${datos.nombre}\nProveedor:\t\t${datos.proveedor.nombre_marca}\nTipo:\t\t\t${datos.tipo.nombre}\nCapacidad:\t\t${datos.tipo.nombre}\nPrecio de compra:\t${datos.precioCompra}` 
+                    : ''}
+                  onChange={(e) => setDatos(e.target.value)}
+                  required={true}
+                  readOnly={true}
+                  icon={<ProductionQuantityLimits/>}
+                />
+                <CustomSelectCom
+                  number={12}
+                  id="categoria"
+                  label="Seleccione la categoria"
+                  value={categoria}
+                  onChange={(e) => setCategoria(e.target.value)}
+                  roles={complementos}
+                  icon={<AddBusiness />}
+                />
+                <CustomRegisterUser
+                  number={12}
+                  label="Fecha Caducidad" 
+                  placeholder= 'Ingrese la fecha de caducidad'
+                  type= 'date'
+                  value={fecha_caducidad}
+                  onChange={(e) => setFechaCaducidad(e.target.value)}
+                  required={true}
+                  icon={<DateRange/>}
+                />
+                <CustomRegisterUser
+                  number={6}
+                  label="Precio" 
+                  placeholder= {idproducto.precioCompra}
+                  type= 'Number'
+                  value={precioVenta}
+                  onChange={(e) => setPrecioVenta(e.target.value)}
+                  required={true}
+                  icon={<AttachMoney/>}
+                />
+                <CustomRegisterUser
+                  number={6}
+                  label="Stock" 
+                  placeholder= 'Ingrese la cantidad de stock que tiene este prodcuto'
+                  type= 'Number'
+                  value={cantidad_stock}
+                  onChange={(e) => setCantidad_stock(e.target.value)}
+                  required={true}
+                  icon={<Filter9Plus/>}
+                />
+                </Grid>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  type="submit"
+                  sx={{
+                    backgroundColor: '#e2e2e2',
+                    color: '#0f1b35',
+                    marginTop: 2.5,
+                    fontWeight: 'bold',
+                    '&:hover': {
+                      backgroundColor: '#1a7b13',
+                      color: '#e2e2e2',
+                      border: '2px solid #e2e2e2',
+                    },
+                  }}
+                >Guardar Almacen
+                </Button>
+              </form>
+            </Grid>
+        </Grid>
       </Box>
     </div>
   )

@@ -66,7 +66,7 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar }
             ))}
           </TableBody>
         </Table>
-        <Grid item xs={12} sm={4} sx={{ marginTop: 2, '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+        <Grid item xs={12} sm={12} sx={{ marginTop: 2, '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
           <TablePagination
             component="div"
             count={filtrarDatos.length}

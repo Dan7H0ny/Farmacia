@@ -25,6 +25,7 @@ import { RegistrarProducto } from './views/RegistrarProducto';
 import { ListarProducto } from './views/ListarProducto';
 
 import { RegistrarAlmacen } from './views/RegistrarAlmacen';
+import { ListarAlmacen } from './views/ListarAlmacen';
 
 import { RegistrarVenta } from './components/RegistrarVenta';
 import { ListarVenta } from './components/ListarVenta';
@@ -51,6 +52,7 @@ function App() {
               <Route exact path="/Menu/Administrador/Producto/Registrar" element={<RegistrarProducto/>}/>
               <Route exact path="/Menu/Administrador/Producto/Listar" element={<ListarProducto/>}/>
               <Route exact path="/Menu/Administrador/Almacen/Registrar" element={<RegistrarAlmacen/>}/>
+              <Route exact path="/Menu/Administrador/Almacen/Listar" element={<ListarAlmacen/>}/>
               <Route exact path="/Menu/Administrador/Venta/Registrar" element={<RegistrarVenta/>}/>
               <Route exact path="/Menu/Administrador/Venta/Listar" element={<ListarVenta/>}/>
             </Route>

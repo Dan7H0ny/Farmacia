@@ -120,7 +120,7 @@ export const RegistrarAlmacen = () => {
                   rows={5.5}
                   multiline= {true} 
                   value={datos?
-                    `Producto:\t\t${datos.nombre}\nProveedor:\t\t${datos.proveedor.nombre_marca}\nTipo:\t\t\t${datos.tipo.nombre}\nCapacidad:\t\t${datos.tipo.nombre}\nPrecio de compra:\t${datos.precioCompra}` 
+                    `Producto:\t\t${datos.nombre}\nProveedor:\t\t${datos.proveedor.nombre_marca}\nTipo:\t\t\t${datos.tipo.nombre}\nCapacidad:\t\t${datos.capacidad_presentacion}\nPrecio de compra:\t${datos.precioCompra}` 
                     : ''}
                   onChange={(e) => setDatos(e.target.value)}
                   required={true}
@@ -149,7 +149,7 @@ export const RegistrarAlmacen = () => {
                 <CustomRegisterUser
                   number={6}
                   label="Precio" 
-                  placeholder= {idproducto.precioCompra}
+                  placeholder= {datos.precioCompra}
                   type= 'Number'
                   value={precioVenta}
                   onChange={(e) => setPrecioVenta(e.target.value)}
@@ -184,7 +184,7 @@ export const RegistrarAlmacen = () => {
                       border: '2px solid #e2e2e2',
                     },
                   }}
-                >Guardar Almacen
+                >Añadir producto al almacen
                 </Button>
               </form>
             </Grid>

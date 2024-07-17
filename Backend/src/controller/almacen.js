@@ -34,33 +34,43 @@ router.post('/crear',verificacion, async (req, res) => {
 
 router.get('/mostrar', verificacion, async (req, res) => {
   try {
-    const productosEncontrados = await Producto.find({})
-      .populate('proveedor', 'nombre_marca')
+    const productosEncontrados = await Almacen.find({})
+      .populate('producto', 'nombre')
+      .populate('categoria', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
       .sort({ fecha_caducidad: 1 });
     res.json(productosEncontrados);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al obtener los Productos' });
+    res.status(500).json({ mensaje: 'Error al obtener el producto del almacen' });
   }
 });
 
 router.get('/buscar/:id',verificacion, async (req, res) => {
   const { id } = req.params;
   try {
-    
-    const producto = await Producto.findById(id)
-      .populate('proveedor', 'nombre_marca')
-      .populate('usuario', 'nombre apellido rol correo')
-      .sort({ fecha_caducidad: 1 });
+    const producto = await Almacen.findById(id)
+    .populate({
+      path: 'producto',
+      select: 'nombre capacidad_presentacion precioCompra',
+      populate: [
+        { path: 'tipo', select: 'nombre' },
+        { path: 'proveedor', select: 'nombre_marca' }
+      ]
+      })
+      .populate('categoria', 'nombre')
+      .populate('usuario_registro', 'nombre apellido rol correo')
+      .populate('usuario_actualizacion', 'nombre apellido rol correo')
+      .sort({ fecha_caducidad: 1 }).exec();
     if (!producto) {
-      return res.status(404).json({ mensaje: 'Producto no encontrado' });
+      return res.status(404).json({ mensaje: 'Almacen no encontrado' });
     }
+
     res.json(producto);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al obtener el Producto' });
+    res.status(500).json({ mensaje: 'Error al obtener el Almacen' });
   }
 });
 

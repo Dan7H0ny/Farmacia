@@ -149,7 +149,9 @@ export const MenuAdministrador = () => {
   function ListarProveedor() {navigate(`/Menu/Administrador/Proveedor/Listar`);}
 
   function RegistrarComplemento() {navigate(`/Menu/Administrador/Complemento/Registrar`);}
+
   function RegistrarAlmacen() {navigate(`/Menu/Administrador/Almacen/Registrar`);}
+  function ListarAlmacen() {navigate(`/Menu/Administrador/Almacen/Listar`);}
 
   function RegistrarProducto() {navigate(`/Menu/Administrador/Producto/Registrar`);}
   function ListarProducto() {navigate(`/Menu/Administrador/Producto/Listar`);}
@@ -199,7 +201,7 @@ export const MenuAdministrador = () => {
           <CustomMenu itemName={"Proveedor"} itemOpen={Proveedor} BtnMostrar={toggleProveedor} BtnRegistrar={RegistrarProveedor} BtnListar={ListarProveedor} drawerOpen={drawerOpen} icon={<ManageAccountsOutlined />}/>
           <CustomMenu itemName={"Cliente"} itemOpen={Cliente} BtnMostrar={toggleCliente} BtnRegistrar={RegistrarCliente} BtnListar={ListarCliente} drawerOpen={drawerOpen} icon={<PhotoCameraFrontOutlined />}/>
           <CustomMenu itemName={"Producto"} itemOpen={Producto} BtnMostrar={toggleProducto} BtnRegistrar={RegistrarProducto} BtnListar={ListarProducto} drawerOpen={drawerOpen} icon={<AppRegistrationOutlined />}/>
-          <CustomMenu itemName={"Almacen"} itemOpen={Almacen} BtnMostrar={toggleAlmacen} BtnRegistrar={RegistrarAlmacen} drawerOpen={drawerOpen} icon={<Inventory2Outlined />}/>
+          <CustomMenu itemName={"Almacen"} itemOpen={Almacen} BtnMostrar={toggleAlmacen} BtnRegistrar={RegistrarAlmacen} BtnListar={ListarAlmacen} drawerOpen={drawerOpen} icon={<Inventory2Outlined />}/>
           <CustomMenu itemName={"Venta"} itemOpen={Venta} BtnMostrar={toggleVenta} BtnRegistrar={RegistrarVenta} BtnListar={ListarVenta} drawerOpen={drawerOpen} icon={<MonetizationOnOutlined />}/>
         </div>
         <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '10px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>

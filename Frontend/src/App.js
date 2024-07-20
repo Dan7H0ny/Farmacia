@@ -27,7 +27,7 @@ import { ListarProducto } from './views/ListarProducto';
 import { RegistrarAlmacen } from './views/RegistrarAlmacen';
 import { ListarAlmacen } from './views/ListarAlmacen';
 
-import { RegistrarVenta } from './components/RegistrarVenta';
+import { RegistrarVenta } from './views/RegistrarVenta';
 import { ListarVenta } from './components/ListarVenta';
 
 function App() {

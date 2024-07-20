@@ -26,11 +26,6 @@ const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar, b
   });
 
   const paginaDatos = filtrarDatos.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
-  function formatDateTime(date) {
-    const optionsDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    const formattedDate = date.toLocaleDateString('es-ES', optionsDate);
-    return `${formattedDate}`;
-  }
   return (
     <Box sx={{ overflowX: 'auto', width: '100%' }}>
       <Table className="table table-bordered"  style={{ marginTop: '1.5%', border: '2px solid #e2e2e2' }}>
@@ -39,9 +34,10 @@ const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar, b
               <TableCell>#</TableCell>
               <TableCell>Producto</TableCell>
               <TableCell>Categoria</TableCell>
-              <TableCell>Precio</TableCell>
               <TableCell>Fecha Caducidad</TableCell>
               <TableCell>Estado</TableCell>
+              <TableCell>Stock</TableCell>
+              <TableCell>Precio</TableCell>
               <TableCell>Detalles</TableCell>
               <TableCell>Editar</TableCell>
             </TableRow>
@@ -52,11 +48,12 @@ const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar, b
                 <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
                 <TableCell>{x.producto.nombre}</TableCell>
                 <TableCell>{x.categoria.nombre}</TableCell>
-                <TableCell>{x.precioVenta}</TableCell>
-                <TableCell>{formatDateTime(new Date(x.fecha_caducidad))}</TableCell>
+                <TableCell>{new Date(x.fecha_caducidad).toISOString().split('T')[0]}</TableCell>
                 <TableCell>
                   {x.estado ? <VerifiedUser color="success" /> : <Dangerous color="error" />}
                 </TableCell>
+                <TableCell>{x.cantidad_stock}</TableCell>
+                <TableCell>{x.precioVenta}</TableCell>
                 <TableCell >
                   <Button variant="contained" onClick={() => botonMostrar(x) } sx={{backgroundColor: "#0f1b35", color:" #e2e2e2", border: '2px solid #e2e2e2'}}>
                     <Visibility />

@@ -10,16 +10,11 @@ const ventaSchema = new mongoose.Schema({
     producto: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Producto',
-      required: true,
     },
     cantidad_producto: {
       type: Number,
       required: true
     },
-    precio_producto: {
-      type: Number,
-      required: true
-    }
   }],
   precio_total: {
     type: Number,

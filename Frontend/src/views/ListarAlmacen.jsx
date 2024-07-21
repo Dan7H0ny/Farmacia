@@ -92,14 +92,34 @@ export const ListarAlmacen = () => {
             showCancelButton: true,
             confirmButtonText: 'Actualizar',
             cancelButtonText: 'Cancelar',
-            preConfirm: () => {
+            preConfirm: async () => {
               const producto_ = productoRef.current.getSelectedProduct();
               const categoria_ = categoriaRef.current.getSelectedRole();
               const precioVenta_ = parseInt(document.getElementById('precioVenta').value);
               const stock_ = parseInt(document.getElementById('stock').value);
               const fecha_ = document.getElementById('fecha').value;
-              return { producto_, categoria_, stock_, precioVenta_, fecha_ };
-            },
+              if(producto_._id === producto._id){
+                return{ producto_, categoria_, stock_, precioVenta_, fecha_ };
+              }
+              else{
+                return axios.get(`${UrlReact}/almacen/buscarproducto/${producto_._id}`, configInicial)
+                .then(response => {
+                  if (response.mensaje === 'Almacen no encontrado') {
+                    return { producto_, categoria_, stock_, precioVenta_, fecha_ };
+                  } else {
+                    CustomSwal({ 
+                      icono: 'error', 
+                      titulo: 'Error al actualizar el almacén', 
+                      mensaje: 'El producto ya está almacenado' 
+                    });
+                    return false;
+                  }
+                })
+                .catch(error => {
+                  return { producto_, categoria_, stock_, precioVenta_, fecha_ };
+                });
+            }
+          },
           customClass: {
             popup: 'customs-swal-popup',
             title: 'customs-swal-title',
@@ -122,13 +142,13 @@ export const ListarAlmacen = () => {
               CustomSwal({ icono: 'success', titulo: 'Actualización Exitosa', mensaje: response.mensaje });
           })
           .catch((error) => {
-            CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });
+            CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Almacen', mensaje: error.mensaje });
           });
         }
       });
     })
     .catch(error => {
-      CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });
+      CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Almacen', mensaje: error.mensaje });
     });
     }
   };

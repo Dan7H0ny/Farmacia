@@ -94,7 +94,7 @@ export const RegistrarAlmacen = () => {
         <CustomTypography text={'Registro de almacen'} />
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} sx={{marginTop: 'auto',}}>
-            <CustomSubtitulo text={'Elige el producto'} />
+            <CustomSubtitulo text={'Elige el producto'}/>
             <form id="Form-2" className="custom-form">
               <CustomRegisterUser
                 number={12}

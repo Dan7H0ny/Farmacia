@@ -76,6 +76,33 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
     res.status(500).json({ mensaje: 'Error al obtener el Almacen' });
   }
 });
+router.get('/buscarproducto/:producto', verificacion, async (req, res) => {
+  const { producto } = req.params;
+  try {
+    const almacen = await Almacen.findOne({ producto })
+      .populate({
+        path: 'producto',
+        select: 'nombre capacidad_presentacion precioCompra categoria',
+        populate: [
+          { path: 'tipo', select: 'nombre' },
+          { path: 'proveedor', select: 'nombre_marca' }
+        ]
+      })
+      .populate('categoria', 'nombre')
+      .populate('usuario_registro', 'nombre apellido rol correo')
+      .populate('usuario_actualizacion', 'nombre apellido rol correo')
+      .sort({ fecha_caducidad: 1 })
+      .exec();
+    if (!almacen) {
+      return res.status(404).json({ mensaje: 'Almacen no encontrado' });
+    }
+    res.json(almacen);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al obtener el Almacen' });
+  }
+});
+
 
 router.get('/buscarnombre/:nombre', verificacion, async (req, res) => {
   const { nombre } = req.params;
@@ -109,10 +136,6 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
     if (fechaCaducidad <= fechaMinimaCaducidad) {
       return res.status(400).json({ mensaje: 'La fecha de caducidad debe ser al menos un mes posterior al día de hoy.' });
     }
-    const productoEnAlmacen = await Almacen.findOne({ producto });
-    if (productoEnAlmacen) {
-      return res.status(400).json({ mensaje: 'El producto ya está registrado en el almacén.' });
-    } 
 
     // Verificar si el producto existe
     const producto_ = await Producto.findById(producto);

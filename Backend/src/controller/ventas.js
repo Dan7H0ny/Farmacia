@@ -5,21 +5,19 @@ const verificacion = require('../middlewares/verificacion');
 const Cliente = require('../models/Cliente');
 const Usuario = require('../models/Usuario');
 const Producto = require('../models/Producto');
+const Almacen = require('../models/Almacen');
 
 // Crear un Venta
 router.post('/crear', verificacion, async (req, res) => {
-  const { cliente, productos, precio_total, usuario_registra, usuario_update } = req.body;
+  const { cliente, productos, precio_total, usuario } = req.body;
   try {
-    const cliente_ = await Cliente.findById(cliente);
-    const usuario_registro_ = await Usuario.findById(usuario_registra);
-    const usuario_update_ = await Usuario.findById(usuario_update);
-    if (!productos || productos.length === 0) { return res.status(400).json({ mensaje: 'La lista de productos está vacía' });}
+    if (!cliente) return res.status(400).json({ mensaje: 'Seleccione a un cliente' });
+    const cliente_ = await Cliente.findById(cliente._id);
+    if (!productos || productos.length === 0) { return res.status(400).json({ mensaje: 'La lista de productos está vacía, añada productos' });}
     if (!cliente_) return res.status(400).json({ mensaje: 'El cliente no existe' });
-    if (!usuario_registro_) return res.status(400).json({ mensaje: 'El usuario que registra no existe' });
-    if (!usuario_update_) return res.status(400).json({ mensaje: 'El usuario que actualiza no existe' });
 
     const productosIds = productos.map(item => item.producto);
-    const productosData = await Producto.find({ _id: { $in: productosIds } });
+    const productosData = await Almacen.find({ _id: { $in: productosIds } });
 
     if (productosData.length !== productos.length) {
       const missingIds = productosIds.filter(id => !productosData.some(prod => prod._id.equals(id)));
@@ -30,43 +28,27 @@ router.post('/crear', verificacion, async (req, res) => {
       return {
         producto: productoData._id,
         cantidad_producto: item.cantidad_producto,
-        precio_producto: item.precio_producto,
       };
     });
+
     for (const producto of productosConPrecio) {
       const productoData = productosData.find(prod => prod._id.equals(producto.producto));
       if (productoData) {
-        const factorMultiplicador = productoData.categoria.cantidad;
-        let capacidadRestante = productoData.capacidad;
-        let cajasRestantes = productoData.capacidad_pres;
-    
-        if (capacidadRestante < producto.cantidad_producto) {
-          const unidadesExcedentes = producto.cantidad_producto - capacidadRestante;
-          cajasRestantes -= Math.ceil(unidadesExcedentes / factorMultiplicador);
-          capacidadRestante = factorMultiplicador - (unidadesExcedentes % factorMultiplicador);
-        } else {
-          capacidadRestante -= producto.cantidad_producto;
-        }
-    
-        productoData.capacidad = capacidadRestante;
-        productoData.capacidad_pres = cajasRestantes;
-        console.log(productoData)
-        // Recorremos cada producto y actualizamos su cantidad
+        const capacidadRestante = productoData.cantidad_stock - producto.cantidad_producto;
+        productoData.cantidad_stock = capacidadRestante;
         await productoData.save();
       } else {
         console.log(`El producto ${producto.producto} no se encontró en la base de datos`);
       }
     }
-    console.log(productosConPrecio)
-
     const venta = new Venta({
-      cliente,
+      cliente: cliente._id,
       productos: productosConPrecio,
       precio_total,
       fecha_registro: new Date(),
       fecha_actualizacion: new Date(),
-      usuario_registra,
-      usuario_update,
+      usuario_registra: usuario,
+      usuario_update: usuario,
     });
 
     await venta.save();

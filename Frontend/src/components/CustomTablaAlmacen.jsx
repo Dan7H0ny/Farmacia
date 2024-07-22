@@ -3,7 +3,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination
 import { Visibility, ModeEdit, Dangerous, VerifiedUser  } from '@mui/icons-material';
 import '../assets/css/tabla.css';
 
-const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar, botonEstado }) => {
+const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   

@@ -65,8 +65,6 @@ export const ListarAlmacen = () => {
       .catch(error => { console.log(error);});
   }, [navigate]);
 
- 
-
   const btnActualizar = (almacen) => {
     if (!token) {
       CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso' });
@@ -217,22 +215,6 @@ export const ListarAlmacen = () => {
         });
     }
   };
-
-  const btnEstado = async (event, id) => {
-    const nuevoEstado = event.target.checked ? true : false;
-    try {
-      await axios.put(`${UrlReact}/usuario/eliminar/${id}`, { estado: nuevoEstado }, configInicial);
-      setAlmacen((prevAlmacen) =>
-        prevAlmacen.map((a) =>
-          a._id === id ? { ...a, estado: nuevoEstado } : almacen
-        )
-      );
-      CustomSwal({ icono: 'success', titulo: 'Estado Actualizado', mensaje: 'El almacen a cambiado: ' + (nuevoEstado ? 'activo' : 'inactivo')}); 
-    } catch (error) {
-      console.error('Error al cambiar el estado del usuario:', error);
-    }
-  };
- 
  
   return (
     <div id="caja_contenido">
@@ -250,7 +232,7 @@ export const ListarAlmacen = () => {
             icon={<Search/>}
           />
         </form>
-        <CustomTablaAlmacen usuarios={almacen} buscar={buscar} botonMostrar={btnMostrar} botonEstado={btnEstado} botonActualizar={btnActualizar}/>
+        <CustomTablaAlmacen usuarios={almacen} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
       </Box>
     </div>
   )

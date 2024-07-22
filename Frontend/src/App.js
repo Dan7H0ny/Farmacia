@@ -28,7 +28,7 @@ import { RegistrarAlmacen } from './views/RegistrarAlmacen';
 import { ListarAlmacen } from './views/ListarAlmacen';
 
 import { RegistrarVenta } from './views/RegistrarVenta';
-import { ListarVenta } from './components/ListarVenta';
+import { ListarVenta } from './views/ListarVenta';
 
 function App() {
   const { rol } = useAutenticarContexto();

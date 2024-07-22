@@ -17,10 +17,10 @@ export const RegistrarVenta = () => {
   const [productos, setProductos] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [idcliente, setIdCliente] = useState(null);
-  const [inputCliente, setInputCliente] = useState('');
+  const [inputCliente, setInputCliente] = useState('');  
+  const [inputValue, setInputValue] = useState('');
   const [productosAñadidos, setProductosAñadidos] = useState([]);
   const [productosElegidos, setProductosElegidos] = useState([]);
-  const [inputValue, setInputValue] = useState('');
   const usuario_ = localStorage.getItem('id');
   const navigate = useNavigate();
   const [reloadProductos, setReloadProductos] = useState(false);
@@ -169,7 +169,6 @@ export const RegistrarVenta = () => {
         precio_total:precioTotal, 
         usuario:usuario_
       };
-      console.log(productosElegidos)
       axios.post(`${UrlReact}/venta/crear`, miventa, configInicial)
         .then(response => {
           CustomSwal({ icono: 'success', titulo: 'Venta Creado', mensaje: response.mensaje});

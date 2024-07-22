@@ -59,52 +59,72 @@ router.post('/crear', verificacion, async (req, res) => {
   }
 });
 
-
 // Obtener todos los Ventas
 router.get('/mostrar',verificacion, async (req, res) => {
   try {
-    const Ventas = await Venta.find({})
-    .populate('cliente')
-    .populate({
-      path: 'productos.producto',
-      model: 'Producto',
-      populate: {
-        path: 'proveedor',
-        model: 'Proveedor'
-      }
-    })
-    .populate('usuario_registra')
-    .populate('usuario_update');
-    res.json(Ventas);
+    const ventas = await Venta.find({})
+      .populate('cliente') // Poblamos el cliente
+      .populate({
+        path: 'productos.producto',
+        populate: {
+          path: 'producto', // Referencia al esquema Producto en Almacen
+          model: 'Producto',
+          populate: {
+            path: 'proveedor', // Referencia al proveedor en Producto
+            model: 'Proveedor',
+            select: 'nombre_marca' // Solo seleccionamos el campo nombre_marca del proveedor
+          },
+          select: 'nombre' // Solo seleccionamos el campo nombre del producto
+        },
+        select: 'precioVenta' // Solo seleccionamos el campo precioVenta del almacen
+      })
+      .populate('usuario_registra') // Opcional, si necesitas datos de usuario
+      .populate('usuario_update'); // Opcional, si necesitas datos de usuario
+
+    res.json(ventas);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al obtener Ventaes' });
+    res.status(500).json({ mensaje: 'Error al obtener Ventas' });
   }
 });
 
 // buscar el Venta
-router.get('/buscar/:id',verificacion, async (req, res) => {
+router.get('/buscar/:id', verificacion, async (req, res) => {
   const { id } = req.params;
   try {
     const venta = await Venta.findById(id)
-    .populate('cliente')
     .populate({
-      path: 'productos.producto',
-      model: 'Producto',
+      path: 'cliente',
       populate: {
-        path: 'proveedor',
-        model: 'Proveedor'
+        path: 'stringIdentity', // Campo que hace referencia a Complemento
+        select: 'nombre' // Campo específico de Complemento que deseas incluir
       }
     })
-    .populate('usuario_registra')
-    .populate('usuario_update');
+    .populate({
+      path: 'productos.producto',
+      populate: {
+        path: 'producto', // Referencia al esquema Producto en Almacen
+        model: 'Producto',
+        populate: {
+          path: 'proveedor', // Referencia al proveedor en Producto
+          model: 'Proveedor',
+          select: 'nombre_marca' // Solo seleccionamos el campo nombre_marca del proveedor
+        },
+        select: 'nombre' // Solo seleccionamos el campo nombre del producto
+      },
+      select: 'precioVenta' // Solo seleccionamos el campo precioVenta del almacen
+    })
+    .populate('usuario_registra') // Opcional, si necesitas datos de usuario
+    .populate('usuario_update'); // Opcional, si necesitas datos de usuario
+    
     if (!venta) {
-      return res.status(404).json({ mensaje: 'Venta no encontrado' });
+      return res.status(404).json({ mensaje: 'Venta no encontrada' });
     }
+    
     res.json(venta);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al obtener el Venta' });
+    res.status(500).json({ mensaje: 'Error al obtener la venta' });
   }
 });
   

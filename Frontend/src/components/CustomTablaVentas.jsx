@@ -37,7 +37,7 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
             <TableCell>Producto</TableCell>
             <TableCell>Cantidad</TableCell>
             <TableCell>Precio</TableCell>
-            <TableCell>precio Total</TableCell>
+            <TableCell>Precio Total</TableCell>
             <TableCell>Fecha de Registro</TableCell>
             <TableCell>Detalles</TableCell>
             <TableCell>Editar</TableCell>
@@ -51,7 +51,7 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
               <TableCell>
                 {x.productos.map((productoItem, prodIndex) => (
                   <div key={prodIndex}>
-                    { productoItem.producto.producto.nombre }
+                    { productoItem.nombre }
                   </div>
                 ))}
               </TableCell>
@@ -65,7 +65,7 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
               <TableCell>
                 {x.productos.map((productoItem, prodIndex) => (
                   <div key={prodIndex}>
-                    { productoItem.producto.precioVenta }
+                    { productoItem.precio_venta }
                   </div>
                 ))}
               </TableCell>
@@ -86,13 +86,6 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
         </TableBody>
       </Table>
       <Grid item xs={12} sm={12} sx={{ marginTop: 2, '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
-        <ExportExcelButton
-          data={usuarios}
-          fileName="Reporte de Ventas"
-          sheetName="Ventas"
-          buttonText="Exportar a Excel"
-          sx={{ mt: 2 }}
-        />
         <TablePagination
           component="div"
           count={filtrarDatos.length}
@@ -129,6 +122,15 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
               color: '#e2e2e2',
             }
           }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={12} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+        <ExportExcelButton
+          data={usuarios}
+          fileName="Reporte de Ventas"
+          sheetName="Ventas"
+          buttonText="Extraer Reportes"
+          sx={{ mt: 2 }}
         />
       </Grid>
     </Box>

@@ -35,34 +35,24 @@ const CustomUpdate = ({ cliente, productos }) => {
         {/* Datos del Producto */}
         <Grid item xs={12}>
           <Typography variant="body2" align="center">
-            <strong>DATOS DEL PRODUCTO:</strong>
+            <strong>DATOS DE LA VENTA DE PRODUCTOS:</strong>
           </Typography>
         </Grid>
         <Grid item xs={12}>
           <Box
             component={Paper}
-            padding={2}
+            padding={1}
             style={{
-              maxHeight: 280, // Altura máxima del cuadro de desplazamiento
+              maxHeight: 200, // Altura máxima del cuadro de desplazamiento
               overflowY: 'auto',
             }}
           >
             {productos.map((producto, index) => (
-              <Box key={index} marginBottom={2} padding={2} border={1} borderRadius={2}>
+              <Box key={index} marginBottom={2} padding={1} border={1} borderRadius={2}>
                 <Typography variant="h6" align="center">
-                  <strong>Producto {index + 1}</strong>
+                  <strong>{producto.nombre}</strong>
                 </Typography>
-                <Grid container spacing={2} marginTop={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="body2" align="center">
-                      <strong>Producto:</strong>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="body2" align="center">
-                      {producto.producto.producto.nombre} {/* Valor predeterminado */}
-                    </Typography>
-                  </Grid>
+                <Grid container spacing={2}>
                   <Grid item xs={6}>
                     <Typography variant="body2" align="center">
                       <strong>Precio de Venta:</strong>
@@ -70,7 +60,7 @@ const CustomUpdate = ({ cliente, productos }) => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="body2" align="center">
-                      {producto.producto.precioVenta} {/* Valor predeterminado */}
+                      {producto.precio_venta} {/* Valor predeterminado */}
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
@@ -90,7 +80,17 @@ const CustomUpdate = ({ cliente, productos }) => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="body2" align="center">
-                      {producto.producto.producto.proveedor.nombre_marca} {/* Valor predeterminado */}
+                      {producto.proveedor} {/* Valor predeterminado */}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="body2" align="center">
+                      <strong>Tipo:</strong>
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="body2" align="center">
+                      {producto.tipo} {/* Valor predeterminado */}
                     </Typography>
                   </Grid>
                 </Grid>

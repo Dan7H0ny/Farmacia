@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Typography, TextField, Autocomplete, Box, Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination, Button } from '@mui/material';
 import { AttachMoney, TagSharp } from '@mui/icons-material';
 import axios from 'axios';
@@ -7,11 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import CustomRegisterUser from '../components/CustomRegisterUser';
-
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token; };
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` } };
 
 export const RegistrarVenta = () => {
   const [productos, setProductos] = useState([]);
@@ -24,6 +19,13 @@ export const RegistrarVenta = () => {
   const usuario_ = localStorage.getItem('id');
   const navigate = useNavigate();
   const [reloadProductos, setReloadProductos] = useState(false);
+
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(3);
@@ -64,19 +66,28 @@ export const RegistrarVenta = () => {
 
   useEffect(() => {
     // Actualizar productosElegidos basándonos en la cantidad actualizada
-    const updatedProductosElegidos = productosAñadidos.map(producto => ({
-      producto: producto._id,
-      nombre: producto.producto.nombre,
-      tipo: producto.producto.tipo.nombre,
-      proveedor: producto.producto.proveedor.nombre,
-      categoria: producto.categoria.nombre,
-      cantidad_producto: cantidad[producto._id] || 1,
-      precio_venta: producto.precioVenta,
-
-    }));
-
+    const updatedProductosElegidos = productosAñadidos.map(producto => {
+      // Verificación para asegurar que todas las propiedades necesarias existen
+      const nombreProducto = producto?.producto?.nombre || 'Nombre no disponible';
+      const tipoProducto = producto?.producto?.tipo?.nombre || 'Tipo no disponible';
+      const proveedorProducto = producto?.producto?.proveedor?.nombre_marca || 'Proveedor no disponible';
+      const categoriaProducto = producto?.categoria?.nombre || 'Categoría no disponible';
+      const cantidadProducto = cantidad[producto._id] || 1;
+      const precioVentaProducto = producto?.precioVenta || 0;
+  
+      return {
+        producto: producto._id,
+        nombre: nombreProducto,
+        tipo: tipoProducto,
+        proveedor: proveedorProducto,
+        categoria: categoriaProducto,
+        cantidad_producto: cantidadProducto,
+        precio_venta: precioVentaProducto,
+      };
+    });
     setProductosElegidos(updatedProductosElegidos);
   }, [cantidad, productosAñadidos]);
+  
 
   useEffect(() => {
     // Calcular el precio total basado en los productos y cantidades
@@ -143,7 +154,7 @@ export const RegistrarVenta = () => {
       .catch(error => {
         console.log(error);
       });
-  }, [navigate, reloadProductos]);
+  }, [navigate, token, configInicial, UrlReact, reloadProductos]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/cliente/mostrar`, configInicial)
@@ -158,7 +169,7 @@ export const RegistrarVenta = () => {
       .catch(error => {
         console.log(error);
       });
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   const btnRegistrarVenta= (e) => {
     e.preventDefault();
@@ -169,6 +180,7 @@ export const RegistrarVenta = () => {
     } 
     else 
     {
+      console.log(productosElegidos)
       const miventa = { 
         cliente:idcliente, 
         productos: productosElegidos, 
@@ -255,7 +267,7 @@ export const RegistrarVenta = () => {
                         {option.nombreCompleto}
                       </Typography>
                       <Typography variant="body2" color="textSecondary" component="span">
-                        {` - ${option.nombreCompleto} - ${option.numberIdentity} - ${option.stringIdentity.nombre}`}
+                        {` - ${option.numberIdentity} - ${option.stringIdentity.nombre}`}
                       </Typography>
                     </Grid>
                   </Grid>

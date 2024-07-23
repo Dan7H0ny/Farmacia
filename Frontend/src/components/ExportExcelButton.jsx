@@ -13,14 +13,27 @@ const ExportExcelButton = ({ data, fileName, sheetName, buttonText, ...props }) 
   };
 
   return (
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={exportToExcel}
-      {...props}
-    >
-      {buttonText || 'Generar Reportes'}
-    </Button>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  type="submit"
+                  onClick={exportToExcel}
+                  sx={{
+                    backgroundColor: '#e2e2e2',
+                    color: '#0f1b35',
+                    border: '2px solid #0f1b35',
+                    marginTop: 2.5,
+                    fontWeight: 'bold',
+                    '&:hover': {
+                      backgroundColor: '#1a7b13',
+                      color: '#e2e2e2',
+                      border: '2px solid #0f1b35',
+                    },
+                  }}
+                >GENERAR rEPORTE
+                </Button>
   );
 };
 

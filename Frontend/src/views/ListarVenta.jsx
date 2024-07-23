@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Grid, Box } from '@mui/material';
@@ -11,18 +11,54 @@ import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomTablaVentas from '../components/CustomTablaVentas';
 import CustomUpdate from '../components/CustomUpdate';
-
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
+import CustomAutocomplete from '../components/CustomAutocomplete';
 
 export const ListarVenta = () => {
   const [ventas, setVentas] = useState([]);
-  const [buscar, setBuscar] = useState('');
+  const [buscar, setBuscar] = useState('');  
+  const [productosList, setProductos] = useState([]);
+  const [clientes, setClientes] = useState([]);
   const usuario_ = localStorage.getItem('id');
 
-  const navigate = useNavigate();
+  const navigate = useNavigate();  
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/almacen/mostrar`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso' });
+          navigate('/Menu/Administrador');
+        } else {
+          const productosFiltrados = response.filter(producto => producto.estado === true);
+          setProductos(productosFiltrados);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [navigate, token, configInicial, UrlReact]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/cliente/mostrar`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso' });
+          navigate('/Menu/Administrador');
+        } else {
+          setClientes(response); 
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [navigate, token, configInicial, UrlReact]);
+
   useEffect(() => {
     axios.get(`${UrlReact}/venta/mostrar`, configInicial )
       .then(response => {
@@ -30,10 +66,10 @@ export const ListarVenta = () => {
           CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
           navigate('/Menu/Administrador')
         }
-        else {setVentas(response)}
+        else {setVentas(response);console.log(response)}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   const btnMostrar = (venta) => {
     if (!token) {
@@ -91,11 +127,20 @@ export const ListarVenta = () => {
       axios.get(`${UrlReact}/venta/buscar/${venta._id}`, configInicial)
         .then(response => {
           const { _id, cliente, productos, precio_total } = response;
+          console.log(productos)
           const container = document.createElement('div');
           const root = createRoot(container);
           root.render(
             <Grid container spacing={2}>
-              <CustomActualizarUser number={6} id="precioCompra" label="Precio Total" type="Number" defaultValue={precio_total} readOnly={true} icon={<AttachMoney />} />
+              <CustomAutocomplete
+                id="cliente-autocomplete"
+                options={clientes}
+                label="Seleccione el cliente"
+                value={cliente}
+                onChange={cliente}
+                getOptionLabel={(option) => `${option.nombre}`}
+              />
+              <CustomActualizarUser number={6} id="precioCompra" label="Precio Total" type="Number" defaultValue={precio_total} readOnly={true} icon={<AttachMoney />}/>
             </Grid>
           );
           Swal.fire({
@@ -118,13 +163,11 @@ export const ListarVenta = () => {
           },
         }).then((result) => {
           if (result.isConfirmed) {
-            const { producto_, categoria_, stock_, precioVenta_, fecha_ } = result.value;
-            axios.put(`${UrlReact}/almacen/actualizar/${_id}`, {
-              producto: producto_,
-              categoria: categoria_,
-              cantidad_stock: stock_,
-              precioVenta: precioVenta_, 
-              fecha_caducidad: fecha_,
+            const { cliente_, producto_, precioCompra_ } = result.value;
+            axios.put(`${UrlReact}/venta/actualizar/${_id}`, {
+              cliente: cliente_,
+              productos: producto_,
+              precio_total: precioCompra_,
               usuario_actualizacion: usuario_,
             }, configInicial)
             .then((response) => {

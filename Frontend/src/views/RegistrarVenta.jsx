@@ -66,7 +66,13 @@ export const RegistrarVenta = () => {
     // Actualizar productosElegidos basándonos en la cantidad actualizada
     const updatedProductosElegidos = productosAñadidos.map(producto => ({
       producto: producto._id,
-      cantidad_producto: cantidad[producto._id] || 1 // Valor por defecto 1
+      nombre: producto.producto.nombre,
+      tipo: producto.producto.tipo.nombre,
+      proveedor: producto.producto.proveedor.nombre,
+      categoria: producto.categoria.nombre,
+      cantidad_producto: cantidad[producto._id] || 1,
+      precio_venta: producto.precioVenta,
+
     }));
 
     setProductosElegidos(updatedProductosElegidos);

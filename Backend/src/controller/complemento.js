@@ -7,9 +7,9 @@ router.post('/crear', verificacion, async (req, res) => {
   const { nombreComplemento, nombre } = req.body;  
   try {
     const fechaActual = new Date();
-    const complementos = new Complemento({ nombreComplemento, nombre, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
-    await complementos.save();
-    res.status(201).json({ mensaje: `${nombreComplemento} creado exitosamente`, complementos });
+    const nuevoComplemento = new Complemento({ nombreComplemento, nombre, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
+    await nuevoComplemento.save();
+    res.status(201).json({ mensaje: `${nombreComplemento} creado exitosamente`, nuevoComplemento });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: `Error al crear ${nombreComplemento}` });
@@ -60,11 +60,11 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
   const { nombreComplemento, nombre } = req.body;
   try {
     const fechaActual = new Date();
-    const complementoActual = await Tipo.findByIdAndUpdate(id, { nombreComplemento, nombre, fecha_actualizacion: fechaActual }, { new: true });
+    const complementoActual = await Complemento.findByIdAndUpdate(id, { nombreComplemento, nombre, fecha_actualizacion: fechaActual }, { new: true });
     res.json({ mensaje: `${nombreComplemento} actualizado esitosamente`, complementoActual });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al actualizar el complemento' });
+    res.status(500).json({ mensaje: 'Error al actualizar el complemento datos incorrectos' });
   }
 });
 

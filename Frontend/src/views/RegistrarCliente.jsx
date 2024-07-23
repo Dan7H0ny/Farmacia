@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import { Button, Grid, Box, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import {Person, Badge, Email, Numbers, PhoneAndroid } from '@mui/icons-material';
+import {Person, Badge, Email, Numbers, PhoneAndroid, ExtensionSharp } from '@mui/icons-material';
 import CustomTypography from '../components/CustomTypography';
 import '../assets/css/menu.css';
 import CustomRegisterUser from '../components/CustomRegisterUser';
@@ -21,6 +21,7 @@ export const RegistrarCliente = ( ) => {
   const [ telefono, setTelefono ] = useState('');
   const [ numberIdentity, setNumberIdentity ] = useState('');
   const [ plus, setPlus ] = useState('');
+  const [ extension, setExtension ] = useState('');
   const [ stringIdentity, setStringIdentity ] = useState('');
   const [ complementos, setComplementos ] = useState([]);
   const [ envioIntentado, setEnvioIntentado ] = useState(false);
@@ -51,51 +52,77 @@ export const RegistrarCliente = ( ) => {
   const btnRegistrarCliente = (e) => {
     e.preventDefault();
     if (!token) {
-      CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
-      navigate('/Menu/Administrador')
+      CustomSwal({ icono: 'error', titulo: 'El token es inválido', mensaje: 'Error al obtener el token de acceso' });
+      navigate('/Menu/Administrador');
       return;
     }
-    else
-    {
-      if(!telefono){
-        if(telefono.length !== 12 || numberIdentity.length < 7 || numberIdentity.length > 12){
-          setEnvioIntentado(true);
-        }
-        else {
-          setEnvioIntentado(false);
-          const NuevoCliente = { nombreCompleto, correo, telefono, numberIdentity: numberIdentity + plus, stringIdentity, usuario_: usuario_ };
-          axios.post(`${UrlReact}/cliente/crear`, NuevoCliente, configInicial)
-            .then(response => {
-              CustomSwal({ icono: 'success', titulo: 'Cliente Creado', mensaje: response.mensaje});
-              limpiarFormulario();
-            })
-            .catch(error => {
-              console.log(error)
-              CustomSwal({ icono: 'error', titulo: 'Error al crear el cliente', mensaje: error.mensaje});
-            });
-        }
+    if(telefono){
+      if(telefono.length !== 8 || telefono < 60000000 || telefono > 79999999){
+        setEnvioIntentado(true);
       }
-      else{
-        const NuevoCliente = { nombreCompleto, correo, telefono, numberIdentity: numberIdentity + plus, stringIdentity, usuario_: usuario_ };
-          axios.post(`${UrlReact}/cliente/crear`, NuevoCliente, configInicial)
-            .then(response => {
-              CustomSwal({ icono: 'success', titulo: 'Cliente Creado', mensaje: response.mensaje});
-              limpiarFormulario();
-            })
-            .catch(error => {
-              console.log(error)
-              CustomSwal({ icono: 'error', titulo: 'Error al crear el cliente', mensaje: error.mensaje});
-            });
-      }        
+      else {
+        setEnvioIntentado(false);
+        const combinedIdentity = plus ? `${numberIdentity}-${plus}` : `${numberIdentity}`;
+        const nuevoCliente = {
+          nombreCompleto,
+          correo,
+          telefono,
+          numberIdentity,
+          plus,
+          extension,
+          combinedIdentity,
+          stringIdentity,
+          usuario_: usuario_,
+        };
+        
+        axios.post(`${UrlReact}/cliente/crear`, nuevoCliente, configInicial)
+          .then(response => {
+            CustomSwal({ icono: 'success', titulo: 'Cliente Creado', mensaje: response.mensaje });
+            limpiarFormulario();
+          })
+          .catch(error => {
+            console.log(error);
+            CustomSwal({ icono: 'error', titulo: 'Error al crear el cliente', mensaje: error.response.mensaje });
+          });
+      }
     }
-  }
+    else{
+      const combinedIdentity = plus ? `${numberIdentity}-${plus}` : `${numberIdentity}`;
+      console.log(usuario_)
+      const nuevoCliente = {
+        nombreCompleto,
+        correo,
+        telefono,
+        numberIdentity,
+        plus,
+        extension,
+        combinedIdentity,
+        stringIdentity,
+        usuario_: usuario_,
+      };
+      
+      axios.post(`${UrlReact}/cliente/crear`, nuevoCliente, configInicial)
+        .then(response => {
+          CustomSwal({ icono: 'success', titulo: 'Cliente Creado', mensaje: response.mensaje });
+          limpiarFormulario();
+        })
+        .catch(error => {
+          console.log(error);
+          CustomSwal({ icono: 'error', titulo: 'Error al crear el cliente', mensaje: error.response.mensaje });
+        });
+    }
+  };
+  
 
   const limpiarFormulario = () => {
     setNombreCompleto("");
     setCorreo("");
     setTelefono("");
     setNumberIdentity("");
+    setPlus("");
+    setExtension("");
     setStringIdentity("");
+    setEnvioIntentado(false);
     document.getElementById("Form-1").reset();
   }
 
@@ -122,7 +149,7 @@ export const RegistrarCliente = ( ) => {
             <CustomRegisterUser
               number={6}
               label="Correo"  
-              placeholder= 'Ingrese el correo del Usuario'
+              placeholder= 'Ingrese el correo del Cliente'
               type= 'email'
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
@@ -132,7 +159,7 @@ export const RegistrarCliente = ( ) => {
             <CustomRegisterUser
               number={6}
               label="Telefono"  
-              placeholder= 'Ingrese el número del Usuario'
+              placeholder= 'Ingrese el número del Cliente'
               type= 'Number'
               value={telefono}
               onChange={(e) => { 
@@ -148,7 +175,7 @@ export const RegistrarCliente = ( ) => {
               icon={<PhoneAndroid/>}
             />
             <CustomRegisterUser
-              number={6}
+              number={4}
               label="Identidad"  
               placeholder= 'Ingrese su numero de indentidad'
               type= 'Number'
@@ -168,13 +195,13 @@ export const RegistrarCliente = ( ) => {
             <CustomRegisterUser
               number={2}
               label="Plus"  
-              placeholder= '000000'
+              placeholder= '0000'
               type= 'Number'
               value={plus}
               onChange={(e) => { 
                 const inputValue = e.target.value;
-                if ( inputValue.length > 8) {
-                  setPlus(inputValue.slice(0, 15));
+                if ( inputValue.length > 4) {
+                  setPlus(inputValue.slice(0, 4));
                 } 
                 else { 
                   setPlus(inputValue);
@@ -182,6 +209,16 @@ export const RegistrarCliente = ( ) => {
               }}
               required={false}
               icon={<Numbers/>}
+            />
+            <CustomRegisterUser
+              number={2}
+              label="Extension"  
+              placeholder= 'Extension'
+              type= 'text'
+              value={extension}
+              onChange={(e) => setExtension(e.target.value)}
+              required={false}
+              icon={<ExtensionSharp/>}
             />
             <CustomSelectCom
               number={4}

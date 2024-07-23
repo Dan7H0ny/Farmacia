@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import { Button, Box , Grid, Alert } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -21,11 +21,6 @@ export const RegistrarUsuario = () => {
   const [envioIntentado, setEnvioIntentado] = useState(false);
   const navigate = useNavigate();
 
-  const obtenerToken = () => {
-    const token = localStorage.getItem('token');
-    return token;
-  };
-
   const mostrarMensajeValidacion = (mensaje) => {
     return (
       <Alert severity="error" sx={{ mt: 1 }}>
@@ -34,9 +29,12 @@ export const RegistrarUsuario = () => {
     );
   };
 
-  const token = obtenerToken();
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-  const config = {headers: {Authorization: `Bearer ${token}`}}; 
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
   const roles = [
     { nombre: 'Administrador' },
@@ -58,7 +56,7 @@ export const RegistrarUsuario = () => {
         else {
           setEnvioIntentado(false);
           const NuevoUsuario = { nombre, apellido, rol, direccion, telefono, correo, password };
-          axios.post(`${UrlReact}/usuario/crear`, NuevoUsuario, config)
+          axios.post(`${UrlReact}/usuario/crear`, NuevoUsuario, configInicial)
             .then(response => {
               CustomSwal({ icono: 'success', titulo: 'Usuario Creado', mensaje: response.mensaje});
               limpiarFormulario();
@@ -71,7 +69,7 @@ export const RegistrarUsuario = () => {
       }
       else{
         const NuevoUsuario = { nombre, apellido, rol, direccion, telefono, correo, password };
-        axios.post(`${UrlReact}/usuario/crear`, NuevoUsuario, config)
+        axios.post(`${UrlReact}/usuario/crear`, NuevoUsuario, configInicial)
           .then(response => {
             CustomSwal({ icono: 'success', titulo: 'Usuario Creado', mensaje: response.mensaje});
             limpiarFormulario();

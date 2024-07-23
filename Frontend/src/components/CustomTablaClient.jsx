@@ -15,17 +15,17 @@ const CustomTablaClient = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
     setRowsPerPage(parseInt(event.target.value, 10));
     setCurrentPage(0);
   };
+
   const filtrarDatos = usuarios.filter(elemento => {
-    const { nombreCompleto, numberIdentity, stringIdentity } = elemento;
+    const { nombreCompleto, combinedIdentity, stringIdentity } = elemento;
     const busqueda = buscar.toLowerCase();
   
     return (
       nombreCompleto.toLowerCase().includes(busqueda) ||
-      numberIdentity.toLowerCase().includes(busqueda) ||
-      stringIdentity.toLowerCase().includes(busqueda)
+      combinedIdentity.toLowerCase().includes(busqueda) ||
+      stringIdentity?.nombre?.toLowerCase().includes(busqueda)
     );
   });
-  
 
   const paginaDatos = filtrarDatos.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
 
@@ -48,9 +48,9 @@ const CustomTablaClient = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
               <TableRow key={index}>
                 <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
                 <TableCell>{x.nombreCompleto}</TableCell>
-                <TableCell>{x.numberIdentity}</TableCell>
-                <TableCell>{x.stringIdentity.nombre}</TableCell>
-                <TableCell>{x.usuario_registro.nombre + ' ' + x.usuario_registro.apellido}</TableCell>
+                <TableCell>{x.combinedIdentity}</TableCell>
+                <TableCell>{x.stringIdentity?.nombre}</TableCell>
+                <TableCell>{x.usuario_registro?.nombre + ' ' + x.usuario_registro?.apellido}</TableCell>
                 <TableCell >
                   <Button variant="contained" onClick={() => botonMostrar(x) } sx={{backgroundColor: "#0f1b35", color:" #e2e2e2", border: '2px solid #e2e2e2'}}>
                     <Visibility />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {  Grid, Box, } from '@mui/material';
@@ -13,17 +13,19 @@ import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomTabla from '../components/CustomTabla';
 import CustomSelectUser from '../components/CustomSelectUser';
 
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
-
 export const ListarUsuario = () => {
   const [usuarios, setUsuario] = useState([]);
   const [buscar, setBuscar] = useState('');
 
   const navigate = useNavigate();
   const roles = [{ nombre: 'Administrador' }, { nombre: 'Cajero' }, ];
+
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
   
   useEffect(() => {
     axios.get(`${UrlReact}/usuario/mostrar`, configInicial)
@@ -35,7 +37,7 @@ export const ListarUsuario = () => {
         else {setUsuario(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
   
   const btnActualizar = (usuario) => {
     if (!token) {

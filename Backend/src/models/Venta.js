@@ -11,7 +11,27 @@ const ventaSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Almacen',
     },
+    nombre: {
+      type: String,
+      required: true
+    },
+    tipo: {
+      type: String,
+      required: true
+    },
+    proveedor: {
+      type: String,
+      required: true
+    },
+    categoria: {
+      type: String,
+      required: true
+    },
     cantidad_producto: {
+      type: Number,
+      required: true
+    },
+    precio_venta: {
       type: Number,
       required: true
     },

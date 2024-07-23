@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Button, Grid, Box } from '@mui/material';
@@ -7,17 +7,12 @@ import { useNavigate } from 'react-router-dom';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import CustomSelect from '../components/CustomSelect';
-import CustomSelectC from '../components/CustomSelectC';
+import CustomSelectComponents from '../components/CustomSelectComponents';
 import '../assets/css/menu.css';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomTablaC from '../components/CustomTablaC';
 import { createRoot } from 'react-dom/client';
 import CustomActualizarUser from '../components/CustomActualizarUser';
-
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
 
 export const RegistrarComplementos = () => {
   const [nombreComplemento, setnombreComplemento] = useState('');
@@ -25,6 +20,13 @@ export const RegistrarComplementos = () => {
   const [buscar, setBuscar] = useState('');
   const [complemento, setComplementos] = useState([]);
   const navigate = useNavigate();
+
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
   const complementos = [
     { nombre: 'Identificación' },
@@ -42,7 +44,7 @@ export const RegistrarComplementos = () => {
         else {setComplementos(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
   
   const btnRegistrarComplemento = (e) => {
     e.preventDefault();
@@ -56,6 +58,7 @@ export const RegistrarComplementos = () => {
       axios.post(`${UrlReact}/complemento/crear`, NuevoComplemento, configInicial)
         .then(response => {
           CustomSwal({ icono: 'success', titulo: 'Usuario Creado', mensaje: response.mensaje});
+          setComplementos(prevComplementos => [...prevComplementos, response.nuevoComplemento]);
           limpiarFormulario();
         })
         .catch(error => {
@@ -82,7 +85,7 @@ export const RegistrarComplementos = () => {
           const root = createRoot(container);
           root.render(
             <Grid container spacing={2}>
-              <CustomSelectC number={6} id="identidad-select" label="Seleccione el tipo complemento" value={nombreComplemento} roles={complementos} icon={<DevicesOther />}/>
+              <CustomSelectComponents number={6} id="identidad-select" label="Seleccione el tipo complemento" value={nombreComplemento} roles={complementos} icon={<DevicesOther />}/>
               <CustomActualizarUser number={6} id="nombre" label="Nombre Complemento" type="text" defaultValue={nombre} required={true} icon={<SettingsInputComponent />} />
             </Grid>
           );
@@ -94,7 +97,7 @@ export const RegistrarComplementos = () => {
             cancelButtonText: 'Cancelar',
             preConfirm: () => {
               const nombreComplemento_ = document.getElementById('identidad-select').textContent;
-              const nombre_ = parseInt(document.getElementById('nombre').value);
+              const nombre_ = document.getElementById('nombre').value;
               return { nombreComplemento_, nombre_, };
             },
           customClass: {
@@ -106,16 +109,20 @@ export const RegistrarComplementos = () => {
         }).then((result) => {
           if (result.isConfirmed) {
             const { nombreComplemento_, nombre_ } = result.value;
-            axios.put(`${UrlReact}/cliente/actualizar/${_id}`, {
+            axios.put(`${UrlReact}/complemento/actualizar/${_id}`, {
               nombreComplemento: nombreComplemento_,
               nombre: nombre_,
             }, configInicial)
             .then((response) => {
-              setComplementos(response.clientes);
+              setComplementos(prevComplementos => 
+                prevComplementos.map(comp => 
+                  comp._id === _id ? { ...comp, nombreComplemento: nombreComplemento_, nombre: nombre_ } : comp
+                )
+              );
               CustomSwal({ icono: 'success', titulo: 'Actualización Exitosa', mensaje: response.mensaje });
             })
           .catch((error) => {
-            CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Usuario', mensaje: error.mensaje });
+            CustomSwal({ icono: 'error', titulo: 'Error al actualizar', mensaje: error.mensaje });
           });
         }
       });

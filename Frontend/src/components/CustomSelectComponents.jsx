@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Grid, FormControl, InputLabel, Select, MenuItem, InputAdornment } from '@mui/material';
 
-const CustomSelectC = forwardRef(({ number, id, label, value, roles, icon }, ref) => {
+const CustomSelectComponents = forwardRef(({ number, id, label, value, roles, icon }, ref) => {
   const [selectedRole, setSelectedRole] = useState(value);
 
   useImperativeHandle(ref, () => ({
@@ -49,7 +49,7 @@ const CustomSelectC = forwardRef(({ number, id, label, value, roles, icon }, ref
           }}
         >
           {roles.map((r) => (
-            <MenuItem key={r._id} value={r._id}>
+            <MenuItem key={r.nombre} value={r.nombre}>
               {r.nombre}
             </MenuItem>
           ))}
@@ -59,4 +59,4 @@ const CustomSelectC = forwardRef(({ number, id, label, value, roles, icon }, ref
   );
 });
 
-export default CustomSelectC;
+export default CustomSelectComponents;

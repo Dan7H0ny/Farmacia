@@ -47,7 +47,7 @@ export const ListarCliente = () => {
           CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
           navigate('/Menu/Administrador')
         }
-        else {setClientes(response);}
+        else {setClientes(response);console.log(response)}
       })
       .catch(error => { console.log(error);});
   }, [navigate]);

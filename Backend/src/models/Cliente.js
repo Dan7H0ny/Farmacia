@@ -19,6 +19,19 @@ const clienteSchema = new mongoose.Schema({
     required: true,
     min: 0,
   },
+  plus: {
+    type: Number,
+    required: false,
+    min: 0,
+  },
+  combinedIdentity: {
+    type: String,
+    required: false,
+  },
+  extension: {
+    type: String,
+    required: false,
+  },
   stringIdentity: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Complemento'
@@ -40,7 +53,16 @@ const clienteSchema = new mongoose.Schema({
     required: true
   }
 });
+
+clienteSchema.pre('save', function(next) {
+  if (this.plus !== undefined && this.plus !== null) {
+    this.combinedIdentity = `${this.numberIdentity}-${this.plus}`;
+  } else {
+    this.combinedIdentity = `${this.numberIdentity}`;
+  }
+  next();
+});
+
 const Cliente = mongoose.model('Cliente', clienteSchema);
 
 module.exports = Cliente;
-

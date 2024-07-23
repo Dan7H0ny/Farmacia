@@ -1,27 +1,28 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Grid, Box } from '@mui/material';
-import { Visibility, ModeEdit, Search, PhoneAndroid, Email, AddBusiness,Language, LocalPhone, SupervisedUserCircle, CalendarMonth } from '@mui/icons-material';
+import { Search, PhoneAndroid, Email, AddBusiness,Language, LocalPhone, SupervisedUserCircle, CalendarMonth } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import CustomSwal from '../components/CustomSwal';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import { createRoot } from 'react-dom/client';
 import CustomTablaPro from '../components/CustomTablaPro';
 import CustomRegisterUser from '../components/CustomRegisterUser';
-import CustomSelectUser from '../components/CustomSelectUser';
 import CustomTypography from '../components/CustomTypography';
-
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
 
 export const ListarProveedor = () => {
   const [proveedores, setproveedores] = useState([]);
   const [buscar, setBuscar] = useState('');
 
   const navigate = useNavigate();
+
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/proveedor/mostrar`, configInicial)
@@ -33,7 +34,7 @@ export const ListarProveedor = () => {
         else {setproveedores(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact] );
 
   const btnActualizar = (proveedor) => {
     if (!token) {
@@ -47,11 +48,11 @@ export const ListarProveedor = () => {
           const root = createRoot(container);
           root.render(
             <Grid container spacing={2}>
-              <CustomActualizarUser number={6} id="marca" label="Marca" type="text" defaultValue={nombre_marca} required={true} icon={<AddBusiness />} />
+              <CustomActualizarUser number={12} id="marca" label="Marca" type="text" defaultValue={nombre_marca} required={true} icon={<AddBusiness />} />
               <CustomActualizarUser number={6} id="correo" label="Correo" type="email" defaultValue={correo} required={false} icon={<Email />} />
               <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<LocalPhone />} />
-              <CustomActualizarUser number={6} id="sitioWeb" label="Sitio Web" type="text" defaultValue={sitioweb} required={false} icon={<Language />} />
-              <CustomActualizarUser number={6} id="nombre" label="Nombre del Vendedor" type="text" defaultValue={nombre_vendedor} required={true} icon={<SupervisedUserCircle />} />
+              <CustomActualizarUser number={12} id="sitioWeb" label="Sitio Web" type="text" defaultValue={sitioweb} required={false} icon={<Language />} />
+              <CustomActualizarUser number={12} id="nombre" label="Nombre del Vendedor" type="text" defaultValue={nombre_vendedor} required={true} icon={<SupervisedUserCircle />} />
               <CustomActualizarUser number={6} id="correoV" label="Correo del Vendedor" type="email" defaultValue={correo_vendedor} required={false} icon={<Email />} />
               <CustomActualizarUser number={6} id="celular" label="Celular del Vendedor" type="number" defaultValue={celular} required={false} icon={<PhoneAndroid />} />
             </Grid>
@@ -91,7 +92,7 @@ export const ListarProveedor = () => {
                 const nombreInput = document.getElementById('marca');
                 const apellidoInput = document.getElementById('nombre');
                 const telefonoInput = document.getElementById('telefono');
-                const celularInput = document.getElementById('telefono');
+                const celularInput = document.getElementById('celular');
 
                 if (nombreInput) {
                   nombreInput.addEventListener('input', function () {

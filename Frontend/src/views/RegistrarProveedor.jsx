@@ -83,6 +83,7 @@ export const RegistrarProveedor = () => {
     setNombreVendedor("");
     setCorreoVendedor("");
     setCelular("");
+    setEnvioIntentado(false)
     document.getElementById("Form-1").reset();
   }
   return (

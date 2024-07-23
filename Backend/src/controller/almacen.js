@@ -38,7 +38,14 @@ router.post('/crear',verificacion, async (req, res) => {
 router.get('/mostrar', verificacion, async (req, res) => {
   try {
     const productosEncontrados = await Almacen.find({})
-      .populate('producto', 'nombre')
+      .populate({
+      path: 'producto',
+      select: 'nombre capacidad_presentacion precioCompra categoria',
+      populate: [
+        { path: 'tipo', select: 'nombre' },
+        { path: 'proveedor', select: 'nombre_marca' }
+      ]
+      })
       .populate('categoria', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')

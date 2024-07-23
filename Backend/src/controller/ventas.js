@@ -27,7 +27,12 @@ router.post('/crear', verificacion, async (req, res) => {
       const productoData = productosData.find(prod => prod._id.equals(item.producto));
       return {
         producto: productoData._id,
+        nombre: item.nombre,
+        tipo: item.tipo,
+        proveedor: item.proveedor,
+        categoria: item.categoria,
         cantidad_producto: item.cantidad_producto,
+        precio_venta: item.precio_venta,
       };
     });
 
@@ -64,23 +69,8 @@ router.get('/mostrar',verificacion, async (req, res) => {
   try {
     const ventas = await Venta.find({})
       .populate('cliente') // Poblamos el cliente
-      .populate({
-        path: 'productos.producto',
-        populate: {
-          path: 'producto', // Referencia al esquema Producto en Almacen
-          model: 'Producto',
-          populate: {
-            path: 'proveedor', // Referencia al proveedor en Producto
-            model: 'Proveedor',
-            select: 'nombre_marca' // Solo seleccionamos el campo nombre_marca del proveedor
-          },
-          select: 'nombre' // Solo seleccionamos el campo nombre del producto
-        },
-        select: 'precioVenta' // Solo seleccionamos el campo precioVenta del almacen
-      })
       .populate('usuario_registra') // Opcional, si necesitas datos de usuario
       .populate('usuario_update'); // Opcional, si necesitas datos de usuario
-
     res.json(ventas);
   } catch (error) {
     console.error(error);

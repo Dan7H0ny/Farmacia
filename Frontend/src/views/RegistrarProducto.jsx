@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {  Box , Grid, Button } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -9,11 +9,6 @@ import CustomSwal from '../components/CustomSwal';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectCom from '../components/CustomSelectCom';
 import CustomSelectProveedor from '../components/CustomSelectProveedor';
-
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
 
 export const RegistrarProducto = () => {
   const [nombre, setNombre] = useState('');
@@ -27,6 +22,12 @@ export const RegistrarProducto = () => {
   const [ tipos, setTipos ] = useState([]);
   
   const navigate = useNavigate();
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/proveedor/mostrar`, configInicial)
@@ -38,7 +39,7 @@ export const RegistrarProducto = () => {
         else {setProveedor(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  },[navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     const nombre = 'Tipo'
@@ -51,7 +52,7 @@ export const RegistrarProducto = () => {
         else {setTipos(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   const CrearProducto = (e) => {
     e.preventDefault();
@@ -73,10 +74,16 @@ export const RegistrarProducto = () => {
         });
     }
   };
+
   const limpiarFormulario = () => {
+    setNombre("");
+    setCapacidadPres("");
+    setDescripcion("");
+    setPrecioCompra("");
+    setTipo("");
+    setIdProveedor("");
     document.getElementById("Form-1").reset();
   }
-
   return (
     <div id="caja_contenido">
       <Box mt={3}>
@@ -137,7 +144,7 @@ export const RegistrarProducto = () => {
             <CustomSelectProveedor
               number={4}
               id="select-proveedor"
-              label="Seleccione el proveedor"
+              label="Seleccione un proveedor"
               value={idproveedor}
               onChange={(e) => setIdProveedor(e.target.value)}
               roles={proveedor}

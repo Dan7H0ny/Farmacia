@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Grid, Box  } from '@mui/material';
@@ -13,11 +13,6 @@ import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectProvee from '../components/CustomSelectProvee';
 
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
-
 export const ListarProducto = () => {
   const [productos, setProductos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
@@ -27,6 +22,13 @@ export const ListarProducto = () => {
   const navigate = useNavigate();
   const proveedorRef = useRef();
   const tipoRef = useRef();
+
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/producto/mostrar`, configInicial )
@@ -38,7 +40,7 @@ export const ListarProducto = () => {
         else {setProductos(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  },[navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/proveedor/mostrar`, configInicial )
@@ -50,7 +52,7 @@ export const ListarProducto = () => {
         else {setProveedores(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  },[navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     const nombre = 'Tipo'
@@ -63,7 +65,7 @@ export const ListarProducto = () => {
         else {setComplementos(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  },[navigate, token, configInicial, UrlReact]);
 
   const btnActualizar = (producto) => {
     

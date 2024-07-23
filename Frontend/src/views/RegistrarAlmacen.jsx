@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
 import { Button, Grid, Box } from '@mui/material';
 import '../assets/css/menu.css';
@@ -10,11 +10,6 @@ import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectCom from '../components/CustomSelectCom';
 import CustomForm from '../components/CustomForm';
 import CustomSubtitulo from '../components/CustomSubtitulo';
-
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
 
 export const RegistrarAlmacen = () => {
   const [producto, setProducto] = useState([]);
@@ -30,6 +25,13 @@ export const RegistrarAlmacen = () => {
 
   const navigate = useNavigate();
 
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
+
   useEffect(() => {
     const nombre = 'Categoría'
     axios.get(`${UrlReact}/complemento/buscarNombre/${nombre}`, configInicial)
@@ -41,7 +43,7 @@ export const RegistrarAlmacen = () => {
         else {setComplementos(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/producto/mostrar`, configInicial )
@@ -53,7 +55,7 @@ export const RegistrarAlmacen = () => {
         else {setProducto(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   const btnRegistrarAlmacen= (e) => {
     e.preventDefault();

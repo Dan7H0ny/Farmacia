@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef,useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Grid, Box  } from '@mui/material';
@@ -13,11 +13,6 @@ import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectProducto from '../components/CustomSelectProducto';
 import CustomTablaAlmacen from '../components/CustomTablaAlmacen';
 
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
-
 export const ListarAlmacen = () => {
   const [almacen, setAlmacen] = useState([]);
   const [productos, setProductos] = useState([]);
@@ -27,6 +22,13 @@ export const ListarAlmacen = () => {
   const navigate = useNavigate();
   const categoriaRef = useRef();
   const productoRef = useRef();
+
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/producto/mostrar`, configInicial )
@@ -38,7 +40,7 @@ export const ListarAlmacen = () => {
         else {setProductos(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/almacen/mostrar`, configInicial )
@@ -50,7 +52,7 @@ export const ListarAlmacen = () => {
         else {setAlmacen(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     const nombre = 'Categoría'
@@ -63,7 +65,7 @@ export const ListarAlmacen = () => {
         else {setComplementos(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   const btnActualizar = (almacen) => {
     if (!token) {

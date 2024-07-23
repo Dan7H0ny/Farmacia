@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination, Button, Box } from '@mui/material';
 import { Visibility, ModeEdit } from '@mui/icons-material';
 import '../assets/css/tabla.css';
+import ExportExcelButton from '../components/ExportExcelButton';
 
 const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -85,6 +86,13 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
         </TableBody>
       </Table>
       <Grid item xs={12} sm={12} sx={{ marginTop: 2, '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+        <ExportExcelButton
+          data={usuarios}
+          fileName="Reporte de Ventas"
+          sheetName="Ventas"
+          buttonText="Exportar a Excel"
+          sx={{ mt: 2 }}
+        />
         <TablePagination
           component="div"
           count={filtrarDatos.length}

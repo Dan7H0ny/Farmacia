@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
 import { Button, Grid, Box, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -8,11 +8,6 @@ import '../assets/css/menu.css';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectCom from '../components/CustomSelectCom';
 import CustomSwal from '../components/CustomSwal';
-
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
 
 export const RegistrarCliente = ( ) => {
 
@@ -36,6 +31,13 @@ export const RegistrarCliente = ( ) => {
     );
   };
 
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
+
   useEffect(() => {
     const nombre = 'Identificación'
     axios.get(`${UrlReact}/complemento/buscarNombre/${nombre}`, configInicial)
@@ -47,7 +49,7 @@ export const RegistrarCliente = ( ) => {
         else {setComplementos(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
  
   const btnRegistrarCliente = (e) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {  Grid, Box, } from '@mui/material';
@@ -13,11 +13,6 @@ import CustomTablaClient from '../components/CustomTablaClient';
 import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
-
 export const ListarCliente = () => {
   const [clientes, setClientes] = useState([]);
   const [buscar, setBuscar] = useState('');
@@ -26,6 +21,13 @@ export const ListarCliente = () => {
   const proveedorRef = useRef();
 
   const navigate = useNavigate();
+
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
 
   useEffect(() => {
     const nombre = 'Identificación'
@@ -38,7 +40,7 @@ export const ListarCliente = () => {
         else {setComplementos(response);}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  },[navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/cliente/mostrar`, configInicial )
@@ -50,7 +52,7 @@ export const ListarCliente = () => {
         else {setClientes(response);console.log(response)}
       })
       .catch(error => { console.log(error);});
-  }, [navigate]);
+  },[navigate, token, configInicial, UrlReact]);
 
   const btnActualizar = (cliente) => {
     if (!token) {

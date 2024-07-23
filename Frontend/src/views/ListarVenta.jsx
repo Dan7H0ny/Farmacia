@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Grid, Box } from '@mui/material';
-import { Search, Description, ProductionQuantityLimits, Group, AddBusiness, AttachMoney, VerifiedUser, CalendarMonth, Person, DateRange, Dangerous } from '@mui/icons-material';
+import { Search, AttachMoney, Person, DateRange } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import CustomActualizarUser from '../components/CustomActualizarUser';
-import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
-import CustomSelectProducto from '../components/CustomSelectProducto';
 import CustomTablaVentas from '../components/CustomTablaVentas';
 import CustomUpdate from '../components/CustomUpdate';
 

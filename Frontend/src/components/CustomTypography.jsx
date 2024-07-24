@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 
-const CustomTypography = ({text}) => {
+const CustomTypography = ({ text }) => {
   return (
     <Typography
       variant="h6"
@@ -17,7 +17,11 @@ const CustomTypography = ({text}) => {
         borderRadius: '10px', // Añadido para redondear los bordes
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Añadido para dar una sombra suave
         textTransform: 'uppercase',
-      }}>
+        position: 'sticky', // Hace que el título sea fijo en la parte superior
+        top: 0, // Alinea el título en la parte superior de la pantalla
+        zIndex: 1000 // Asegura que el título esté sobre otros contenidos
+      }}
+    >
       {text}
     </Typography>
   );

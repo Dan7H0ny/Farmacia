@@ -1,33 +1,49 @@
-import React, {useEffect, useState} from 'react';
-import { Grid, Paper } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import React, {useEffect, useState, useMemo} from 'react';
 import axios from 'axios';
-import { PersonPin, ManageAccounts, Inventory, AddShoppingCart } from '@mui/icons-material';
-import CustomInfoDashboard from '../components/CustomInfoDashboard';
-import WebsiteViews from '../components/Dashboard/WebsiteViews';
-import DailySales from '../components/Dashboard/DailySales';
-import CompletedTasks from '../components/Dashboard/CompletedTasks';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import { useNavigate } from 'react-router-dom';
-
-const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
-const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
-const token = obtenerToken();
-const configInicial = { headers: { Authorization: `Bearer ${token}` }};
-
-const Item = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-}));
+import InfoCard from '../components/InfoCard';
+import BarChartInfo from '../components/BarChartInfo';
+import InfoDonutChart from '../components/InfoDonutChart';
+import CustomRegisterUser from '../components/CustomRegisterUser';
+import { Grid } from '@mui/material';
+import {Person2TwoTone, Search, ExtensionSharp, ProductionQuantityLimits } from '@mui/icons-material';
 
 export const Dashboard = () => {
   const [clientes, setClientes] = useState([]);
+  const [almacen, setAlmacen] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [productos, setProductos] = useState([]);
-  const [ventas, setVentas] = useState([]);
+  
+  const [buscarNombre, setBuscarNombre] = useState('');
+  const [buscarCategoria, setBuscarCategoria] = useState('');
+  const [buscarProveedor, setBuscarProveedor] = useState('');
+  
   const navigate = useNavigate();
+  console.log(almacen)
+
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
+
+  useEffect(() => {
+    if (!token) {
+      CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+      navigate('/Menu/Administrador');
+    }
+    axios.get(`${UrlReact}/almacen/mostrar`, configInicial)
+      .then(response => {
+        setAlmacen(response);
+      })
+      .catch(error => {
+        CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.mensaje ? error.response.data.mensaje : 'Error desconocido',});
+        navigate('/Menu/Administrador')
+      });
+  }, [navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     if (!token) {
@@ -42,7 +58,7 @@ export const Dashboard = () => {
         CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.mensaje ? error.response.data.mensaje : 'Error desconocido',});
         navigate('/Menu/Administrador')
       });
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     if (!token) {
@@ -57,14 +73,14 @@ export const Dashboard = () => {
         CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.mensaje ? error.response.data.mensaje : 'Error desconocido',});
         navigate('/Menu/Administrador')
       });
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     if (!token) {
       CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
       navigate('/Menu/Administrador');
     }
-    axios.get(`${UrlReact}/producto/mostrar`, configInicial)
+    axios.get(`${UrlReact}/almacen/mostrar`, configInicial)
       .then(response => {
         setProductos(response.length);
       })
@@ -72,53 +88,62 @@ export const Dashboard = () => {
         CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.mensaje ? error.response.data.mensaje : 'Error desconocido',});
         navigate('/Menu/Administrador')
       });
-  }, [navigate]);
-
-  useEffect(() => {
-    if (!token) {
-      CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
-      navigate('/Menu/Administrador');
-    }
-    axios.get(`${UrlReact}/venta/mostrar`, configInicial)
-      .then(response => {
-        setVentas(response.length);
-      })
-      .catch(error => {
-        CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.mensaje ? error.response.data.mensaje : 'Error desconocido',});
-        navigate('/Menu/Administrador')
-      });
-  }, [navigate]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   return (
     <div id="caja_contenido" >
       <CustomTypography text={'Dashboard'} />
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Item sx={{backgroundColor: '#e2e2e2', border: '2px solid #0f1b35', borderRadius: '15%',}}><CustomInfoDashboard icon={<PersonPin sx={{ width:'65%', height:'65%'}}/>} text={"Clientes"} number={clientes} porcentaje={"+5% el ultimo mes"}/></Item>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={4} >  
+          <InfoCard title="CLIENTES" value={clientes} icon={<Person2TwoTone/>} color={'#15b79f'}/>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Item sx={{backgroundColor: '#e2e2e2', border: '2px solid #0f1b35', borderRadius: '15%',}}><CustomInfoDashboard icon={<ManageAccounts sx={{ width:'65%', height:'65%'}}/>} text={"Proveedores"} number={proveedores} porcentaje={"+5% el ultimo mes"}/></Item>
+        <Grid item xs={12} sm={4} >  
+          <InfoCard title="PROVEEDORES" value={proveedores} icon={<ExtensionSharp/>} color={'#fb9c0c'}/>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Item sx={{backgroundColor: '#e2e2e2', border: '2px solid #0f1b35', borderRadius: '15%',}}><CustomInfoDashboard icon={<Inventory sx={{ width:'65%', height:'65%'}}/>} text={"Productos"} number={productos} porcentaje={"+5% el ultimo mes"}/></Item>
+        <Grid item xs={12} sm={4} >  
+          <InfoCard title="ALMACEN" value={productos} icon={<ProductionQuantityLimits/>} color={'#635bff'}/>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Item sx={{backgroundColor: '#e2e2e2', border: '2px solid #0f1b35', borderRadius: '15%',}}><CustomInfoDashboard icon={<AddShoppingCart sx={{ width:'65%', height:'65%'}}/>} text={"Ventas"} number={ventas} porcentaje={"+5% el ultimo mes"}/></Item>
+        <Grid item xs={12} sm={4}>  
+          <CustomRegisterUser
+            number={12}
+            label="Producto"  
+            placeholder= 'Buscar por el nombre del producto'
+            type= 'text'
+            value={buscarNombre}
+            onChange={(e) => setBuscarNombre(e.target.value)}
+            required={false}
+            icon={<Search/>}
+          />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Item>
-            <WebsiteViews />
-          </Item>
+        <Grid item xs={12} sm={4}>  
+          <CustomRegisterUser
+            number={12}
+            label="Categoria"  
+            placeholder= 'Buscar por la categoria'
+            type= 'text'
+            value={buscarCategoria}
+            onChange={(e) => setBuscarCategoria(e.target.value)}
+            required={false}
+            icon={<Search/>}
+          />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Item>
-            <DailySales />
-          </Item>
+        <Grid item xs={12} sm={4}>  
+          <CustomRegisterUser
+            number={12}
+            label="Proveedor"  
+            placeholder= 'Buscar por el proveedor'
+            type= 'text'
+            value={buscarProveedor}
+            onChange={(e) => setBuscarProveedor(e.target.value)}
+            required={false}
+            icon={<Search/>}
+          />
         </Grid>
-        <Grid item xs={12}>
-          <Item>
-            <CompletedTasks />
-          </Item>
+        <Grid item xs={12} sm={8} >  
+          <BarChartInfo/>
+        </Grid>
+        <Grid item xs={12} sm={4} >  
+          <InfoDonutChart/>
         </Grid>
       </Grid>
     </div>

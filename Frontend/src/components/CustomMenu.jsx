@@ -15,7 +15,7 @@ const CustomMenu = ({ itemName, itemOpen, BtnMostrar, BtnRegistrar, BtnListar, d
         <ListItemIcon sx={{ display: 'flex', minWidth: drawerOpen ? 'auto' : 'unset' }}>
           {icon}
         </ListItemIcon>
-        {drawerOpen && <ListItemText primary={`Gestionar ${itemName}`} sx={{ marginLeft: 1, color: '#e2e2e2', fontWeight: 'bold', textTransform: 'uppercase' }} />}
+        {drawerOpen && <ListItemText primary={`${itemName}`} sx={{ marginLeft: 1, color: '#e2e2e2', fontWeight: 'bold', textTransform: 'uppercase' }} />}
         {drawerOpen ? (itemOpen ? <ExpandLess /> : <ExpandMore />) : null}
       </ListItem>
       <Collapse in={itemOpen} timeout="auto" unmountOnExit sx={{background: '#e2e2e2', minHeight: '100vh', display: 'felx'}}>

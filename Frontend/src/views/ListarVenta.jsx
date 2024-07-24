@@ -11,14 +11,11 @@ import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomTablaVentas from '../components/CustomTablaVentas';
 import CustomUpdate from '../components/CustomUpdate';
-import CustomAutocomplete from '../components/CustomAutocomplete';
 
 export const ListarVenta = () => {
   const [ventas, setVentas] = useState([]);
-  const [buscar, setBuscar] = useState('');  
-  const [productosList, setProductos] = useState([]);
-  const [clientes, setClientes] = useState([]);
-  const usuario_ = localStorage.getItem('id');
+  const [buscar, setBuscar] = useState('');
+  const rol = localStorage.getItem('rol');
 
   const navigate = useNavigate();  
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
@@ -29,44 +26,13 @@ export const ListarVenta = () => {
   }), [token]);
 
   useEffect(() => {
-    axios.get(`${UrlReact}/almacen/mostrar`, configInicial)
-      .then(response => {
-        if (!token) {
-          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso' });
-          navigate('/Menu/Administrador');
-        } else {
-          const productosFiltrados = response.filter(producto => producto.estado === true);
-          setProductos(productosFiltrados);
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }, [navigate, token, configInicial, UrlReact]);
-
-  useEffect(() => {
-    axios.get(`${UrlReact}/cliente/mostrar`, configInicial)
-      .then(response => {
-        if (!token) {
-          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso' });
-          navigate('/Menu/Administrador');
-        } else {
-          setClientes(response); 
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }, [navigate, token, configInicial, UrlReact]);
-
-  useEffect(() => {
     axios.get(`${UrlReact}/venta/mostrar`, configInicial )
       .then(response => {
         if (!token) {
           CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
           navigate('/Menu/Administrador')
         }
-        else {setVentas(response);console.log(response)}
+        else {setVentas(response);}
       })
       .catch(error => { console.log(error);});
   }, [navigate, token, configInicial, UrlReact]);
@@ -120,68 +86,12 @@ export const ListarVenta = () => {
   };
 
   const btnActualizar = (venta) => {
-    if (!token) {
-      CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso' });
-      navigate('/Menu/Administrador');
-    } else {
-      axios.get(`${UrlReact}/venta/buscar/${venta._id}`, configInicial)
-        .then(response => {
-          const { _id, cliente, productos, precio_total } = response;
-          console.log(productos)
-          const container = document.createElement('div');
-          const root = createRoot(container);
-          root.render(
-            <Grid container spacing={2}>
-              <CustomAutocomplete
-                id="cliente-autocomplete"
-                options={clientes}
-                label="Seleccione el cliente"
-                value={cliente}
-                onChange={cliente}
-                getOptionLabel={(option) => `${option.nombre}`}
-              />
-              <CustomActualizarUser number={6} id="precioCompra" label="Precio Total" type="Number" defaultValue={precio_total} readOnly={true} icon={<AttachMoney />}/>
-            </Grid>
-          );
-          Swal.fire({
-            title: 'ACTUALIZAR DATOS DEL PRODUCTO',
-            html: container,
-            showCancelButton: true,
-            confirmButtonText: 'Actualizar',
-            cancelButtonText: 'Cancelar',
-            preConfirm: async () => {
-              const cliente_ = document.getElementById('precioVenta').value;
-              const producto_ = document.getElementById('precioVenta').value;
-              const precioCompra_ = parseInt(document.getElementById('precioCompra').value);
-              return { cliente_, producto_, precioCompra_ };
-          },
-          customClass: {
-            popup: 'customs-swal-popup',
-            title: 'customs-swal-title',
-            confirmButton: 'swal2-confirm custom-swal2-confirm',
-            cancelButton: 'swal2-cancel custom-swal2-cancel',
-          },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            const { cliente_, producto_, precioCompra_ } = result.value;
-            axios.put(`${UrlReact}/venta/actualizar/${_id}`, {
-              cliente: cliente_,
-              productos: producto_,
-              precio_total: precioCompra_,
-              usuario_actualizacion: usuario_,
-            }, configInicial)
-            .then((response) => {
-              CustomSwal({ icono: 'success', titulo: 'Actualización Exitosa', mensaje: response.mensaje });
-          })
-          .catch((error) => {
-            CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Almacen', mensaje: error.mensaje });
-          });
-        }
-      });
-    })
-    .catch(error => {
-      CustomSwal({ icono: 'error', titulo: 'Error al actualizar el Almacen', mensaje: error.mensaje });
-    });
+    const ventaId = venta._id;
+    if(rol === 'Administrador'){
+      navigate(`/Menu/Administrador/Venta/Actualizar/${ventaId}`);
+    }
+    else{
+      navigate(`/Menu/Cajero/Venta/Actualizar/${ventaId}`);
     }
   };
  

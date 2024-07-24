@@ -93,16 +93,16 @@ export const Dashboard = () => {
     <div id="caja_contenido" >
       <CustomTypography text={'Dashboard'} />
       <Grid container spacing={3}>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={6}>
           <Item sx={{backgroundColor: '#e2e2e2', border: '2px solid #0f1b35', borderRadius: '15%',}}><CustomInfoDashboard icon={<PersonPin sx={{ width:'65%', height:'65%'}}/>} text={"Clientes"} number={clientes} porcentaje={"+5% el ultimo mes"}/></Item>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={6}>
           <Item sx={{backgroundColor: '#e2e2e2', border: '2px solid #0f1b35', borderRadius: '15%',}}><CustomInfoDashboard icon={<ManageAccounts sx={{ width:'65%', height:'65%'}}/>} text={"Proveedores"} number={proveedores} porcentaje={"+5% el ultimo mes"}/></Item>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={6}>
           <Item sx={{backgroundColor: '#e2e2e2', border: '2px solid #0f1b35', borderRadius: '15%',}}><CustomInfoDashboard icon={<Inventory sx={{ width:'65%', height:'65%'}}/>} text={"Productos"} number={productos} porcentaje={"+5% el ultimo mes"}/></Item>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={6}>
           <Item sx={{backgroundColor: '#e2e2e2', border: '2px solid #0f1b35', borderRadius: '15%',}}><CustomInfoDashboard icon={<AddShoppingCart sx={{ width:'65%', height:'65%'}}/>} text={"Ventas"} number={ventas} porcentaje={"+5% el ultimo mes"}/></Item>
         </Grid>
         <Grid item xs={12} md={6}>

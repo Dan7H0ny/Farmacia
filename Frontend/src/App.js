@@ -1,34 +1,26 @@
 import './assets/css/App.css';
-import React, { } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import { useAutenticarContexto  } from './contextos/autenticar';
-import { RegistrarComplementos  } from './views/RegistrarComplementos';
-
+import { useAutenticarContexto } from './contextos/autenticar';
+import { RegistrarComplementos } from './views/RegistrarComplementos';
 import { Login } from './views/Login';
-
 import { MenuAdministrador } from './views/MenuAdministrador';
 import { MenuCajero } from './views/MenuCajero';
-
 import { Dashboard } from './views/Dashboard'; 
-
 import { RegistrarUsuario } from './views/RegistrarUsuario';
 import { ListarUsuario } from './views/ListarUsuario';
-
 import { RegistrarCliente } from './views/RegistrarCliente';
 import { ListarCliente } from './views/ListarCliente';
-
 import { RegistrarProveedor } from './views/RegistrarProveedor';
 import { ListarProveedor } from './views/ListarProveedor';
-
 import { RegistrarProducto } from './views/RegistrarProducto';
 import { ListarProducto } from './views/ListarProducto';
-
 import { RegistrarAlmacen } from './views/RegistrarAlmacen';
 import { ListarAlmacen } from './views/ListarAlmacen';
-
 import { RegistrarVenta } from './views/RegistrarVenta';
 import { ListarVenta } from './views/ListarVenta';
+import { ActualizarVenta } from './components/ActualizarVenta';
 
 function App() {
   const { rol } = useAutenticarContexto();
@@ -38,43 +30,42 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
-          <Route exact path="/login" element={<Login/>}/>
+          <Route path="/login" element={<Login />} />
           {rol === 'Administrador' && (
-            <Route path="/Menu/Administrador" element={<MenuAdministrador/>}>
-              <Route exact path="/Menu/Administrador/Dashboard" element={<Dashboard/>}/>
-              <Route exact path="/Menu/Administrador/Usuario/Registrar" element={<RegistrarUsuario/>}/>
-              <Route exact path="/Menu/Administrador/Usuario/Listar" element={<ListarUsuario/>}/>
-              <Route exact path="/Menu/Administrador/Cliente/Registrar" element={<RegistrarCliente/>}/>
-              <Route exact path="/Menu/Administrador/Cliente/Listar" element={<ListarCliente/>}/>
-              <Route exact path="/Menu/Administrador/Proveedor/Registrar" element={<RegistrarProveedor/>}/>
-              <Route exact path="/Menu/Administrador/Proveedor/Listar" element={<ListarProveedor/>}/>
-              <Route exact path="/Menu/Administrador/Complemento/Registrar" element={<RegistrarComplementos/>}/>
-              <Route exact path="/Menu/Administrador/Producto/Registrar" element={<RegistrarProducto/>}/>
-              <Route exact path="/Menu/Administrador/Producto/Listar" element={<ListarProducto/>}/>
-              <Route exact path="/Menu/Administrador/Almacen/Registrar" element={<RegistrarAlmacen/>}/>
-              <Route exact path="/Menu/Administrador/Almacen/Listar" element={<ListarAlmacen/>}/>
-              <Route exact path="/Menu/Administrador/Venta/Registrar" element={<RegistrarVenta/>}/>
-              <Route exact path="/Menu/Administrador/Venta/Listar" element={<ListarVenta/>}/>
+            <Route path="/Menu/Administrador" element={<MenuAdministrador />}>
+              <Route path="Dashboard" element={<Dashboard />} />
+              <Route path="Usuario/Registrar" element={<RegistrarUsuario />} />
+              <Route path="Usuario/Listar" element={<ListarUsuario />} />
+              <Route path="Cliente/Registrar" element={<RegistrarCliente />} />
+              <Route path="Cliente/Listar" element={<ListarCliente />} />
+              <Route path="Proveedor/Registrar" element={<RegistrarProveedor />} />
+              <Route path="Proveedor/Listar" element={<ListarProveedor />} />
+              <Route path="Complemento/Registrar" element={<RegistrarComplementos />} />
+              <Route path="Producto/Registrar" element={<RegistrarProducto />} />
+              <Route path="Producto/Listar" element={<ListarProducto />} />
+              <Route path="Almacen/Registrar" element={<RegistrarAlmacen />} />
+              <Route path="Almacen/Listar" element={<ListarAlmacen />} />
+              <Route path="Venta/Registrar" element={<RegistrarVenta />} />
+              <Route path="Venta/Listar" element={<ListarVenta />} />
+              <Route path="Venta/Actualizar/:ventaId" element={<ActualizarVenta />} />
             </Route>
           )}
           {rol === 'Cajero' && (
-            <Route path="/Menu/Cajero" element={<MenuCajero/>}>
-              <Route exact path="/Menu/Cajero/Cliente/Registrar" element={<RegistrarCliente/>}/>
-              <Route exact path="/Menu/Cajero/Cliente/Listar" element={<ListarCliente/>}/>
-              <Route exact path="/Menu/Cajero/Venta/Registrar" element={<RegistrarVenta/>}/>
-              <Route exact path="/Menu/Cajero/Venta/Listar" element={<ListarVenta/>}/>
+            <Route path="/Menu/Cajero" element={<MenuCajero />}>
+              <Route path="Cliente/Registrar" element={<RegistrarCliente />} />
+              <Route path="Cliente/Listar" element={<ListarCliente />} />
+              <Route path="Venta/Registrar" element={<RegistrarVenta />} />
+              <Route path="Venta/Listar" element={<ListarVenta />} />
+              <Route path="Venta/Actualizar/:ventaId" element={<ActualizarVenta />} />
             </Route>
           )}
-
-          {rol !== 'Administrador' && rol !== 'Cajero' && (
+          {(rol !== 'Administrador' && rol !== 'Cajero') && (
             <Route path="*" element={<Navigate to="/login" />} />
           )}
         </Routes>
-      </BrowserRouter> 
+      </BrowserRouter>
     </div>
   );
 }
 
 export default App;
-
-

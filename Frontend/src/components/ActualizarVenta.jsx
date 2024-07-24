@@ -2,13 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Typography, TextField, Autocomplete, Box, Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination, Button } from '@mui/material';
 import { AttachMoney, TagSharp } from '@mui/icons-material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, useParams } from 'react-router-dom';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 
-export const RegistrarVenta = () => {
+export const ActualizarVenta = () => {
+  const { ventaId } = useParams();
   const [productos, setProductos] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [idcliente, setIdCliente] = useState(null);
@@ -17,8 +17,8 @@ export const RegistrarVenta = () => {
   const [productosAñadidos, setProductosAñadidos] = useState([]);
   const [productosElegidos, setProductosElegidos] = useState([]);
   const usuario_ = localStorage.getItem('id');
+  const rol = localStorage.getItem('rol');
   const navigate = useNavigate();
-  const [reloadProductos, setReloadProductos] = useState(false);
 
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
   const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
@@ -26,6 +26,45 @@ export const RegistrarVenta = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/venta/buscar/${ventaId}`, configInicial)
+      .then(response => {
+        const detalles = response.productos.map(producto => {
+          return axios.get(`${UrlReact}/almacen/buscar/${producto.producto}`, configInicial)
+            .then(res => {
+              return { ...res, productoId:producto.producto};
+            })
+        });
+        Promise.all(detalles)
+          .then(productosDetallados  => {
+            setProductosAñadidos(productosDetallados);
+            const cantidadesIniciales = {};
+            productosDetallados.forEach(producto => {
+              // Asume que 'cantidad' es un campo en los objetos originales de 'response.productos'
+              const productoOriginal = response.productos.find(p => p.producto === producto._id);
+              if (productoOriginal) {
+                cantidadesIniciales[producto._id] = productoOriginal.cantidad_producto;
+              }
+            });
+            setCantidad(cantidadesIniciales);
+          })
+          .catch(error => {
+            console.error('Error al cargar detalles de productos:', error);
+            CustomSwal({ icono: 'error', titulo: 'Error al cargar detalles de productos', mensaje: error.mensaje || error.message });
+          });
+        const clienteCompleto = response.cliente;
+        setIdCliente(clienteCompleto);  
+        setInputCliente(clienteCompleto.nombreCompleto + ' ' + clienteCompleto.numberIdentity);
+        setPrecioTotal(response.precio_total);
+      })
+      .catch(error => {
+        CustomSwal({ icono: 'error', titulo: 'Error al obtener la venta', mensaje: error.mensaje || error.message });
+        navigate('/Menu/Administrador');
+      });
+  }, [ventaId, configInicial, UrlReact, navigate]);
+  
+  
 
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(3);
@@ -154,7 +193,7 @@ export const RegistrarVenta = () => {
       .catch(error => {
         console.log(error);
       });
-  }, [navigate, token, configInicial, UrlReact, reloadProductos]);
+  }, [navigate, token, configInicial, UrlReact]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/cliente/mostrar`, configInicial)
@@ -186,32 +225,26 @@ export const RegistrarVenta = () => {
         precio_total:precioTotal, 
         usuario:usuario_
       };
-      axios.post(`${UrlReact}/venta/crear`, miventa, configInicial)
+      axios.put(`${UrlReact}/venta/actualizar/${ventaId}`, miventa, configInicial)
         .then(response => {
-          CustomSwal({ icono: 'success', titulo: 'Venta Creado', mensaje: response.mensaje});
-          limpiarFormulario();
-          setReloadProductos(prev => !prev);
+          CustomSwal({ icono: 'success', titulo: 'Venta Actualizada', mensaje: response.mensaje});
+          if(rol === 'Administrador'){
+            navigate(`/Menu/Administrador/Venta/Listar`);
+          }
+          else{
+            navigate(`/Menu/Cajero/Venta/Listar`);
+          }
         })
         .catch(error => {
-          CustomSwal({ icono: 'error', titulo: 'Error al crear la venta', mensaje: error.mensaje});
+          CustomSwal({ icono: 'error', titulo: 'Error al actualizar la venta', mensaje: error.mensaje});
         });
     }
-  }
-
-  const limpiarFormulario = () => {
-    setIdCliente(null);
-    setProductosAñadidos([]);
-    setProductosElegidos([]);
-    setInputValue("");
-    setInputCliente("");
-    setPrecioTotal(0);
-    setProductos([]);
   }
 
   return (
     <div id="caja_contenido">
       <Box mt={3}>
-        <CustomTypography text={'Registrar una venta'} />
+        <CustomTypography text={'Actualizar la venta'} />
         <form id="Form-1" onSubmit={btnRegistrarVenta} className="custom-form">
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
@@ -226,6 +259,7 @@ export const RegistrarVenta = () => {
               onInputChange={(event, newInputValue) => {
                 setInputCliente(newInputValue);
               }}
+              isOptionEqualToValue={(option, value) => option._id === value._id}
               renderInput={(params) => (
                 <TextField {...params} label="Elija al cliente" variant="outlined" fullWidth 
                 InputProps={{
@@ -278,7 +312,7 @@ export const RegistrarVenta = () => {
             <Autocomplete
               multiple
               options={productos}
-              getOptionLabel={(option) => option.producto.nombre || ''}
+              getOptionLabel={(option) => option.producto.nombre}
               value={productosAñadidos}
               onChange={(event, newValue) => {
                 setProductosAñadidos(newValue);
@@ -287,6 +321,7 @@ export const RegistrarVenta = () => {
               onInputChange={(event, newInputValue) => {
                 setInputValue(newInputValue);
               }}
+              isOptionEqualToValue={(option, value) => option._id === value._id}
               filterSelectedOptions
               renderInput={(params) => (
                 <TextField
@@ -466,7 +501,27 @@ export const RegistrarVenta = () => {
                 border: '2px solid #e2e2e2',
                 },
               }}
-            >Añadir producto al almacen
+            >Actualizar el Producto
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            size="large"
+            type="button" // Cambiado de 'submit' a 'button' si no es un formulario
+            onClick={() => navigate(`/Menu/Administrador/Venta/Listar`)}
+            sx={{
+              backgroundColor: '#e2e2e2',
+              color: '#0f1b35',
+              marginTop: 2.5,
+              fontWeight: 'bold',
+              '&:hover': {
+                backgroundColor: '#1a7b13',
+                color: '#e2e2e2',
+                border: '2px solid #e2e2e2',
+                },
+              }}
+            >Volver a la lista de ventas
           </Button>
         </form>
       </Box>

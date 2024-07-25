@@ -39,12 +39,12 @@ const generarUsuario = async function() {
 };
 
 const generarStringIdentity = async function() {
-    const complementos = await Complemento.find({ nombreComplemento: 'Identificación' });
-    if (complementos.length === 0) {
-      return null;
-    }
-    return complementos[Math.floor(Math.random() * complementos.length)]._id;
-  };
+  const complementos = await Complemento.find({ nombreComplemento: 'Identificación' });
+  if (complementos.length === 0) {
+    return null;
+  }
+  return complementos[Math.floor(Math.random() * complementos.length)]._id;
+ };
 
 const generarFechaAleatoria = function() {
   const fechaActual = new Date();

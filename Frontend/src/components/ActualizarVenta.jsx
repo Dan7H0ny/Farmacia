@@ -477,7 +477,7 @@ export const ActualizarVenta = () => {
             number={12}
             label="Precio Total"
             type='Number'
-            value={precioTotal}
+            value={precioTotal.toFixed(1)}
             onChange={(e) => {setPrecioTotal(e.target.value)}}
             required={true}
             readOnly={true}

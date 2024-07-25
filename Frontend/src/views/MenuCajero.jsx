@@ -122,13 +122,13 @@ export const MenuCajero = () => {
   const GetCliente = () => {setisCliente(!Cliente);};
   const GetVenta = () => {setisVenta(!Venta);};
 
-  function Dashboard() {navigate(`/Menu/Administrador/Dashboard`);}
+  function Dashboard() {navigate(`/Menu/Cajero/Dashboard`);}
 
-  function RegistrarCliente() {navigate(`/Menu/Administrador/Cliente/Registrar`);}
-  function ListarCliente() {navigate(`/Menu/Administrador/Cliente/Listar`);}
+  function RegistrarCliente() {navigate(`/Menu/Cajero/Cliente/Registrar`);}
+  function ListarCliente() {navigate(`/Menu/Cajero/Cliente/Listar`);}
 
-  function RegistrarVenta() {navigate(`/Menu/Administrador/Venta/Registrar`);}
-  function ListarVenta() {navigate(`/Menu/Administrador/Venta/Listar`);}
+  function RegistrarVenta() {navigate(`/Menu/Cajero/Venta/Registrar`);}
+  function ListarVenta() {navigate(`/Menu/Cajero/Venta/Listar`);}
 
   const handleLogout = () => {
     // Llama a la función de logout cuando se haga clic en el botón o enlace de "Cerrar sesión"
@@ -142,7 +142,7 @@ export const MenuCajero = () => {
 
   return (
     <div className={`background-container-menu`}>
-    <div id="caja_menu" style={{ textAlign: 'left'}}>
+    <div id="caja_menu" style={{ textAlign: 'left', width: '95%', overflowY: 'auto', maxHeight: '100vh'}}>
       <Drawer variant="permanent" open={drawerOpen} className={drawerClass} >
         {drawerOpen && (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '5%', backgroundColor: '#e2e2e2' }}>

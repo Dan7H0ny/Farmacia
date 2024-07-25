@@ -83,7 +83,14 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
   const { id } = req.params;
   const { nombreCompleto, correo, telefono, numberIdentity, plus, extension, stringIdentity, usuario_ } = req.body;
   try {
+    let complemento 
     const fechaActual = new Date();
+    if(plus !== undefined && plus !== null){
+      complemento = numberIdentity + ' - ' + plus;
+    }
+    else{
+      complemento = numberIdentity;
+    }
     const clienteActualizado = await Cliente.findByIdAndUpdate(
       id,
       {
@@ -94,6 +101,7 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
         plus,
         extension,
         stringIdentity,
+        combinedIdentity:complemento,
         usuario_actualizacion: usuario_,
         fecha_actualizacion: fechaActual
       },

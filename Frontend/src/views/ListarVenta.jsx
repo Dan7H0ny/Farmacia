@@ -10,10 +10,12 @@ import CustomSwal from '../components/CustomSwal';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomTablaVentas from '../components/CustomTablaVentas';
+import ExportExcelButton from '../components/ExportExcelButton';
 import CustomUpdate from '../components/CustomUpdate';
 
 export const ListarVenta = () => {
   const [ventas, setVentas] = useState([]);
+  const [imprimir, setVentasImprimir] = useState([]);
   const [buscar, setBuscar] = useState('');
   const rol = localStorage.getItem('rol');
 
@@ -36,6 +38,38 @@ export const ListarVenta = () => {
       })
       .catch(error => { console.log(error);});
   }, [navigate, token, configInicial, UrlReact]);
+
+  useEffect(() => {
+    if (ventas.length > 0) {
+      const datosTransformados = ventas.map(venta => {
+        const fechaRegistro = new Date(venta.fecha_registro);
+        const fechaActualizacion = new Date(venta.fecha_actualizacion);
+        
+        const opciones = {
+          year: 'numeric', 
+          month: '2-digit', 
+          day: '2-digit', 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit', 
+          hour12: false // Usar formato de 24 horas
+        };
+
+        return {
+          NombreCliente: venta.cliente.nombreCompleto,
+          Identificacion: venta.cliente.stringIdentity.nombre,
+          NumeroIdentificacion: venta.cliente.combinedIdentity, 
+          Productos: venta.productos.map(prod => `${prod.nombre} - ${prod.tipo} - ${prod.proveedor} - ${prod.categoria} - (${prod.cantidad_producto} unidades) - ${prod.precio_venta}`).join(', '), // Asumiendo que es un array
+          TotalVenta: venta.precio_total,
+          FechaRegistro: fechaRegistro.toLocaleString('es-ES', opciones),
+          FechaActualizacion: fechaActualizacion.toLocaleString('es-ES', opciones),
+          UsuarioRegistro: `${venta.usuario_registra.nombre} - ${venta.usuario_registra.apellido} - ${venta.usuario_registra.rol}`,
+          UsuarioUpdate: `${venta.usuario_update.nombre} - ${venta.usuario_update.apellido} - ${venta.usuario_update.rol}`,    
+        };
+      });
+      setVentasImprimir(datosTransformados);
+    }
+  }, [ventas]);
 
   const btnMostrar = (venta) => {
     if (!token) {
@@ -100,18 +134,28 @@ export const ListarVenta = () => {
       <Box mt={3}>
         <CustomTypography text={'Control de Almacen'} />
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>
-          <CustomRegisterUser
-            number={12}
-            label="Nombre"  
-            placeholder= 'Buscar el nombre del usuario'
-            type= 'text'
-            value={buscar}
-            onChange={(e) => setBuscar(e.target.value)}
-            required={false}
-            icon={<Search/>}
-          />
+          <Grid container spacing={3} >
+            <CustomRegisterUser
+              number={8}
+              label="Nombre"  
+              placeholder= 'Buscar el nombre del cliente'
+              type= 'text'
+              value={buscar}
+              onChange={(e) => setBuscar(e.target.value)}
+              required={false}
+              icon={<Search/>}
+            />
+            <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+              <ExportExcelButton
+                data={imprimir}
+                fileName="Reporte de Ventas"
+                sheetName="Ventas"
+                sx={{ mt: 2 }}
+              />
+            </Grid>
+          </Grid>
         </form>
-        <CustomTablaVentas usuarios={ventas} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
+        <CustomTablaVentas usuarios={ventas} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar} />
       </Box>
     </div>
   )

@@ -1,47 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination, Button, Box } from '@mui/material';
 import { Visibility, ModeEdit } from '@mui/icons-material';
 import '../assets/css/tabla.css';
-import ExportExcelButton from '../components/ExportExcelButton';
 
 const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [ventas, setVentas] = useState([]);
-  
-  useEffect(() => {
-    if (usuarios.length > 0) {
-      const datosTransformados = usuarios.map(usuario => {
-        const fechaRegistro = new Date(usuario.fecha_registro);
-        const fechaActualizacion = new Date(usuario.fecha_actualizacion);
-        
-        const opciones = {
-          year: 'numeric', 
-          month: '2-digit', 
-          day: '2-digit', 
-          hour: '2-digit', 
-          minute: '2-digit', 
-          second: '2-digit', 
-          hour12: false // Usar formato de 24 horas
-        };
-
-        return {
-          NombreCliente: usuario.cliente.nombreCompleto,
-          Identificacion: usuario.cliente.stringIdentity.nombre,
-          NumeroIdentificacion: usuario.cliente.combinedIdentity, 
-          Productos: usuario.productos.map(prod => `${prod.nombre} - ${prod.tipo} - ${prod.proveedor} - ${prod.categoria} - (${prod.cantidad_producto} unidades) - ${prod.precio_venta}`).join(', '), // Asumiendo que es un array
-          TotalVenta: usuario.precio_total,
-          FechaRegistro: fechaRegistro.toLocaleString('es-ES', opciones),
-          FechaActualizacion: fechaActualizacion.toLocaleString('es-ES', opciones),
-          UsuarioRegistro: `${usuario.usuario_registra.nombre} - ${usuario.usuario_registra.apellido} - ${usuario.usuario_registra.rol}`,
-          UsuarioUpdate: `${usuario.usuario_update.nombre} - ${usuario.usuario_update.apellido} - ${usuario.usuario_update.rol}`,    
-        };
-      });
-      setVentas(datosTransformados);
-    }
-  }, [usuarios]);
-
-  
   
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);
@@ -157,14 +121,6 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
               color: '#e2e2e2',
             }
           }}
-        />
-      </Grid>
-      <Grid item xs={12} sm={12} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
-        <ExportExcelButton
-          data={ventas}
-          fileName="Reporte de Ventas"
-          sheetName="Ventas"
-          sx={{ mt: 2 }}
         />
       </Grid>
     </Box>

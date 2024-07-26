@@ -33,9 +33,9 @@ mongoose.connect(process.env.BD_CONEXION, {
   utiles.primerUsuario(function() {
     app.listen(process.env.PUERTO_HTTP, process.env.PUERTO_IP_URL, () => {
       console.log(`Servidor iniciado en el puerto ${process.env.PUERTO_HTTP}`)
-      crearDatos(() => {
-        console.log('Proceso de creación de complementos');
-      });
+      // crearDatos(() => {
+      //   console.log('Proceso de creación de complementos');
+      // });
     })
   })
 }).catch((error) => {

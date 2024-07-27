@@ -1,15 +1,15 @@
 import React from 'react';
-import { Card, CardContent, Typography, Box, Avatar } from '@mui/material';
+import { Card, CardContent, Typography, Box, IconButton } from '@mui/material';
 
-const InfoCard = ({ title, value, icon, color }) => {
+const InfoCard = ({ title, value, icon, color, onClick }) => {
   return (
     <Card style={{
       borderRadius: '15px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
       padding: '20px',
-      backgroundColor:'#0f1b35',
+      backgroundColor: '#0f1b35',
       border: '2px solid #e2e2e2',
-      color:'#e2e2e2'
+      color: '#e2e2e2'
     }}>
       <CardContent style={{
         display: 'flex',
@@ -17,20 +17,24 @@ const InfoCard = ({ title, value, icon, color }) => {
         alignItems: 'center'
       }}>
         <Box>
-          <Typography  gutterBottom > 
+          <Typography gutterBottom>
             {title}
           </Typography>
           <Typography variant="h5">
             {value}
           </Typography>
         </Box>
-        <Avatar style={{
-          backgroundColor: color,
-          height: '50px',
-          width: '50px'
-        }}>
+        <IconButton
+          style={{
+            backgroundColor: color,
+            height: '50px',
+            width: '50px',
+            color: '#fff'
+          }}
+          onClick={onClick}
+        >
           {icon}
-        </Avatar>
+        </IconButton>
       </CardContent>
     </Card>
   );

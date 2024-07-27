@@ -71,13 +71,14 @@ const BarChartInfo = () => {
     .sort((a, b) => b.totalVentas - a.totalVentas)
     .slice(0, 5);
 
-  const coloresClaros = [
-    'rgba(173, 216, 230, 0.8)', // LightBlue
-    'rgba(144, 238, 144, 0.8)', // LightGreen
-    'rgba(255, 182, 193, 0.8)', // LightPink
-    'rgba(240, 230, 140, 0.8)', // Khaki
-    'rgba(221, 160, 221, 0.8)'  // Plum
-  ];
+    const coloresClaros = [
+      '#add8e6CC', // LightBlue
+      '#90ee90CC', // LightGreen
+      '#ffb6c1CC', // LightPink
+      '#f0e68cCC', // Khaki
+      '#dda0ddCC'  // Plum
+    ];
+    
 
   const demandaFigureData = {
     labels: obtenerDiasSemana(),
@@ -134,7 +135,14 @@ const BarChartInfo = () => {
   };
 
   return (
-    <Card style={{ margin: 5, borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: '#0f1b35', color:'#e2e2e2' }}>
+    <Card style={{
+      borderRadius: '15px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
+      padding: '20px',
+      backgroundColor: '#0f1b35',
+      border: '2px solid #e2e2e2',
+      color: '#e2e2e2'
+    }}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" component="div">

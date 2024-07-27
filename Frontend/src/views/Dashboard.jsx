@@ -81,10 +81,10 @@ export const Dashboard = () => {
         <Grid item xs={12} sm={4} >  
           <InfoCard title="ALMACEN" value={productos} icon={<ProductionQuantityLimits/>} color={'#635bff'} />
         </Grid>
-        <Grid item xs={12} sm={8} >  
+        <Grid item xs={12} sm={7} >  
           <BarChartInfo />
         </Grid>
-        <Grid item xs={12} sm={4} >  
+        <Grid item xs={12} sm={5} >  
           <InfoDonutChart/>
         </Grid>
       </Grid>

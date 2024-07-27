@@ -1,0 +1,6 @@
+http://localhost:3000/Menu/Administrador/Producto/Listar
+http://localhost:3000/Menu/Administrador/Almacen/Listar?(Producto nombre)
+http://localhost:3000/Menu/Administrador/Venta/Registrar (NO STOK) BOTO AÑADIR
+
+http://localhost:3000/Menu/Administrador/Venta/Listar (ordenamiento)
+fechaaaa de control

@@ -9,6 +9,18 @@ import Notificacion from './screens/Notificacion';
 import Pedidos from './screens/Pedidos';
 import FlashMessage from 'react-native-flash-message';
 import * as Notifications from 'expo-notifications';
+import URL_BASE from './config';
+import axios from 'axios';
+import { Alert, Linking  } from 'react-native';
+import * as Device from 'expo-device';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const Stack = createStackNavigator();
 
@@ -33,43 +45,65 @@ const AppNavigator = () => {
   );
 };
 
-const App = () => {
-  useEffect(() => {
-    registerForPushNotificationsAsync();
-  }, []);
+const registrarNotificacionesActivadas = async () => {
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+  if (existingStatus !== 'granted') {
+    // Si no se han otorgado, solicitarlos
+    const permissions = await Notifications.requestPermissionsAsync();
+    finalStatus = permissions.status;
+  }
+  if (finalStatus !== 'granted') {
+    // Si los permisos no son concedidos, informar al usuario que debe habilitarlos manualmente
+    Alert.alert(
+      'Permisos Requeridos',
+      'Cambie los permisos de notificacion',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        // Abrir la configuración del sistema si es posible
+        { text: 'Open Settings', onPress: () => Linking.openSettings() }
+      ],
+      { cancelable: false }
+    );
+    return;
+  }
 
-  async function registerForPushNotificationsAsync() {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
-    }
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
+  const tokenData = await Notifications.getExpoPushTokenAsync();
   
-    // Enviar el token al backend
-    const response = await fetch('https://your-backend-url.com/api/tokens', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        token: token
-      }),
+  const token = tokenData.data;
+  const deviceId = Device.osBuildId; // Obtiene el deviceId único del dispositivo
+  console.log(tokenData)
+  // Enviar el token y el deviceId al servidor
+  try {
+    const response = await axios.post(`${URL_BASE}/api/registrarToken`, { token, deviceId });
+    console.log('Token registered:', response.data);
+  } catch (error) {
+    console.error('Error registering token:', error);
+  }
+};
+
+const App = () => {
+  const navigationRef = React.useRef();
+  useEffect(() => {
+    registrarNotificacionesActivadas();
+    // Este escuchador es llamado siempre que una notificación es recibida mientras la app está en primer plano
+    const foregroundSubscription = Notifications.addNotificationReceivedListener(notification => {
     });
-  
-    const data = await response.json();
-    console.log('Token saved:', data);
-  }  
+
+    // Este escuchador es llamado siempre que el usuario interactúa con la notificación (tocándola cuando está fuera de la app)
+    const responseSubscription = Notifications.addNotificationResponseReceivedListener(response => {
+      navigationRef.current?.navigate('Pedidos');
+    });
+
+    return () => {
+      foregroundSubscription.remove();
+      responseSubscription.remove();
+    };
+  }, []);
 
   return (
     <AutenticarContextoProveedor>
-      <NavigationContainer>
+      <NavigationContainer  ref={navigationRef}>
         <AppNavigator />
         <FlashMessage position="top" />
       </NavigationContainer>

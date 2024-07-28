@@ -1,27 +1,33 @@
 {
   "expo": {
-    "name": "App",
-    "slug": "App",
+    "name": "Farmacia",
+    "slug": "farmacia",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/LogoFar.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0f1b35"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/LogoFar.png",
+        "backgroundColor": "#0f1b35"
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4ef9143c-aa49-48d5-aaab-99c7ec7cde69"
+      }
+    },
+    "owner": "danthony"
   }
 }

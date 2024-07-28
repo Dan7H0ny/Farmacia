@@ -91,7 +91,8 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
     }
   }
   // Devolver solo una predicción por iteración de días
-  return { 
+  return {
+    producto: producto._id, 
     nombreProducto: producto.producto.nombre, 
     prediccion: { ventas: primeraPrediccion, stockRestante }, 
     diaAgotamiento 

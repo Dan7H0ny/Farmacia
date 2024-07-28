@@ -16,12 +16,13 @@ const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar })
     setCurrentPage(0);
   };
   const filtrarDatos = usuarios.filter(elemento => {
-    const { producto, categoria } = elemento;
+    const { producto, categoria, fecha_caducidad } = elemento;
     const busqueda = buscar.toLowerCase();
   
     return (
       producto.nombre.toLowerCase().includes(busqueda) ||
-      categoria.nombre.toLowerCase().includes(busqueda)  
+      categoria.nombre.toLowerCase().includes(busqueda) ||  
+      fecha_caducidad.toLowerCase().includes(busqueda) 
     );
   });
 

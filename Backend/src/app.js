@@ -3,9 +3,11 @@ const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const utiles = require('./config/newuser')
-const crearDatos  = require('./config/cargar-venta')
+const utiles = require('./config/newuser');
+const crearDatos  = require('./config/cargar-notificacion');
 require('dotenv').config();
+require('./controller/scheduler'); // Asegúrate de que la ruta es correcta
+
 
 app.set('key', process.env.TOKEN_LLAVE);
 app.use(cors());
@@ -24,6 +26,7 @@ app.use('/proveedor', require('./controller/proveedores'));
 app.use('/producto', require('./controller/productos'));
 app.use('/venta', require('./controller/ventas'));
 app.use('/prediccion', require('./controller/prediccion'));
+app.use('/notificacion', require('./controller/notificacion'));
 
 mongoose.connect(process.env.BD_CONEXION, {
   useNewUrlParser: true,

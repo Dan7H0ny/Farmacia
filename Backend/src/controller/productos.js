@@ -26,7 +26,7 @@ router.get('/mostrar', verificacion, async (req, res) => {
       .populate('tipo', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
-      .sort({ fecha_caducidad: 1 });
+      .sort({ fecha_registro: -1 });
     res.json(productosEncontrados);
   } catch (error) {
     console.error(error);
@@ -51,23 +51,6 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al obtener el Producto' });
-  }
-});
-
-router.get('/buscarnombre/:nombre', verificacion, async (req, res) => {
-  const { nombre } = req.params;
-  try {
-    const productos = await Producto.find({ nombre: { $regex: new RegExp(nombre, 'i') } })
-    .populate('proveedor', 'nombre_marca')
-    .populate('tipo', 'nombre')
-    .populate('usuario', 'nombre apellido rol correo').sort({ fecha_caducidad: 1 });
-    if (!productos || productos.length === 0) {
-      return res.status(404).json({ mensaje: 'Producto no encontrado' });
-    }
-    res.json(productos);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al obtener los productos' });
   }
 });
 

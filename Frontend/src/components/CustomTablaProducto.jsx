@@ -21,8 +21,8 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar }
   
     return (
       nombre.toLowerCase().includes(busqueda) ||
-      proveedor.nombre_marca.toLowerCase().includes(busqueda)  ||
-      tipo.toLowerCase().includes(busqueda)
+      proveedor.nombre_marca.toLowerCase().includes(busqueda) ||
+      tipo.nombre.toLowerCase().includes(busqueda)  
     );
   });
 

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Drawer, IconButton, Box, Typography, Grid, Avatar } from '@mui/material';
 import { Inventory2Outlined, MonetizationOnOutlined, MeetingRoom, HomeOutlined, PhoneAndroid, PeopleAltOutlined, Password, 
   MenuOutlined, Email, Room, BusinessCenter, PhotoCameraFrontOutlined, ManageAccountsOutlined, SupervisedUserCircle, AppRegistrationOutlined, 
-  EditOutlined, Person, AddBoxOutlined } from '@mui/icons-material';
+  DashboardOutlined, Person, AddBoxOutlined } from '@mui/icons-material';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
@@ -70,7 +70,7 @@ export const MenuAdministrador = () => {
         </form>
       );
       Swal.fire({
-        title: 'DATOS DEL USUARIO',
+        title: 'PERFIL DEL USUARIO',
         html: container,
         showCancelButton: true,
         confirmButtonText: 'Actualizar',
@@ -138,6 +138,7 @@ export const MenuAdministrador = () => {
   const GetVenta = () => {setisVenta(!Venta);};
 
   function Dashboard() {navigate(`/Menu/Administrador/Dashboard`);}
+  function Home() {navigate(`/Menu/Administrador`);}
 
   function RegistrarUsuario() {navigate(`/Menu/Administrador/Usuario/Registrar`);}
   function ListarUsuario() {navigate(`/Menu/Administrador/Usuario/Listar`);}
@@ -186,10 +187,10 @@ export const MenuAdministrador = () => {
           </IconButton>
           {drawerOpen &&
           <>
-            <IconButton onClick={botonActualizar} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
-              <EditOutlined sx={{ color: '#e2e2e2' }} />
-            </IconButton>
             <IconButton onClick={Dashboard} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
+              <DashboardOutlined sx={{ color: '#e2e2e2' }} />
+            </IconButton>
+            <IconButton onClick={Home} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
               <HomeOutlined sx={{ color: '#e2e2e2' }} />
             </IconButton>
           </>
@@ -206,7 +207,11 @@ export const MenuAdministrador = () => {
         </div>
         <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '10px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>
           {drawerOpen && (
-            <Avatar sx={{ bgcolor: '#e2e2e2', color: '#0f1b35', marginRight: drawerOpen ? 2 : 0 }}>{nombre.charAt(0)}</Avatar>
+            <IconButton onClick={botonActualizar} sx={{ marginRight: drawerOpen ? 2 : 0 }}>
+              <Avatar sx={{ bgcolor: '#e2e2e2', color: '#0f1b35' }}>
+                {nombre.charAt(0)}
+              </Avatar>
+            </IconButton>
           )}
             {drawerOpen && (
               <Box sx={{ display: 'flex', flexDirection: 'column', color: '#e2e2e2', alignItems: 'flex-start' }}>

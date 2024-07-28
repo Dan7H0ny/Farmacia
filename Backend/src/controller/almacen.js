@@ -23,8 +23,10 @@ router.post('/crear',verificacion, async (req, res) => {
     const productoEnAlmacen = await Almacen.findOne({ producto });
     if (productoEnAlmacen) {
       return res.status(400).json({ mensaje: 'El producto ya está registrado en el almacén.' });
-    } 
-
+    }
+    const notificacionNueva = new Notificacion({ producto, estado: false });
+    await notificacionNueva.save();
+     
     const almacen = new Almacen({ producto, categoria, precioVenta, cantidad_stock, estado: true, usuario_registro: usuario, usuario_actualizacion: usuario,
       fecha_caducidad: fechaCaducidad, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
     await almacen.save();
@@ -190,7 +192,6 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
       .sort({ fecha_caducidad: 1 });
 
     res.status(200).json({ mensaje: 'Almacen actualizado exitosamente', almacenesEncontrados });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar el almacen' });

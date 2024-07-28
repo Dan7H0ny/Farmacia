@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useMemo, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -11,41 +11,39 @@ export function AutenticarContextoProveedor({ children }) {
   const [rol, setRol] = useState(null);
 
   useEffect(() => {
-    async function cargarDatos() {
+    const cargarDatos = async () => {
       const token = await AsyncStorage.getItem('token');
-      const id = await AsyncStorage.getItem('id');
-      const nombre = await AsyncStorage.getItem('nombre');
-      const rol = await AsyncStorage.getItem('rol');
-      
-      if (token) {
+      const storedRol = await AsyncStorage.getItem('rol');
+      if (token && storedRol === 'Administrador') {
+        setId(await AsyncStorage.getItem('id'));
+        setNombre(await AsyncStorage.getItem('nombre'));
+        setRol(storedRol);
         setAutenticado(true);
-        setId(id);
-        setNombre(nombre);
-        setRol(rol);
       }
-    }
-
+    };
     cargarDatos();
   }, []);
 
-  const iniciarSesion = useCallback(async function(id, nombre, rol, token) {
-    await AsyncStorage.setItem('id', id);
-    await AsyncStorage.setItem('nombre', nombre);
-    await AsyncStorage.setItem('rol', rol);
-    await AsyncStorage.setItem('token', token);
-    
-    setId(id);
-    setNombre(nombre);
-    setRol(rol);
-    setAutenticado(true);
+  const iniciarSesion = useCallback(async (id, nombre, rol, token) => {
+    if (rol === 'Administrador') {
+      await AsyncStorage.setItem('id', id);
+      await AsyncStorage.setItem('nombre', nombre);
+      await AsyncStorage.setItem('rol', rol);
+      await AsyncStorage.setItem('token', token);
+      setId(id);
+      setNombre(nombre);
+      setRol(rol);
+      setAutenticado(true);
+    } else {
+      setAutenticado(false);
+    }
   }, []);
 
-  const cerrarSesion = useCallback(async function() {
+  const cerrarSesion = useCallback(async () => {
     await AsyncStorage.removeItem('id');
     await AsyncStorage.removeItem('nombre');
     await AsyncStorage.removeItem('rol');
     await AsyncStorage.removeItem('token');
-    
     setId(null);
     setNombre(null);
     setRol(null);
@@ -68,7 +66,7 @@ export function AutenticarContextoProveedor({ children }) {
 }
 
 AutenticarContextoProveedor.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 export function useAutenticarContexto() {

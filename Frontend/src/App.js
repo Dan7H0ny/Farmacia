@@ -52,6 +52,8 @@ function App() {
           )}
           {rol === 'Cajero' && (
             <Route path="/Menu/Cajero" element={<MenuCajero />}>
+              <Route path="Dashboard" element={<Dashboard />} />
+              <Route path="Complemento/Registrar" element={<RegistrarComplementos />} />
               <Route path="Cliente/Registrar" element={<RegistrarCliente />} />
               <Route path="Cliente/Listar" element={<ListarCliente />} />
               <Route path="Venta/Registrar" element={<RegistrarVenta />} />

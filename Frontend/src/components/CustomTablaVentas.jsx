@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination, Button, Box } from '@mui/material';
 import { Visibility, ModeEdit } from '@mui/icons-material';
 import '../assets/css/tabla.css';
+import { format } from 'date-fns';
 
 const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -17,11 +18,15 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
   };
 
   const filtrarDatos = usuarios.filter(elemento => {
-    const { cliente } = elemento;
+    const { cliente, productos } = elemento;
     const busqueda = buscar.toLowerCase();
-  
+    const productoCoincide = productos.some(producto => 
+      producto.nombre.toLowerCase().includes(busqueda)
+    );
+
     return (
-      cliente.nombreCompleto.toLowerCase().includes(busqueda)
+      cliente.nombreCompleto.toLowerCase().includes(busqueda) ||
+      productoCoincide
     );
   });
 
@@ -69,7 +74,7 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
                 ))}
               </TableCell>
               <TableCell>{x.precio_total}</TableCell>
-              <TableCell>{new Date(x.fecha_registro).toISOString().split('T')[0]}</TableCell>
+              <TableCell>{format(x.fecha_registro, 'dd/MM/yyyy')}</TableCell>
               <TableCell>
                 <Button variant="contained" onClick={() => botonMostrar(x)} sx={{ backgroundColor: "#0f1b35", color: "#e2e2e2", border: '2px solid #e2e2e2' }}>
                   <Visibility />

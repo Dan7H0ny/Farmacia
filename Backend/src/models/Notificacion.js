@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 
 const notificacionSchema = new mongoose.Schema({
-  venta: {
+  producto: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Cliente',
+    ref: 'Almacen',
+  },
+  estado: {
+    type: Boolean,
     required: true,
   },
 });

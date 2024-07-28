@@ -42,62 +42,51 @@ const ExportExcelButton = ({ data, fileName, sheetName }) => {
         const { fechaInicio_, fechaFin_ } = result.value;
 
         // Filtrar los datos basados en las fechas proporcionadas
-        const filteredData = data.filter(d => {
-          const fechaRegistro = new Date(d.FechaRegistro);
+        const DatosConFecha = data.filter(d => {
+          const fechaRegistro = new Date(d.fecha_registro); 
           return fechaRegistro >= new Date(fechaInicio_) && fechaRegistro <= new Date(fechaFin_);
         });
 
-        const datosConNumeros = filteredData.map((item, index) => ({
+        const DatosActualizados = DatosConFecha.map((item, index) => ({
           'N°': index + 1,
-          ...item
+          'Nombre del Cliente': item.cliente.nombreCompleto,
+          'Identificación': item.cliente.stringIdentity.nombre,
+          'Número de Identificación': item.cliente.combinedIdentity,
+          'Productos': item.productos.map(prod => `${prod.nombre} (${prod.cantidad_producto} unidades)`).join(', '),
+          'Venta Total': item.precio_total,
+          'Fecha de Registro': new Date(item.fecha_registro).toLocaleDateString('es-ES'),
+          'Fecha de Actualización': new Date(item.fecha_actualizacion).toLocaleDateString('es-ES'),
+          'Registrado Por': `${item.usuario_registra.nombre} ${item.usuario_registra.apellido}`,
+          'Actualizado Por': `${item.usuario_update.nombre} ${item.usuario_update.apellido}`
         }));
 
-        // Convertir datos JSON a hoja de Excel
-        const ws = XLSX.utils.json_to_sheet(datosConNumeros);
+        const ws = XLSX.utils.json_to_sheet(DatosActualizados, { origin: -1 });
 
-        // Definir encabezados personalizados y su estilo
-        const headers = ["N°", "NombreCliente", "Identificacion", "NumeroIdentificacion", "Productos", "TotalVenta", "FechaRegistro", "FechaActualizacion", "UsuarioRegistro", "UsuarioUpdate"];
+        // Agregar encabezados personalizados
+        const headers = ["N°", "Nombre del Cliente", "Identificación", "Número de Identificación", "Productos", "Venta Total", "Fecha de Registro", "Fecha de Actualización", "Registrado Por", "Actualizado Por"];
         XLSX.utils.sheet_add_aoa(ws, [headers], { origin: "A1" });
 
-        // Aplicar estilos a los encabezados
-        headers.forEach((header, colIdx) => {
-          const cellRef = XLSX.utils.encode_cell({ r: 0, c: colIdx });
-          if (!ws[cellRef]) ws[cellRef] = {};
-          ws[cellRef].s = {
-            fill: { fgColor: { rgb: "FFFF00" } }, // Color de fondo amarillo
-            font: { bold: true, sz: 12, name: 'Calibri', color: { rgb: "000000" } }, // Texto en negrita
-            alignment: { horizontal: "center", vertical: "center" },
-            border: {
-              top: { style: "thin", color: { rgb: "000000" } },
-              bottom: { style: "thin", color: { rgb: "000000" } },
-              left: { style: "thin", color: { rgb: "000000" } },
-              right: { style: "thin", color: { rgb: "000000" } }
-            }
-          };
-        });
+       // Aplicar estilos a los encabezados
+      headers.forEach((header, index) => {
+        const cellRef = XLSX.utils.encode_cell({ r: 0, c: index });
+        if (!ws[cellRef]) ws[cellRef] = {};
+        ws[cellRef].s = {
+          fill: { fgColor: { rgb: "FFFF00" } },
+          font: { bold: true, color: { rgb: "000000" } },
+          alignment: { horizontal: "center" }
+        };
+      });
 
-        const range = XLSX.utils.decode_range(ws['!ref']);
-        range.s.r = 0; // Ajustar para incluir los encabezados
-
-        for (let row = 1; row <= range.e.r; ++row) {
-          for (let col = 0; col <= range.e.c; ++col) {
-            const cellRef = XLSX.utils.encode_cell({ r: row, c: col });
-            if (!ws[cellRef]) ws[cellRef] = {};
-            ws[cellRef].s = {
-              alignment: { horizontal: "left", vertical: "center" },
-              border: {
-                top: { style: "thin", color: { rgb: "000000" } },
-                bottom: { style: "thin", color: { rgb: "000000" } },
-                left: { style: "thin", color: { rgb: "000000" } },
-                right: { style: "thin", color: { rgb: "000000" } }
-              }
-            };
-            // Aplicar formato de fecha a las celdas que contienen fechas
-            if (headers[col] === "FechaRegistro" || headers[col] === "FechaActualizacion") {
-              ws[cellRef].z = 'dd/mm/yyyy'; // Formato de fecha
-            }
-          }
-        }
+      // Estilizar la columna 'N°'
+      for (let row = 1; row <= data.length; row++) {
+        const cellRef = XLSX.utils.encode_cell({ r: row, c: 0 }); // Columna 'N°'
+        if (!ws[cellRef]) ws[cellRef] = {};
+        ws[cellRef].s = {
+          fill: { fgColor: { rgb: "FF0000" } },
+          font: { bold: true, color: { rgb: "FFFFFF" } },
+          alignment: { horizontal: "center" }
+        };
+      }
 
         // Ajustar el ancho de las columnas
         const colWidths = [

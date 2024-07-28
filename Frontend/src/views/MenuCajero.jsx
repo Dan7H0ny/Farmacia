@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Drawer, IconButton, Grid, Box, Typography, Avatar } from '@mui/material';
 import { MonetizationOnOutlined, MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, 
-  BusinessCenter, PhotoCameraFrontOutlined, SupervisedUserCircle, EditOutlined, Person } from '@mui/icons-material';
+  BusinessCenter, PhotoCameraFrontOutlined, SupervisedUserCircle, Person, DashboardOutlined } from '@mui/icons-material';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
@@ -66,7 +66,7 @@ export const MenuCajero = () => {
         </Grid>
       );
       Swal.fire({
-        title: 'DATOS DEL USUARIO',
+        title: 'PERFIL DEL USUARIO',
         html: container,
         showCancelButton: true,
         confirmButtonColor: '#e0ffff',
@@ -123,6 +123,7 @@ export const MenuCajero = () => {
   const GetVenta = () => {setisVenta(!Venta);};
 
   function Dashboard() {navigate(`/Menu/Cajero/Dashboard`);}
+  function Home() {navigate(`/Menu/Cajero`);}
 
   function RegistrarCliente() {navigate(`/Menu/Cajero/Cliente/Registrar`);}
   function ListarCliente() {navigate(`/Menu/Cajero/Cliente/Listar`);}
@@ -155,10 +156,10 @@ export const MenuCajero = () => {
           </IconButton>
           {drawerOpen &&
           <>
-            <IconButton onClick={botonActualizar} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
-              <EditOutlined sx={{ color: '#e2e2e2' }} />
-            </IconButton>
             <IconButton onClick={Dashboard} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
+              <DashboardOutlined sx={{ color: '#e2e2e2' }} />
+            </IconButton>
+            <IconButton onClick={Home} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
               <HomeOutlined sx={{ color: '#e2e2e2' }} />
             </IconButton>
           </>
@@ -170,7 +171,11 @@ export const MenuCajero = () => {
         </div>
         <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '10px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>
           {drawerOpen && (
-            <Avatar sx={{ bgcolor: '#e2e2e2', color: '#0f1b35', marginRight: drawerOpen ? 2 : 0 }}>{nombre.charAt(0)}</Avatar>
+            <IconButton onClick={botonActualizar} sx={{ marginRight: drawerOpen ? 2 : 0 }}>
+              <Avatar sx={{ bgcolor: '#e2e2e2', color: '#0f1b35' }}>
+                {nombre.charAt(0)}
+              </Avatar>
+            </IconButton>
           )}
             {drawerOpen && (
               <Box sx={{ display: 'flex', flexDirection: 'column', color: '#e2e2e2', alignItems: 'flex-start' }}>

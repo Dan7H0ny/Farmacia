@@ -15,7 +15,6 @@ import CustomUpdate from '../components/CustomUpdate';
 
 export const ListarVenta = () => {
   const [ventas, setVentas] = useState([]);
-  const [imprimir, setVentasImprimir] = useState([]);
   const [buscar, setBuscar] = useState('');
   const rol = localStorage.getItem('rol');
 
@@ -38,38 +37,6 @@ export const ListarVenta = () => {
       })
       .catch(error => { console.log(error);});
   }, [navigate, token, configInicial, UrlReact]);
-
-  useEffect(() => {
-    if (ventas.length > 0) {
-      const datosTransformados = ventas.map(venta => {
-        const fechaRegistro = new Date(venta.fecha_registro);
-        const fechaActualizacion = new Date(venta.fecha_actualizacion);
-        
-        const opciones = {
-          year: 'numeric', 
-          month: '2-digit', 
-          day: '2-digit', 
-          hour: '2-digit', 
-          minute: '2-digit', 
-          second: '2-digit', 
-          hour12: false // Usar formato de 24 horas
-        };
-
-        return {
-          NombreCliente: venta.cliente.nombreCompleto,
-          Identificacion: venta.cliente.stringIdentity.nombre,
-          NumeroIdentificacion: venta.cliente.combinedIdentity, 
-          Productos: venta.productos.map(prod => `${prod.nombre} - ${prod.tipo} - ${prod.proveedor} - ${prod.categoria} - (${prod.cantidad_producto} unidades) - ${prod.precio_venta}`).join(', '), // Asumiendo que es un array
-          TotalVenta: venta.precio_total,
-          FechaRegistro: fechaRegistro.toLocaleString('es-ES', opciones),
-          FechaActualizacion: fechaActualizacion.toLocaleString('es-ES', opciones),
-          UsuarioRegistro: `${venta.usuario_registra.nombre} - ${venta.usuario_registra.apellido} - ${venta.usuario_registra.rol}`,
-          UsuarioUpdate: `${venta.usuario_update.nombre} - ${venta.usuario_update.apellido} - ${venta.usuario_update.rol}`,    
-        };
-      });
-      setVentasImprimir(datosTransformados);
-    }
-  }, [ventas]);
 
   const btnMostrar = (venta) => {
     if (!token) {
@@ -132,7 +99,7 @@ export const ListarVenta = () => {
   return (
     <div id="caja_contenido">
       <Box mt={3}>
-        <CustomTypography text={'Control de Almacen'} />
+        <CustomTypography text={'Control de Ventas'} />
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>
           <Grid container spacing={3} >
             <CustomRegisterUser
@@ -147,7 +114,7 @@ export const ListarVenta = () => {
             />
             <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
               <ExportExcelButton
-                data={imprimir}
+                data={ventas}
                 fileName="Reporte de Ventas"
                 sheetName="Ventas"
                 sx={{ mt: 2 }}

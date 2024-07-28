@@ -37,7 +37,8 @@ router.get('/mostrar', verificacion, async (req, res) => {
   try {
     const clientes = await Cliente.find({})
       .populate('usuario_registro', 'nombre apellido')
-      .populate('stringIdentity', 'nombre');
+      .populate('stringIdentity', 'nombre')
+      .sort({ fecha_registro: -1 });
     res.json(clientes);
   } catch (error) {
     console.error(error);

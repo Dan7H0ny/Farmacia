@@ -138,7 +138,7 @@ export const ActualizarVenta = () => {
   }, [cantidad, productosAñadidos]);
 
   const createTransposedData = () => {
-    const headers = ["Producto", "Categoria", "Stock", "Fecha Caducidad", "Precio", "Añadir"];
+    const headers = ["Producto", "Categoria", "Cantidad", "Fecha Caducidad", "Precio", "Añadir"];
     const paginatedProductos = productosAñadidos.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
     const transposedData = headers.map((header) => [
       header,
@@ -148,7 +148,7 @@ export const ActualizarVenta = () => {
             return row.producto.nombre;
           case "Categoria":
             return row.categoria.nombre;
-          case "Stock":
+          case "Cantidad":
             return row.cantidad_stock;
           case "Fecha Caducidad":
             return new Date(row.fecha_caducidad).toISOString().split('T')[0];

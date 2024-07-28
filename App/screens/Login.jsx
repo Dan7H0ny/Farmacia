@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import axios from 'axios';
-import { useAutenticarContexto } from "../context/auntenticar.js";
+import { useAutenticarContexto } from "../context/AutenticacionContexto";
 import { useNavigation } from '@react-navigation/native';
-import CustomSwal from '../components/CustomSwal.jsx';
+import CustomSwal from '../components/CustomSwal';
 import imagen from '../assets/LogoFar.png';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import styles from '../styles/LoginStyles';
+import URL_BASE from '../config';
 
 export const Login = () => {
   const navigation = useNavigation();
@@ -23,32 +24,38 @@ export const Login = () => {
   };
 
   const handleLoginSubmit = () => {
-    axios.post('http://192.168.1.133:4000/login', { correo, password })
+    if (correo === '' || password === '') {
+      CustomSwal({ icono: 'error', titulo: 'Campos requeridos', mensaje: 'Por favor, completa todos los campos.' });
+      return;
+    }
+    else
+    {
+      axios.post(`${URL_BASE}/login`, { correo, password })
       .then(response => {
-        CustomSwal({ icono: 'success', titulo: 'Acceso correcto', mensaje: response.mensaje });
-        iniciarSesion(response._id, response.nombre, response.rol, response.token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.token}`;
-        if (response.rol === 'Administrador') {
-          navigation.navigate('AdministradorMenu');
-        } else if (response.rol === 'Cajero') {
-          navigation.navigate('CajeroMenu');
+        const { _id, nombre, rol, token, mensaje } = response.data;
+        CustomSwal({ icono: 'success', titulo: 'Acceso correcto', mensaje: mensaje });
+        iniciarSesion(_id, nombre, rol, token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        if (rol === 'Administrador') {
+          navigation.navigate('Menu');
         } else {
-          navigation.navigate('Login');
+          CustomSwal({ icono: 'error', titulo: 'Acceso Denegado', mensaje: 'No tienes permisos de administrador' });
         }
       })
       .catch(error => {
-        CustomSwal({ icono: 'error', titulo: 'Acceso Denegado', mensaje: error.mensaje });
+        console.log(error);
+        CustomSwal({ icono: 'error', titulo: 'Acceso Denegado', mensaje: error.response.data.mensaje });
       });
+    }
   };
 
   const handlePasswordResetSubmit = () => {
-    axios.post('http://192.168.1.133:4000/enviarpin', { correo })
+    axios.post(`${URL_BASE}/enviarpin`, { correo })
       .then(response => {
-        CustomSwal({ icono: 'success', titulo: 'Envio correcto', mensaje: response.mensaje });
-        navigation.navigate('Login');
+        CustomSwal({ icono: 'success', titulo: 'Envio correcto', mensaje: response.data.mensaje });
       })
       .catch(error => {
-        CustomSwal({ icono: 'error', titulo: 'El envio no se pudo concretar', mensaje: error.mensaje });
+        CustomSwal({ icono: 'error', titulo: 'El envio no se pudo concretar', mensaje: error.response.data.mensaje });
       });
   };
 

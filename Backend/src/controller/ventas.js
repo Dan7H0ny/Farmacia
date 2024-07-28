@@ -76,7 +76,8 @@ router.get('/mostrar',verificacion, async (req, res) => {
       }
     })
     .populate('usuario_registra') // Opcional, si necesitas datos de usuario
-    .populate('usuario_update'); // Opcional, si necesitas datos de usuario
+    .populate('usuario_update')
+    .sort({ fecha_registro: -1 });
     res.json(ventas);
   } catch (error) {
     console.error(error);

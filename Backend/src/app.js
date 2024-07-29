@@ -6,7 +6,6 @@ const cookieParser = require('cookie-parser');
 const utiles = require('./config/newuser');
 const crearDatos  = require('./config/cargar-notificacion');
 require('dotenv').config();
-require('./controller/scheduler'); // Asegúrate de que la ruta es correcta
 
 app.set('key', process.env.TOKEN_LLAVE);
 app.use(cors());

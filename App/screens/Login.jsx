@@ -43,7 +43,6 @@ export const Login = () => {
         }
       })
       .catch(error => {
-        console.log(error);
         CustomSwal({ icono: 'error', titulo: 'Acceso Denegado', mensaje: error.response.data.mensaje });
       });
     }

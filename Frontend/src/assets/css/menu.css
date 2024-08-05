@@ -16,6 +16,7 @@
 #caja_contenido {
   flex: 1; /* El contenido principal ocupa el espacio restante */
   overflow-y: auto; /* Permite desplazamiento vertical si es necesario */
+  max-height: 100vh;
 }
 .content-open {
   margin-left: 17.5%; /* El 50px representa el ancho del menú cuando está cerrado */

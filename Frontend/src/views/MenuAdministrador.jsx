@@ -196,16 +196,16 @@ export const MenuAdministrador = () => {
           </>
           }
         </div>
-        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <CustomMenu itemName={"Complementos"} itemOpen={Complemento} BtnMostrar={toggleComplemento} BtnRegistrar={RegistrarComplemento} drawerOpen={drawerOpen} icon={<AddBoxOutlined />}/>
-          <CustomMenu itemName={"Usuario"} itemOpen={Usuario} BtnMostrar={toggleUsuario} BtnRegistrar={RegistrarUsuario} BtnListar={ListarUsuario} drawerOpen={drawerOpen} icon={<PeopleAltOutlined />}/>
-          <CustomMenu itemName={"Proveedor"} itemOpen={Proveedor} BtnMostrar={toggleProveedor} BtnRegistrar={RegistrarProveedor} BtnListar={ListarProveedor} drawerOpen={drawerOpen} icon={<ManageAccountsOutlined />}/>
-          <CustomMenu itemName={"Cliente"} itemOpen={Cliente} BtnMostrar={toggleCliente} BtnRegistrar={RegistrarCliente} BtnListar={ListarCliente} drawerOpen={drawerOpen} icon={<PhotoCameraFrontOutlined />}/>
-          <CustomMenu itemName={"Producto"} itemOpen={Producto} BtnMostrar={toggleProducto} BtnRegistrar={RegistrarProducto} BtnListar={ListarProducto} drawerOpen={drawerOpen} icon={<AppRegistrationOutlined />}/>
-          <CustomMenu itemName={"Almacen"} itemOpen={Almacen} BtnMostrar={toggleAlmacen} BtnRegistrar={RegistrarAlmacen} BtnListar={ListarAlmacen} drawerOpen={drawerOpen} icon={<Inventory2Outlined />}/>
-          <CustomMenu itemName={"Venta"} itemOpen={Venta} BtnMostrar={toggleVenta} BtnRegistrar={RegistrarVenta} BtnListar={ListarVenta} drawerOpen={drawerOpen} icon={<MonetizationOnOutlined />}/>
+        <div style={{ height: '100%', flexDirection: 'column', overflowX: 'auto'}}>
+          <CustomMenu itemName={"Complementos"} itemOpen={Complemento} BtnMostrar={toggleComplemento} BtnRegistrar={RegistrarComplemento} drawerOpen={drawerOpen} icon={<AddBoxOutlined />} />
+          <CustomMenu itemName={"Usuario"} itemOpen={Usuario} BtnMostrar={toggleUsuario} BtnRegistrar={RegistrarUsuario} BtnListar={ListarUsuario} drawerOpen={drawerOpen} icon={<PeopleAltOutlined />} />
+          <CustomMenu itemName={"Proveedor"} itemOpen={Proveedor} BtnMostrar={toggleProveedor} BtnRegistrar={RegistrarProveedor} BtnListar={ListarProveedor} drawerOpen={drawerOpen} icon={<ManageAccountsOutlined />} />
+          <CustomMenu itemName={"Cliente"} itemOpen={Cliente} BtnMostrar={toggleCliente} BtnRegistrar={RegistrarCliente} BtnListar={ListarCliente} drawerOpen={drawerOpen} icon={<PhotoCameraFrontOutlined />} />
+          <CustomMenu itemName={"Producto"} itemOpen={Producto} BtnMostrar={toggleProducto} BtnRegistrar={RegistrarProducto} BtnListar={ListarProducto} drawerOpen={drawerOpen} icon={<AppRegistrationOutlined />} />
+          <CustomMenu itemName={"Almacen"} itemOpen={Almacen} BtnMostrar={toggleAlmacen} BtnRegistrar={RegistrarAlmacen} BtnListar={ListarAlmacen} drawerOpen={drawerOpen} icon={<Inventory2Outlined />} />
+          <CustomMenu itemName={"Venta"} itemOpen={Venta} BtnMostrar={toggleVenta} BtnRegistrar={RegistrarVenta} BtnListar={ListarVenta} drawerOpen={drawerOpen} icon={<MonetizationOnOutlined />} />
         </div>
-        <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '10px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>
+        <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '3px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>
           {drawerOpen && (
             <IconButton onClick={botonActualizar} sx={{ marginRight: drawerOpen ? 2 : 0 }}>
               <Avatar sx={{ bgcolor: '#e2e2e2', color: '#0f1b35' }}>
@@ -213,12 +213,12 @@ export const MenuAdministrador = () => {
               </Avatar>
             </IconButton>
           )}
-            {drawerOpen && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', color: '#e2e2e2', alignItems: 'flex-start' }}>
-                <Typography>Nombre: {nombre}</Typography>
-                <Typography>Rol: {rol}</Typography>
-              </Box>
-            )}
+          {drawerOpen && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', color: '#e2e2e2', alignItems: 'flex-start' }}>
+              <Typography>Nombre: {nombre}</Typography>
+              <Typography>Rol: {rol}</Typography>
+            </Box>
+          )}
           <IconButton onClick={handleLogout} sx={{ color: '#e2e2e2' }}>
             <MeetingRoom />
           </IconButton>

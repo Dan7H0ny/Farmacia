@@ -1,5 +1,4 @@
 const ARIMA = require('arima');
-const Producto = require('../models/Producto');
 const Venta = require('../models/Venta');
 const Almacen = require('../models/Almacen');
 
@@ -62,7 +61,7 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
   arima.train(y);
   const predicciones = arima.predict(diasAPredecir);
 
-  const producto = await Almacen.findById(productoId).populate('producto', 'nombre');
+  const producto = await Almacen.findById(productoId).populate('producto', 'nombre').populate('categoria', 'nombre');
   const capacidadTotalInicial = calcularCapacidadTotalInicial(producto);
 
   const primeraPrediccion = predicciones[0].map(valor => Math.ceil(valor));
@@ -92,7 +91,8 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
   }
   // Devolver solo una predicción por iteración de días
   return {
-    producto: producto._id, 
+    producto: producto._id,
+    nombreCategoria: producto.categoria.nombre, 
     nombreProducto: producto.producto.nombre, 
     prediccion: { ventas: primeraPrediccion, stockRestante }, 
     diaAgotamiento 
@@ -139,74 +139,4 @@ async function predecirVentasParaTodosLosProductosARIMA(diasAPredecir) {
   }
 }
 
-async function predecirVentasParaUnProducto(diasAPredecir, nombre_producto) {
-  try {
-    const ventasPorProducto = await obtenerVentasDiarias();
-
-    // Busca en el campo 'producto' que está referenciado en el modelo 'Almacen'
-    const productos = await Almacen.find({})
-      .populate({
-        path: 'producto',
-        match: { nombre: { $regex: new RegExp(nombre_producto, 'i') } },
-        select: 'nombre'
-      });
-
-    // Filtrar productos que tienen el nombre deseado
-    const productosFiltrados = productos.filter(producto => producto.producto);
-
-    if (!productosFiltrados || productosFiltrados.length === 0) {
-      throw new Error('Producto no encontrado');
-    }
-
-    const predicciones = await Promise.all(
-      productosFiltrados.map(producto => predecirVentas(ventasPorProducto, producto._id, diasAPredecir))
-    );
-
-    const productosConDiaAgotamiento = predicciones.map(prediccion => ({
-      ...prediccion,
-      diaAgotamiento: prediccion.diaAgotamiento,
-    }));
-
-    return productosConDiaAgotamiento;
-  } catch (error) {
-    console.error('Error al predecir ventas para el producto:', error);
-    throw error;
-  }
-}
-
-async function obtenerVentasDiariasPorCategoria(diasAPredecir, categoria_elegida) {
-  try {
-    const ventasPorProducto = await obtenerVentasDiarias();
-
-    // Busca en el campo 'producto' que está referenciado en el modelo 'Almacen'
-    const productos = await Almacen.find({})
-      .populate({
-        path: 'categoria',
-        match: { nombre: { $regex: new RegExp(categoria_elegida, 'i') } },
-        select: 'nombre'
-      });
-
-      const productosFiltrados = productos.filter(producto => producto.categoria && producto.categoria.nombre);
-    
-      if (!productosFiltrados || productosFiltrados.length === 0) {
-        throw new Error('Productos no encontrados en la categoría especificada');
-      }
-  
-      const predicciones = await Promise.all(
-        productosFiltrados.map(producto => predecirVentas(ventasPorProducto, producto._id, diasAPredecir))
-      );
-  
-      const productosConDiaAgotamiento = predicciones.map(prediccion => ({
-        ...prediccion,
-        diaAgotamiento: prediccion.diaAgotamiento,
-      }));
-  
-      return productosConDiaAgotamiento;
-    } catch (error) {
-      console.error('Error al predecir ventas para la categoría:', error);
-      throw error;
-    }
-  };
-
-
-module.exports = { predecirVentasParaTodosLosProductosARIMA, predecirVentasParaUnProducto, obtenerVentasDiariasPorCategoria };
+module.exports = { predecirVentasParaTodosLosProductosARIMA};

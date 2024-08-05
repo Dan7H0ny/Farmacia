@@ -18,7 +18,7 @@ const BarChartInfo = () => {
 
   const obtenerPrediccionAgotamiento = useCallback(async () => {
     try {
-      const response = await axios.post(`${UrlReact}/prediccion/prediccion-ARIMA`);
+      const response = await axios.post(`${UrlReact}/prediccion/mostrar/predicciones`);
       if (Array.isArray(response)) { // Accede a response.data
         setPredicciones(response);
       } else {
@@ -34,22 +34,23 @@ const BarChartInfo = () => {
       CustomSwal({ icono: 'warning', titulo: 'Error de entrada', mensaje: 'Por favor, llene solo un formulario' });
     } else if (producto) {
       try {
-        const response = await axios.post(`${UrlReact}/prediccion/prediccion-para-un-producto`, { nombre_producto: producto });
-        setPredicciones(response);
+        const response = await axios.post(`${UrlReact}/prediccion/mostrar/nombre`, { nombreProducto: producto });
+        setPredicciones(response); // Asegúrate de pasar response.data
       } catch (error) {
-        CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.error});
+        CustomSwal({ icono: 'error', titulo: 'Error al obtener las predicciones', mensaje: error.response?.data?.error || error.message });
       }
     } else if (categoria) {
       try {
-        const response = await axios.post(`${UrlReact}/prediccion/prediccion-por-categoria`, { categoria_elegida: categoria });
-        setPredicciones(response);
+        const response = await axios.post(`${UrlReact}/prediccion/mostrar/categoria`, { nombreCategoria: categoria });
+        setPredicciones(response); // Asegúrate de pasar response.data
       } catch (error) {
-        CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.error});
+        CustomSwal({ icono: 'error', titulo: 'Error al obtener las predicciones', mensaje: error.response?.data?.error || error.message });
       }
     } else {
       obtenerPrediccionAgotamiento();
     }
   };
+  
 
   useEffect(() => {
     obtenerPrediccionAgotamiento();
@@ -68,8 +69,7 @@ const BarChartInfo = () => {
       ...producto,
       totalVentas: producto.prediccion.ventas.reduce((a, b) => a + b, 0),
     }))
-    .sort((a, b) => b.totalVentas - a.totalVentas)
-    .slice(0, 5);
+    .sort((a, b) => b.totalVentas - a.totalVentas);
 
     const coloresClaros = [
       '#add8e6CC', // LightBlue

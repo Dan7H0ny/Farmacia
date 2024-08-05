@@ -1,66 +1,128 @@
 const express = require('express');
-const { predecirVentasParaTodosLosProductosARIMA, predecirVentasParaUnProducto, obtenerVentasDiariasPorCategoria } = require('../config/arima');
+const cron = require('node-cron');
+const { predecirVentasParaTodosLosProductosARIMA } = require('../config/arima');
 const Prediccion = require('../models/Prediccion');
-const Notificacion = require('../models/Notificacion');
 
 const router = express.Router();
 
-router.post('/prediccion-ARIMA', async (req, res) => {
+// Ruta para mostrar las primeras predicciones filtradas por diaAgotamiento
+router.post('/mostrar/predicciones', async (req, res) => {
   try {
-    const diasAPredecir = 7;
-    const productosConDiaAgotamiento = await predecirVentasParaTodosLosProductosARIMA(diasAPredecir);
+    const productosConDiaAgotamiento = await predecirVentasParaTodosLosProductosARIMA(7);
+    await actualizarPrediccionesEnBD(productosConDiaAgotamiento);
+    // Buscar todas las predicciones
+    const predicciones = await Prediccion.find({});
 
-    await Promise.all(productosConDiaAgotamiento.map(async producto => {
-      const notificacion = await Notificacion.findOne({
-        producto: producto.producto,
-        estado: true
-      });
-      if (notificacion) {
-        const prediccionExistente = await Prediccion.findOne({ notificacion: notificacion._id });
-        if (!prediccionExistente) {
-          // Solo guardar la nueva predicción si no existe una con la misma ID de notificación
-          const nuevaPrediccion = new Prediccion({
-            notificacion: notificacion._id,
-            nombreProducto: producto.nombreProducto,
-            prediccion: {
-              ventas: producto.prediccion.ventas,
-              stockRestante: producto.prediccion.stockRestante
-            },
-            diaAgotamiento: producto.diaAgotamiento
-          });
-          await nuevaPrediccion.save();
-        }
-      }
-    }));
+    if (predicciones.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron predicciones' });
+    }
 
-    // Enviar solo los productos que tienen una notificación activa y una predicción guardada
-    res.json(productosConDiaAgotamiento);
+    // Filtrar las predicciones por diaAgotamiento en el rango de 1 a 7
+    const prediccionesFiltradas = predicciones
+      .filter(prediccion => prediccion.diaAgotamiento >= 1 && prediccion.diaAgotamiento <= 7)
+      .sort((a, b) => a.diaAgotamiento - b.diaAgotamiento) // Ordenar por diaAgotamiento de menor a mayor
+      .slice(0, 5); 
+
+    res.json(prediccionesFiltradas);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al obtener las predicciones de agotamiento' });
-  }
-});
-
-router.post('/prediccion-para-un-producto', async (req, res) => {
-  const { nombre_producto } = req.body;
-  try {
-    const diasAPredecir = 7;
-    const productosConDiaAgotamiento = await predecirVentasParaUnProducto(diasAPredecir, nombre_producto);
-    res.json(productosConDiaAgotamiento);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al predecir ventas por el nombre del producto' });
+    res.status(500).json({ error: 'Error al obtener las predicciones' });
   }
 });
 
 
-router.post('/prediccion-por-categoria', async (req, res) => {
-  const { categoria_elegida } = req.body;
+// Ruta para mostrar predicciones filtradas por nombre del producto
+router.post('/mostrar/nombre', async (req, res) => {
   try {
-    const diasAPredecir = 7;
-    const productosConDiaAgotamiento = await obtenerVentasDiariasPorCategoria(diasAPredecir, categoria_elegida);
-    res.json(productosConDiaAgotamiento);
+    const { nombreProducto } = req.body; // Obtener el nombre del producto desde el cuerpo de la solicitud
+    if (!nombreProducto) {
+      return res.status(400).json({ error: 'Nombre del producto es requerido' });
+    }
+
+    // Buscar predicciones por nombre del producto usando expresión regular para coincidencias parciales
+    const predicciones = await Prediccion.find({ nombreProducto: new RegExp(nombreProducto, 'i')});
+
+    if (predicciones.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron predicciones para el nombre proporcionado' });
+    }
+
+    // Filtrar las predicciones por diaAgotamiento en el rango de 1 a 7
+    const prediccionesFiltradas = predicciones
+      .filter(prediccion => prediccion.diaAgotamiento >= 1 && prediccion.diaAgotamiento <= 7)
+      .sort((a, b) => a.diaAgotamiento - b.diaAgotamiento) // Ordenar por diaAgotamiento de menor a mayor
+      .slice(0, 5);
+
+    res.json(prediccionesFiltradas);
   } catch (error) {
-    res.status(500).json({ error: 'Error al predecir ventas por categorias' });
+    res.status(500).json({ error: 'Error al obtener las predicciones por nombre' });
+  }
+});
+
+// Ruta para mostrar predicciones filtradas por categoría
+router.post('/mostrar/categoria', async (req, res) => {
+  try {
+    const { nombreCategoria } = req.body; // Obtener el nombre de la categoría desde el cuerpo de la solicitud
+    if (!nombreCategoria) {
+      return res.status(400).json({ error: 'Nombre de la categoría es requerido' });
+    }
+
+    // Buscar predicciones por nombre de categoría
+    const predicciones = await Prediccion.find({ nombreCategoria: new RegExp(nombreCategoria, 'i') });
+
+    if (predicciones.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron predicciones para la categoría proporcionada' });
+    }
+
+    // Filtrar las predicciones por diaAgotamiento en el rango de 1 a 7
+    const prediccionesFiltradas = predicciones
+      .filter(prediccion => prediccion.diaAgotamiento >= 1 && prediccion.diaAgotamiento <= 7)
+      .sort((a, b) => a.diaAgotamiento - b.diaAgotamiento) // Ordenar por diaAgotamiento de menor a mayor
+      .slice(0, 5); // Tomar los primeros 5 resultados
+
+    res.json(prediccionesFiltradas);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener las predicciones por categoría' });
+  }
+});
+
+
+// Función para guardar o actualizar predicciones en la base de datos
+async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
+  for (let productos of productosConDiaAgotamiento) {
+    const { producto, nombreCategoria, nombreProducto, prediccion, diaAgotamiento } = productos;
+
+    // Buscar la predicción existente en la base de datos por el ID del producto
+    let prediccionExistente = await Prediccion.findOne({ productos: producto });
+
+    if (prediccionExistente) {
+      // Si existe, actualizar la predicción
+      prediccionExistente.nombreCategoria = nombreCategoria;
+      prediccionExistente.nombreProducto = nombreProducto;
+      prediccionExistente.prediccion = prediccion;
+      prediccionExistente.diaAgotamiento = diaAgotamiento;
+      await prediccionExistente.save();
+    } else {
+      // Si no existe, crear una nueva predicción
+      const nuevaPrediccion = new Prediccion({
+        productos: producto,  // Guardar el ID del producto
+        nombreCategoria,
+        nombreProducto,
+        prediccion,
+        diaAgotamiento
+      });
+      await nuevaPrediccion.save();
+    }
+  }
+}
+
+
+// Cron job para ejecutar la predicción todos los días a la medianoche
+cron.schedule('0 8,20 * * *', async () => {
+  try {
+    const productosConDiaAgotamiento = await predecirVentasParaTodosLosProductosARIMA(7);
+    await actualizarPrediccionesEnBD(productosConDiaAgotamiento);
+  } catch (error) {
+    console.error('Error al actualizar predicciones:', error);
   }
 });
 

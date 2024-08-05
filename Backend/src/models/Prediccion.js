@@ -1,26 +1,30 @@
 const mongoose = require('mongoose');
 
 const prediccionSchema = new mongoose.Schema({
-  notificacion: {
+  productos: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Notificacion',
+    ref: 'Almacen'
   },
-  nombreProducto: {
+  nombreCategoria: { 
+    type: String,
+    required: true
+  },
+  nombreProducto: { 
     type: String,
     required: true
   },
   prediccion: {
     ventas: {
-      type: [Number], // Supongo que "ventas" es un número que indica la cantidad de ventas previstas
+      type: [Number], 
       required: true
     },
     stockRestante: {
-      type: Number, // Supongo que "stockRestante" es un número que indica la cantidad de stock restante
+      type: Number, 
       required: true
     }
   },
   diaAgotamiento: {
-    type: Number, // Supongo que "diaAgotamiento" es la fecha cuando se prevé que el producto se agotará
+    type: Number, 
     required: false
   }
 });

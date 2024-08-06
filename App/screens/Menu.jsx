@@ -31,7 +31,7 @@ const Menu = () => {
         
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => navigation.navigate('Notificacion')} // Asegúrate de que esta ruta esté configurada en tu Stack Navigator
+          onPress={() => navigation.navigate('Notificacion')} 
         >
           <Icon name="notifications" size={30} color="#fff" />
           <Text style={styles.menuText}>NOTIFICACION</Text>

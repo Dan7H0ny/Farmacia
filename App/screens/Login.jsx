@@ -17,20 +17,28 @@ export const Login = () => {
   const { iniciarSesion } = useAutenticarContexto();
   const [isSignIn, setIsSignIn] = useState(true);
 
-  const toggleAuth = () => {
+  const validateEmail = (email) => {
+    // Expresión regular para validar el formato del correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const opCambio = () => {
     setIsSignIn(!isSignIn);
     setCorreo('');
     setPassword('');
   };
 
-  const handleLoginSubmit = () => {
+  const opIniciarSesion = () => {
     if (correo === '' || password === '') {
       CustomSwal({ icono: 'error', titulo: 'Campos requeridos', mensaje: 'Por favor, completa todos los campos.' });
       return;
     }
-    else
-    {
-      axios.post(`${URL_BASE}/login`, { correo, password })
+    if (!validateEmail(correo)) {
+      CustomSwal({ icono: 'error', titulo: 'Correo inválido', mensaje: 'Por favor, ingresa un correo electrónico válido.' });
+      return;
+    }
+    axios.post(`${URL_BASE}/login`, { correo, password })
       .then(response => {
         const { _id, nombre, rol, token, mensaje } = response.data;
         CustomSwal({ icono: 'success', titulo: 'Acceso correcto', mensaje: mensaje });
@@ -45,24 +53,51 @@ export const Login = () => {
       .catch(error => {
         CustomSwal({ icono: 'error', titulo: 'Acceso Denegado', mensaje: error.response.data.mensaje });
       });
+  };
+
+  const opRestablecerPassword = async () => {
+    if (correo === '') {
+      CustomSwal({ icono: 'error', titulo: 'Correo requerido', mensaje: 'Por favor, ingresa tu correo electrónico.' });
+      return;
+    }
+    if (!validateEmail(correo)) {
+      CustomSwal({ icono: 'error', titulo: 'Correo inválido', mensaje: 'Por favor, ingresa un correo electrónico válido.' });
+      return;
+    }
+
+    try {
+      // Mostrar la animación de carga
+      CustomSwal({
+        icono: 'info',
+        titulo: 'CARGANDO...',
+        mensaje: '', // Mensaje vacío mientras se muestra la carga
+        loading: true
+      });
+  
+      const response = await axios.post(`${URL_BASE}/enviarpin`, { correo });
+      // Mostrar el mensaje de éxito
+      CustomSwal({
+        icono: 'success',
+        titulo: 'Envio correcto',
+        mensaje: response.data.mensaje,
+      });
+    } catch (error) {
+      // Cerrar la animación de carga
+      hideMessage();
+      // Mostrar el mensaje de error
+      CustomSwal({
+        icono: 'error',
+        titulo: 'El envio no se pudo concretar',
+        mensaje: error.response?.data?.mensaje || error.message,
+      });
     }
   };
 
-  const handlePasswordResetSubmit = () => {
-    axios.post(`${URL_BASE}/enviarpin`, { correo })
-      .then(response => {
-        CustomSwal({ icono: 'success', titulo: 'Envio correcto', mensaje: response.data.mensaje });
-      })
-      .catch(error => {
-        CustomSwal({ icono: 'error', titulo: 'El envio no se pudo concretar', mensaje: error.response.data.mensaje });
-      });
-  };
-
-  const handleSubmit = () => {
+  const opMain = () => {
     if (isSignIn) {
-      handleLoginSubmit();
+      opIniciarSesion();
     } else {
-      handlePasswordResetSubmit();
+      opRestablecerPassword();
     }
   };
 
@@ -105,12 +140,12 @@ export const Login = () => {
               </View>
             )}
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <TouchableOpacity style={styles.button} onPress={opMain}>
                 <Text style={styles.buttonText}>{isSignIn ? 'INGRESAR AL SISTEMA' : 'RECUPERAR CONTRASEÑA'}</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button} onPress={toggleAuth}>
+              <TouchableOpacity style={styles.button} onPress={opCambio}>
                 <Text style={styles.buttonText}>{isSignIn ? '¿OLVIDASTE TU CONTRASEÑA?' : 'VOLVER AL INICIO DE SESIÓN'}</Text>
               </TouchableOpacity>
             </View>

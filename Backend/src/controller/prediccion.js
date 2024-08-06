@@ -17,13 +17,7 @@ router.post('/mostrar/predicciones', async (req, res) => {
       return res.status(404).json({ message: 'No se encontraron predicciones' });
     }
 
-    // Filtrar las predicciones por diaAgotamiento en el rango de 1 a 7
-    const prediccionesFiltradas = predicciones
-      .filter(prediccion => prediccion.diaAgotamiento >= 1 && prediccion.diaAgotamiento <= 7)
-      .sort((a, b) => a.diaAgotamiento - b.diaAgotamiento) // Ordenar por diaAgotamiento de menor a mayor
-      .slice(0, 5); 
-
-    res.json(prediccionesFiltradas);
+    res.json(productosConDiaAgotamiento);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al obtener las predicciones' });

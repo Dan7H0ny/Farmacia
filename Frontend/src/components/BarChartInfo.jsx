@@ -20,7 +20,11 @@ const BarChartInfo = () => {
     try {
       const response = await axios.post(`${UrlReact}/prediccion/mostrar/predicciones`);
       if (Array.isArray(response)) { // Accede a response.data
-        setPredicciones(response);
+        const prediccionesFiltradas = response
+        .filter(prediccion => prediccion.diaAgotamiento >= 1 && prediccion.diaAgotamiento <= 7)
+        .sort((a, b) => a.diaAgotamiento - b.diaAgotamiento) // Ordenar por diaAgotamiento de menor a mayor
+        .slice(0, 5); 
+        setPredicciones(prediccionesFiltradas);
       } else {
         throw new Error('Formato de respuesta inválido');
       }

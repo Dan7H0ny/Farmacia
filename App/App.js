@@ -71,8 +71,7 @@ const registrarNotificacionesActivadas = async () => {
   const tokenData = await Notifications.getExpoPushTokenAsync();
   
   const token = tokenData.data;
-  const deviceId = Device.osBuildId; // Obtiene el deviceId único del dispositivo
-  console.log(tokenData)
+  const deviceId = Device.osBuildId;
   // Enviar el token y el deviceId al servidor
   try {
     const response = await axios.post(`${URL_BASE}/api/registrarToken`, { token, deviceId });

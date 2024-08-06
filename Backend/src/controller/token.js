@@ -58,7 +58,6 @@ async function enviarNotificaciones() {
 }
 
 cron.schedule('0 0,12 * * *', () => {
-    console.log('Ejecutando la tarea cada 12 horas.');
     enviarNotificaciones();
 });
 

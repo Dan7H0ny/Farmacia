@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import URL_BASE from '../config';
+import styles from '../styles/DashboardStyles';
 
 const Dashboard = () => {
   const [dataMain, setData] = useState({});
   const [productos, setProductos] = useState([]);
+  const [buscar, setBuscar] = useState('');
+  const [prediccion, setPrediccion] = useState([]);
   const [mostrarCaducidad, setMostrarCaducidad] = useState(true);
   const [token, setToken] = useState('');
 
@@ -29,14 +32,35 @@ const Dashboard = () => {
       })
       .then(response => {
         setProductos(response.data);
-        MostrarDatos(response.data);
+        MostrarDatos(response.data, mostrarCaducidad);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+    }
+  }, [token, URL_BASE, mostrarCaducidad]);
+
+  useEffect(() => {
+    if (token) {
+      axios.post(`${URL_BASE}/prediccion/mostrar/predicciones`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(response => {
+        const prediccionesFiltradas = response.data
+        .filter(prediccion => prediccion.diaAgotamiento >= 1 && prediccion.diaAgotamiento <= 7)
+        .sort((a, b) => a.diaAgotamiento - b.diaAgotamiento) // Ordenar por diaAgotamiento de menor a mayor
+        .slice(0, 10);
+        setPrediccion(prediccionesFiltradas);
       })
       .catch(error => console.error('Error fetching data:', error));
     }
   }, [token, URL_BASE]);
 
-  const MostrarDatos = (data) => {
-    const filteredData = data.slice(0, 5).map((item, index) => ({
+  const MostrarDatos = (data, filtroPorCaducidad) => {
+    const sortedProductos = data.sort((a, b) => filtroPorCaducidad
+      ? new Date(a.fecha_caducidad) - new Date(b.fecha_caducidad)
+      : a.cantidad_stock - b.cantidad_stock
+    ).slice(0, 5);
+
+    const chartData = sortedProductos.map((item, index) => ({
       name: item.producto.nombre,
       population: item.cantidad_stock,
       color: `hsl(${index * 36}, 70%, 70%)`,
@@ -45,84 +69,70 @@ const Dashboard = () => {
     }));
 
     setData({
-      labels: filteredData.map(item => item.name),
-      data: filteredData,
-      legend: filteredData
+      labels: chartData.map(item => item.name),
+      data: chartData,
+      legend: chartData
     });
   };
 
-  const toggleCaducidad = () => {
-    setMostrarCaducidad(!mostrarCaducidad);
-    MostrarDatos(productos);
+  const toggleView = () => {
+    const nuevoEstado = !mostrarCaducidad;
+    setMostrarCaducidad(nuevoEstado);
+    MostrarDatos(productos, nuevoEstado);
   };
 
   return (
     <LinearGradient colors={['#e0ffff', '#91daff']} style={styles.gradient}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
-          <Text style={styles.title}>
-            {mostrarCaducidad ? 'Productos Próximos a Caducar' : 'Productos con Bajo Stock'}
-          </Text>
-          {dataMain.data && (
-            <PieChart
-              data={dataMain.data}
-              width={Dimensions.get('window').width - 50}
-              height={220}
-              chartConfig={{
-                backgroundColor: '#1E2923',
-                backgroundGradientFrom: '#1E2923',
-                backgroundGradientTo: '#08130D',
-                color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-              }}
-              accessor={"population"}
-              backgroundColor={"transparent"}
-              paddingLeft={"15"}
-              absolute
-            />
-          )}
-          <TouchableOpacity style={styles.button} onPress={toggleCaducidad}>
-            <Text style={styles.buttonText}>{mostrarCaducidad ? 'Mostrar Bajo Stock' : 'Mostrar Caducidad'}</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      <FlatList
+        data={prediccion}
+        keyExtractor={(item) => item._id}
+        ListHeaderComponent={
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>
+              {mostrarCaducidad ? 'Productos Próximos a Caducar' : 'Productos con Bajo Stock'}
+            </Text>
+            {dataMain.data && (
+              <PieChart
+                data={dataMain.data}
+                width={Dimensions.get('window').width - 80}
+                height={200}
+                chartConfig={{
+                  backgroundColor: '#1E2923',
+                  backgroundGradientFrom: '#1E2923',
+                  backgroundGradientTo: '#08130D',
+                  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+                }}
+                accessor={"population"}
+                backgroundColor={"transparent"}
+                paddingLeft={"15"}
+                absolute
+              />
+            )}
+            <TouchableOpacity style={styles.button} onPress={toggleView}>
+              <Text style={styles.buttonText}>
+                {mostrarCaducidad ? 'Mostrar Bajo Stock' : 'Mostrar Próximos a Caducar'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        }
+        ListFooterComponent={
+          <View style={styles.footerContainer}>
+            <View style={styles.predictionsContainer}>
+              <Text style={styles.subtitle}>Productos por acabar</Text>
+              {prediccion.map((item, index) => (
+                <View key={index} style={styles.predictionRow}>
+                  <Text style={styles.productName}>{item.nombreProducto}</Text>
+                  <Text style={styles.daysLeft}>{item.diaAgotamiento} días</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        }
+        contentContainerStyle={styles.scrollContainer}
+      />
     </LinearGradient>
   );
 };
 
-const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    width: '90%',
-    alignItems: 'center', // Asegura que todo el contenido se centre horizontalmente
-    backgroundColor: '#0f1b35',
-    padding: 20,
-    borderRadius: 10,
-    marginTop: 20, // Agrega un poco de margen superior
-  },
-  title: {
-    fontSize: 24,
-    color: '#e2e2e2',
-    marginBottom: 20,
-    textAlign: 'center', // Centra el texto del título
-  },
-  button: {
-    backgroundColor: '#e2e2e2',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#0f1b35',
-    fontSize: 16,
-    textAlign: 'center', // Centra el texto dentro del botón
-  }
-});
-
 export default Dashboard;
+

@@ -85,7 +85,7 @@ const Dashboard = () => {
     <LinearGradient colors={['#e0ffff', '#91daff']} style={styles.gradient}>
       <FlatList
         data={prediccion}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item) => item._id?.toString()}
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <Text style={styles.title}>

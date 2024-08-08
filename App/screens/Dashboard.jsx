@@ -10,7 +10,6 @@ import styles from '../styles/DashboardStyles';
 const Dashboard = () => {
   const [dataMain, setData] = useState({});
   const [productos, setProductos] = useState([]);
-  const [buscar, setBuscar] = useState('');
   const [prediccion, setPrediccion] = useState([]);
   const [mostrarCaducidad, setMostrarCaducidad] = useState(true);
   const [token, setToken] = useState('');
@@ -85,7 +84,7 @@ const Dashboard = () => {
     <LinearGradient colors={['#e0ffff', '#91daff']} style={styles.gradient}>
       <FlatList
         data={prediccion}
-        keyExtractor={(item) => item._id?.toString()}
+        keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <Text style={styles.title}>
@@ -120,7 +119,7 @@ const Dashboard = () => {
             <View style={styles.predictionsContainer}>
               <Text style={styles.subtitle}>Productos por acabar</Text>
               {prediccion.map((item, index) => (
-                <View key={index} style={styles.predictionRow}>
+                <View key={item._id || index} style={styles.predictionRow}>
                   <Text style={styles.productName}>{item.nombreProducto}</Text>
                   <Text style={styles.daysLeft}>{item.diaAgotamiento} días</Text>
                 </View>

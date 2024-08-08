@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const notificacionSchema = new mongoose.Schema({
-  producto: {
+  prediccion: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Almacen',
+    ref: 'Prediccion',
   },
   estado: {
     type: Boolean,

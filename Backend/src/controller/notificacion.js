@@ -32,17 +32,15 @@ router.put('/actualizar', verificacion, async (req, res) => {
 router.get('/mostrar', verificacion, async (req, res) => {
   try {
     const productosEncontrados = await Notificacion.find({})
-      .populate({
-        path: 'producto',
-        populate: [
-          { path: 'producto', select: 'nombre' },
-        ]
-      })
+      .populate('prediccion', 'nombreProducto')
+      .sort({ estado: -1 }); // Ordenar por estado en orden descendente (true antes que false)
+      
     res.json(productosEncontrados);
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al obtener los Productos' });
   }
 });
+
 
 module.exports= router

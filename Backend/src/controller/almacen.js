@@ -24,8 +24,6 @@ router.post('/crear',verificacion, async (req, res) => {
     if (productoEnAlmacen) {
       return res.status(400).json({ mensaje: 'El producto ya está registrado en el almacén.' });
     }
-    const notificacionNueva = new Notificacion({ producto, estado: false });
-    await notificacionNueva.save();
      
     const almacen = new Almacen({ producto, categoria, precioVenta, cantidad_stock, estado: true, usuario_registro: usuario, usuario_actualizacion: usuario,
       fecha_caducidad: fechaCaducidad, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
@@ -58,6 +56,29 @@ router.get('/mostrar', verificacion, async (req, res) => {
     res.status(500).json({ mensaje: 'Error al obtener el producto del almacen' });
   }
 });
+
+router.get('/mostrar/pedidos', verificacion, async (req, res) => {
+  try {
+    const productosEncontrados = await Almacen.find({})
+      .populate({
+        path: 'producto',
+        select: 'nombre capacidad_presentacion precioCompra categoria',
+        populate: [
+          { path: 'tipo', select: 'nombre' },
+          { path: 'proveedor', select: 'nombre_marca correo telefono sitioweb' },
+        ]
+      })
+      .populate('categoria', 'nombre')
+      .populate('usuario_registro', 'nombre apellido rol correo')
+      .populate('usuario_actualizacion', 'nombre apellido rol correo')
+      .sort({ fecha_caducidad: 1 });
+    res.json(productosEncontrados);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al obtener el producto del almacen' });
+  }
+});
+
 
 router.get('/buscar/:id',verificacion, async (req, res) => {
   const { id } = req.params;

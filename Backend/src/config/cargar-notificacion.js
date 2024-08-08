@@ -1,32 +1,28 @@
 const mongoose = require('mongoose');
 const Notificacion = require('../models/Notificacion');
-const Almacen = require('../models/Almacen');
+const Prediccion = require('../models/Prediccion');
 
 const crearDatos = async function(callback) {
   try {
-    const almacenes = await Almacen.find();
+    // Obtener todas las predicciones disponibles
+    const predicciones = await Prediccion.find();
 
-    const notificacion = [];
+    // Crear un array para almacenar las notificaciones a insertar
+    const notificaciones = predicciones.map(prediccion => ({
+      prediccion: prediccion._id, // Relaciona la notificación con la predicción
+      estado: false, // Establece el estado inicial como false
+    }));
 
-    // Convertimos el array de productos en un array de objetos
-    const productosDisponibles = almacenes.map(almacen => almacen._id);
+    // Insertar todas las notificaciones creadas en la colección de Notificaciones
+    await Notificacion.insertMany(notificaciones);
 
-    for (let i = 0; i < productosDisponibles.length; i++) {
-      const producto = productosDisponibles[i];
-
-      notificacion.push({
-        producto,
-        estado: false,
-      });
-    }
-
-    await Notificacion.insertMany(notificacion);
-    console.log('Datos insertados correctamente');
+    console.log('Notificaciones insertadas correctamente');
   } catch (error) {
-    console.error('Error al insertar los datos:', error);
+    console.error('Error al insertar las notificaciones:', error);
   } finally {
     if (callback) callback();
   }
 };
 
 module.exports = crearDatos;
+

@@ -2,6 +2,7 @@ const express = require('express');
 const cron = require('node-cron');
 const { predecirVentasParaTodosLosProductosARIMA } = require('../config/arima');
 const Prediccion = require('../models/Prediccion');
+const Notificacion = require('../models/Notificacion');
 
 const router = express.Router();
 
@@ -16,7 +17,6 @@ router.post('/mostrar/predicciones', async (req, res) => {
     if (predicciones.length === 0) {
       return res.status(404).json({ message: 'No se encontraron predicciones' });
     }
-
     res.json(productosConDiaAgotamiento);
   } catch (error) {
     console.error(error);
@@ -95,6 +95,17 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
       prediccionExistente.prediccion = prediccion;
       prediccionExistente.diaAgotamiento = diaAgotamiento;
       await prediccionExistente.save();
+    
+      // Actualizar o crear la notificación correspondiente
+      let notificacionExistente = await Notificacion.findOne({ prediccion: prediccionExistente._id });
+      if (notificacionExistente) {
+        notificacionExistente.estado = false; // Actualizar el estado de la notificación
+        await notificacionExistente.save();
+      } else {
+        // Si no existe la notificación, crear una nueva
+        const notificacionNueva = new Notificacion({ prediccion: prediccionExistente._id, estado: false });
+        await notificacionNueva.save();
+      }
     } else {
       // Si no existe, crear una nueva predicción
       const nuevaPrediccion = new Prediccion({
@@ -105,7 +116,10 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
         diaAgotamiento
       });
       await nuevaPrediccion.save();
-    }
+      // Crear una nueva notificación para la nueva predicción
+      const notificacionNueva = new Notificacion({ prediccion: nuevaPrediccion._id, estado: false });
+      await notificacionNueva.save();
+    }    
   }
 }
 

@@ -3,8 +3,6 @@ const router = express.Router();
 const Venta = require('../models/Venta');
 const verificacion = require('../middlewares/verificacion');
 const Cliente = require('../models/Cliente');
-const Usuario = require('../models/Usuario');
-const Producto = require('../models/Producto');
 const Almacen = require('../models/Almacen');
 
 // Crear un Venta

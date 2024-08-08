@@ -1,166 +1,144 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Switch, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput, Linking } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Autocomplete from 'react-native-autocomplete-input';
 import CustomSwal from '../components/CustomSwal';
 import URL_BASE from '../config';
 import { LinearGradient } from 'expo-linear-gradient';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Importa la librería de iconos
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import styles from '../styles/PedidosStyles';
 
 const Pedidos = () => {
   const [productos, setProductos] = useState([]);
-  const [elegidos, setElegidos] = useState('');
-  const [seleccion, setSeleccion] = useState(null);
-  const [notificaciones, setNotificaciones] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const FiltradoDeDatos = async () => {
       const token = await AsyncStorage.getItem('token');
       if (token) {
-        const response = await axios.get(`${URL_BASE}/notificacion/mostrar`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const productosSinEstado = response.data.filter(notificacion => notificacion.estado === false); 
-        setProductos(productosSinEstado);
-        const activeNotificaciones = response.data.filter(notificacion => notificacion.estado === true);
-        setNotificaciones(activeNotificaciones);
+        try {
+          const response = await axios.get(`${URL_BASE}/almacen/mostrar/pedidos`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setProductos(response.data);
+        } catch (error) {
+          CustomSwal({ icono: 'error', titulo: 'Error al extraer datos', mensaje: error.response.data.mensaje });
+        }
       }
     };
     FiltradoDeDatos();
   }, []);
 
-  const BuscarProducto = (query) => {
-    if (query === '') {
-      return [];
+  const handleButtonClick = (item, tipo) => {
+    const proveedor = item.producto.proveedor || {}; // Manejar si proveedor es undefined
+  
+    switch (tipo) {
+      case 'web':
+        if (proveedor.sitioweb) {
+          // Redirigir a la URL
+          Linking.openURL(proveedor.sitioweb).catch((err) => console.error('Error al abrir la URL:', err));
+        }
+        break;
+      case 'whatsapp':
+        if (proveedor.telefono) {
+          // Iniciar un chat en WhatsApp
+          const url = `whatsapp://send?phone=+591${proveedor.telefono}`;
+          Linking.openURL(url).catch((err) => console.error('Error al abrir WhatsApp:', err));
+        }
+        break;
+      case 'email':
+        if (proveedor.correo) {
+          // Enviar un correo electrónico
+          const url = `mailto:${proveedor.correo}`;
+          Linking.openURL(url).catch((err) => console.error('Error al enviar el correo:', err));
+        }
+        break;
+      default:
+        break;
     }
-    const regex = new RegExp(`${query.trim()}`, 'i');
-    return productos.filter(notificacion => notificacion.producto.producto.nombre.search(regex) >= 0);
   };
 
-  const opsSeleccion = (product) => {
-    setSeleccion(prevState => prevState && prevState._id === product._id ? null : product);
-    setElegidos(''); // Limpiar el campo de búsqueda
-  };
+  // Filtrar los productos según el término de búsqueda
+  const filtrarProductos = productos.filter(p =>
+    p.producto.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const SwitchEstado = async (producto) => {
-    const token = await AsyncStorage.getItem('token');
-    try {
-      const updatedEstado = !producto.estado;
-      await axios.put(`${URL_BASE}/notificacion/actualizar`, {
-        id: producto._id,
-        estado: updatedEstado
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setNotificaciones(prevNotificaciones => prevNotificaciones.map(p => p._id === producto._id ? { ...p, estado: updatedEstado } : p));
-      CustomSwal({ icono: 'success', titulo: 'Estado Actualizado', mensaje: 'Actualización exitosa' });
-    } catch (error) {
-      CustomSwal({ icono: 'error', titulo: 'Error', mensaje: error.response.data.mensaje });
+  // Calcular el número total de páginas basado en los productos filtrados
+  const totalPages = Math.ceil(filtrarProductos.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
-  const filteredProducts = BuscarProducto(elegidos);
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const DsProductos = filtrarProductos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <LinearGradient colors={['#e0ffff', '#91daff']} style={styles.gradient}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-        {seleccion && (
-          <View style={styles.selectedProductView}>
-            <Text style={styles.itemText}>{seleccion.producto.producto.nombre}</Text>
-            <Switch
-              value={seleccion.estado}
-              onValueChange={() => SwitchEstado(seleccion)}
-              style={styles.switch}
-            />
-          </View>
-        )}
-        <Autocomplete
-          data={filteredProducts}
-          defaultValue={elegidos}
-          onChangeText={text => setElegidos(text)}
-          placeholder="Buscar Producto"
-          flatListProps={{
-            keyExtractor: item => item._id.toString(),
-            renderItem: ({ item }) => (
-              <TouchableOpacity onPress={() => opsSeleccion(item)} style={styles.item}>
-                <Text style={styles.itemText}>{item.producto.producto.nombre}</Text>
-              </TouchableOpacity>
-            ),
-            ListEmptyComponent: null
-          }}
-          inputContainerStyle={styles.autocompleteContainer}
-          containerStyle={styles.autocompleteWrapper}
-        />
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar por nombre del producto..."
+            value={searchTerm}
+            onChangeText={text => {
+              setSearchTerm(text);
+              setCurrentPage(1); // Reiniciar a la primera página cuando cambie el término de búsqueda
+            }}
+          />
+        </View>
         <FlatList
-          data={notificaciones}
-          keyExtractor={item => item._id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.notificationItem}>
-              <Text style={styles.itemText}>{item.producto.producto.nombre}</Text>
-              <Switch
-                value={item.estado}
-                onValueChange={() => SwitchEstado(item)}
-                style={styles.switch}
-              />
-            </View>
-          )}
+          data={DsProductos}
+          keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
+          renderItem={({ item }) => {
+            const proveedor = item.producto.proveedor || {}; // Manejar si proveedor es undefined
+            return (
+              <View style={styles.notificationItem}>
+                <Text style={styles.itemText}>{item.producto.nombre}</Text>
+                <View style={styles.buttonContainer}>
+                  {proveedor.sitioweb && (
+                    <TouchableOpacity style={styles.button} onPress={() => handleButtonClick(item, 'web')}>
+                      <Icon name="public" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  )}
+                  {proveedor.telefono && (
+                    <TouchableOpacity style={styles.button} onPress={() => handleButtonClick(item, 'whatsapp')}>
+                      <FontAwesome name="whatsapp" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  )}
+                  {proveedor.correo && (
+                    <TouchableOpacity style={styles.button} onPress={() => handleButtonClick(item, 'email')}>
+                      <Icon name="email" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            );
+          }}
           contentContainerStyle={styles.listContent}
         />
+        <View style={styles.paginationContainer}>
+          <TouchableOpacity onPress={handlePreviousPage} disabled={currentPage === 1} style={styles.paginationButton}>
+            <Text style={styles.paginationText}>Anterior</Text>
+          </TouchableOpacity>
+          <Text style={styles.paginationText}>{currentPage} de {totalPages}</Text>
+          <TouchableOpacity onPress={handleNextPage} disabled={currentPage === totalPages} style={styles.paginationButton}>
+            <Text style={styles.paginationText}>Siguiente</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
     </LinearGradient>
   );
 };
-
-const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  item: {
-    padding: 10,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 5,
-    marginVertical: 5,
-  },
-  itemText: {
-    fontSize: 18,
-    color: '#333',
-  },
-  notificationItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-    marginTop: 5,
-    backgroundColor: '#d1c4e9',
-    borderRadius: 5,
-  },
-  selectedProductView: {
-    marginBottom: 20,
-    padding: 10,
-    backgroundColor: '#c5e1a5',
-    borderRadius: 5,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  switch: {
-    marginLeft: 10,
-  },
-  autocompleteContainer: {
-    borderWidth: 0,
-    backgroundColor: '#ffffff',
-    padding: 5,
-  },
-  autocompleteWrapper: {
-    marginBottom: 10,
-  },
-  listContent: {
-    flexGrow: 1,
-  },
-});
 
 export default Pedidos;

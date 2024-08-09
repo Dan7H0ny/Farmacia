@@ -3,8 +3,16 @@ const Venta = require('../models/Venta');
 const Almacen = require('../models/Almacen');
 
 async function obtenerVentasDiarias() {
+  const fechaLimite = new Date();
+  fechaLimite.setMonth(fechaLimite.getMonth() - 6); // Establece la fecha a seis meses atrás
+
   try {
     const ventas = await Venta.aggregate([
+      {
+        $match: {
+          fecha_registro: { $gte: fechaLimite } // Solo considera ventas desde hace seis meses
+        }
+      },
       { $unwind: '$productos' },
       {
         $group: {
@@ -19,7 +27,6 @@ async function obtenerVentasDiarias() {
     ]);
 
     const ventasPorProducto = {};
-
     ventas.forEach(venta => {
       const productoId = venta._id.producto;
       const fechaVenta = venta._id.fecha;
@@ -28,17 +35,10 @@ async function obtenerVentasDiarias() {
         ventasPorProducto[productoId] = [];
       }
 
-      // Verificar si la fecha ya ha sido agregada para este producto
-      const indiceFecha = ventasPorProducto[productoId].findIndex(item => item.fecha === fechaVenta);
-
-      if (indiceFecha !== -1) {
-        // Si la fecha ya existe, actualiza el totalVentas para esa fecha
-        ventasPorProducto[productoId][indiceFecha].totalVentas += venta.totalVentas;
-      } else {
-        // Si la fecha no existe, agrega una nueva entrada
-        ventasPorProducto[productoId].push({ fecha: fechaVenta, totalVentas: venta.totalVentas });
-      }
+      // Añadir la información de ventas a la lista correspondiente al producto
+      ventasPorProducto[productoId].push({ fecha: fechaVenta, totalVentas: venta.totalVentas });
     });
+
     return ventasPorProducto;
   } catch (error) {
     console.error('Error al obtener las ventas diarias:', error);
@@ -47,17 +47,13 @@ async function obtenerVentasDiarias() {
 }
 
 async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
-  let agotado = false; // Inicializar la variable agotado como false
-  let diaAgotamiento; // Declarar la variable diaAgotamiento
-
   const datosHistoricos = ventasPorProducto[productoId] || [];
   if (datosHistoricos.length === 0) {
     throw new Error(`No hay datos históricos para el producto con ID ${productoId}`);
   }
 
   const y = datosHistoricos.map(venta => venta.totalVentas);
-
-  const arima = new ARIMA({ p: 2, d: 1, q: 2, verbose: false });
+  const arima = new ARIMA({ p: 1, d: 2, q: 1, verbose: false });
   arima.train(y);
   const predicciones = arima.predict(diasAPredecir);
 
@@ -66,36 +62,39 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
 
   const primeraPrediccion = predicciones[0].map(valor => Math.ceil(valor));
 
-  const diaActual = 1;
-  // Asegurarse de que capacidadTotal no sea negativo
   let capacidadTotal = capacidadTotalInicial;
+  let agotado = false;
+  let diaAgotamiento;
 
-  if (!agotado && capacidadTotal <= 0) {
-    diaAgotamiento = diaActual;
-    agotado = true; // Marcar el producto como agotado
+  // Establece un valor predeterminado para `porcentajeError`
+  let porcentajeError = 100;  // Supongamos que 100 significa un error máximo por defecto
+
+  if (datosHistoricos.length > 0 && primeraPrediccion.length > 0) {
+    const ultimaVentaReal = datosHistoricos[datosHistoricos.length - 1].totalVentas;
+    const ultimaPrediccion = primeraPrediccion[0];  // Usar solo la primera predicción para el cálculo
+
+    if (ultimaVentaReal > 0) { // Asegurarse de que no haya división por cero
+      porcentajeError = ((Math.abs(ultimaPrediccion - ultimaVentaReal) / ultimaVentaReal) * 100).toFixed(2);
+    }
   }
 
-  // Calcular el stock restante solo si el producto aún no se ha agotado
-  const stockRestante = agotado ? 0 : Math.max(capacidadTotal, 0);
-  // Sumar las ventas del día actual y actualizar la capacidad total
   for (let i = 0; i < primeraPrediccion.length; i++) {
     const ventaDiaActual = primeraPrediccion[i];
     capacidadTotal -= ventaDiaActual;
-
-    // Verificar si la capacidad total es menor o igual a 0 después de esta iteración
     if (!agotado && capacidadTotal <= 0) {
-      diaAgotamiento = diaActual + i;
-      agotado = true; // Marcar el producto como agotado
-      break; // Salir del bucle si el producto está agotado
+      diaAgotamiento = i + 1;
+      agotado = true;
+      break;
     }
   }
-  // Devolver solo una predicción por iteración de días
+
   return {
     producto: producto._id,
     nombreCategoria: producto.categoria.nombre, 
     nombreProducto: producto.producto.nombre, 
-    prediccion: { ventas: primeraPrediccion, stockRestante }, 
-    diaAgotamiento 
+    prediccion: { ventas: primeraPrediccion, stockRestante: Math.max(capacidadTotal, 0) }, 
+    diaAgotamiento,
+    porcentajeError: parseFloat(porcentajeError), // Añadir el porcentaje de error al resultado
   };
 }
 

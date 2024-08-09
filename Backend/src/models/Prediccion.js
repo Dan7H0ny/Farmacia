@@ -25,7 +25,11 @@ const prediccionSchema = new mongoose.Schema({
   },
   diaAgotamiento: {
     type: Number, 
-    required: false
+    optional: true
+  },
+  porcentajeError: { 
+    type: Number,
+    required: true
   }
 });
 

@@ -83,7 +83,7 @@ router.post('/mostrar/categoria', async (req, res) => {
 // Función para guardar o actualizar predicciones en la base de datos
 async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
   for (let productos of productosConDiaAgotamiento) {
-    const { producto, nombreCategoria, nombreProducto, prediccion, diaAgotamiento } = productos;
+    const { producto, nombreCategoria, nombreProducto, prediccion, diaAgotamiento, porcentajeError} = productos;
 
     // Buscar la predicción existente en la base de datos por el ID del producto
     let prediccionExistente = await Prediccion.findOne({ productos: producto });
@@ -94,6 +94,7 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
       prediccionExistente.nombreProducto = nombreProducto;
       prediccionExistente.prediccion = prediccion;
       prediccionExistente.diaAgotamiento = diaAgotamiento;
+      prediccionExistente.porcentajeError = porcentajeError;
       await prediccionExistente.save();
     
       // Actualizar o crear la notificación correspondiente
@@ -113,7 +114,8 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
         nombreCategoria,
         nombreProducto,
         prediccion,
-        diaAgotamiento
+        diaAgotamiento,
+        porcentajeError
       });
       await nuevaPrediccion.save();
       // Crear una nueva notificación para la nueva predicción

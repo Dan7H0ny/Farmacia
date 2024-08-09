@@ -90,6 +90,7 @@ export const RegistrarUsuario = () => {
     setTelefono("");
     setCorreo("");
     setPassword("");
+    setEnvioIntentado(false);
     document.getElementById("Form-1").reset();
   }
   return (
@@ -184,7 +185,7 @@ export const RegistrarUsuario = () => {
               icon={<Password/>}
             />                
           </Grid>
-          {envioIntentado && mostrarMensajeValidacion("<div>Por favor ingrese un número de teléfono válido </div>")}
+          {envioIntentado && mostrarMensajeValidacion("<div>Por favor ingrese un número de teléfono válido si es necesario</div>")}
           <Button
             fullWidth
             variant="contained"

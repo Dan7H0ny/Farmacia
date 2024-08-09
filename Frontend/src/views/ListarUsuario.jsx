@@ -12,6 +12,7 @@ import CustomSwal from '../components/CustomSwal';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomTabla from '../components/CustomTabla';
 import CustomSelectUser from '../components/CustomSelectUser';
+import { generarPDFPersonalizado } from '../Reports/ReporteUsuario';
 
 export const ListarUsuario = () => {
   const [usuarios, setUsuario] = useState([]);
@@ -74,8 +75,20 @@ export const ListarUsuario = () => {
               const direccion_ = document.getElementById('direccion').value;
               const telefono_ = parseInt(document.getElementById('telefono').value);
               let password_ = document.getElementById('password').value;
+              if (nombre_ === "") {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el nombre del usuario, es requerido</div>');
+                return false;
+              }
+              if (apellido_ === "") {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el apellido del usuario, es requerido</div>');
+                return false;
+              }
+              if (correo_ === "") {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el correo del usuario, es requerido</div>');
+                return false;
+              }
               if (document.getElementById('telefono').value !== "" && (isNaN(telefono_) || telefono_ < 60000000 || telefono_ > 79999999)) {
-                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de teléfono válido</div>');
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de teléfono válido, si es necesario</div>');
                 return false;
               }
               return { nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_ };
@@ -204,13 +217,19 @@ export const ListarUsuario = () => {
           Swal.fire({
             title: 'MOSTRAR USUARIO',
             html: container,
+            showCancelButton: true, 
             confirmButtonText: 'Atras',
+            cancelButtonText: 'Imprimir',
             customClass: {
               popup: 'customs-swal-popup',
               title: 'customs-swal-title',
-              confirmButton: 'swal2-confirm custom-swal2-confirm',  
-              cancelButton: 'swal2-cancel custom-swal2-cancel',
+              confirmButton: 'swal2-cancel custom-swal2-cancel',  
+              cancelButton: 'swal2-confirm custom-swal2-confirm',
             },
+          }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+              generarPDFPersonalizado(response); 
+            }
           });
         })
         .catch(error => {

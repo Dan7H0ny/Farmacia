@@ -10,12 +10,12 @@ const CustomActualizarUser = ({ number, id, label, type, defaultValue, placehold
           </div>
         ) : (
         <TextField
-          id = {id}
-          label = {label}
-          type = {type}
+          id={id}
+          label={label}
+          type={type}
           defaultValue={defaultValue}
           fullWidth
-          required = {required}
+          required={required}
           rows={rows}
           multiline= {multiline}
           margin="normal"

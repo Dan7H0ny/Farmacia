@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Drawer, IconButton, Grid, Box, Typography, Avatar } from '@mui/material';
-import { MonetizationOnOutlined, MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, 
-  BusinessCenter, PhotoCameraFrontOutlined, SupervisedUserCircle, Person, DashboardOutlined } from '@mui/icons-material';
+import { AttachMoney, MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, SupervisedUserCircle, Person, DashboardOutlined } from '@mui/icons-material';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
@@ -11,7 +10,7 @@ import CustomActualizarUser from '../components/CustomActualizarUser';
 import imagen from '../assets/images/LogoFar.png';
 import '../assets/css/swalform.css';
 import CustomSwal from '../components/CustomSwal';
-import CustomMenu from '../components/CustomMenu';
+import CustomMenuVentas from '../components/CustomMenuVentas';
 
 export const MenuCajero = () => {
   const navigate = useNavigate();
@@ -19,7 +18,6 @@ export const MenuCajero = () => {
   const _id = localStorage.getItem('id');
   const nombre = localStorage.getItem('nombre');
   const rol = localStorage.getItem('rol');
-  const [Cliente, setisCliente] = useState(false);
   const [Venta, setisVenta] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(true);
   
@@ -118,14 +116,11 @@ export const MenuCajero = () => {
     });
 }
 };
-  
-  const GetCliente = () => {setisCliente(!Cliente);};
   const GetVenta = () => {setisVenta(!Venta);};
 
   function Dashboard() {navigate(`/Menu/Cajero/Dashboard`);}
   function Home() {navigate(`/Menu/Cajero`);}
 
-  function RegistrarCliente() {navigate(`/Menu/Cajero/Cliente/Registrar`);}
   function ListarCliente() {navigate(`/Menu/Cajero/Cliente/Listar`);}
 
   function RegistrarVenta() {navigate(`/Menu/Cajero/Venta/Registrar`);}
@@ -136,8 +131,7 @@ export const MenuCajero = () => {
     Logout();
   };
   const toggleDrawer = () => { setDrawerOpen(!drawerOpen); };
-  const toggleCliente = () => { GetCliente(!Cliente);};
-  const toggleVenta = () => { GetVenta(!Venta);};
+  const cambioVenta = () => { GetVenta(!Venta);};
 
   const drawerClass = drawerOpen ? 'custom-drawer' : 'custom-drawer drawer-closed';
 
@@ -166,8 +160,10 @@ export const MenuCajero = () => {
           }
         </div>
         <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <CustomMenu itemName={"Cliente"} itemOpen={Cliente} BtnMostrar={toggleCliente} BtnRegistrar={RegistrarCliente} BtnListar={ListarCliente} drawerOpen={drawerOpen} icon={<PhotoCameraFrontOutlined />}/>
-          <CustomMenu itemName={"Venta"} itemOpen={Venta} BtnMostrar={toggleVenta} BtnRegistrar={RegistrarVenta} BtnListar={ListarVenta} drawerOpen={drawerOpen} icon={<MonetizationOnOutlined />}/>
+          <CustomMenuVentas itemName={"Gestion de ventas"} itemOpen={Venta} BtnMostrar={cambioVenta} 
+            BtnRegistrar1={RegistrarVenta} BtnListar1={ListarVenta} nombreBtn1={"Ventas"} 
+            BtnListar2={ListarCliente} nombreBtn2={"Clientes"}
+            drawerOpen={drawerOpen} icon={<AttachMoney />} />
         </div>
         <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '10px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>
           {drawerOpen && (

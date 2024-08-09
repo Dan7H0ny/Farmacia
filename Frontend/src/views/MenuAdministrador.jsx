@@ -2,9 +2,7 @@ import React, { useState } from 'react'
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Drawer, IconButton, Box, Typography, Grid, Avatar } from '@mui/material';
-import { Inventory2Outlined, MonetizationOnOutlined, MeetingRoom, HomeOutlined, PhoneAndroid, PeopleAltOutlined, Password, 
-  MenuOutlined, Email, Room, BusinessCenter, PhotoCameraFrontOutlined, ManageAccountsOutlined, SupervisedUserCircle, AppRegistrationOutlined, 
-  DashboardOutlined, Person, AddBoxOutlined } from '@mui/icons-material';
+import { MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, InventoryOutlined, AttachMoney, SupervisedUserCircle, BuildOutlined, DashboardOutlined, Person } from '@mui/icons-material';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
@@ -13,7 +11,9 @@ import imagen from '../assets/images/LogoFar.png';
 import '../assets/css/swalform.css';
 import '../assets/css/menu.css';
 import CustomSwal from '../components/CustomSwal';
-import CustomMenu from '../components/CustomMenu';
+import CustomMenuAlmacen from '../components/CustomMenuAlmacen';
+import CustomMenuAdministracion from '../components/CustomMenuAdministracion';
+import CustomMenuVentas from '../components/CustomMenuVentas';
 
 export const MenuAdministrador = () => {
   const navigate = useNavigate();
@@ -21,11 +21,7 @@ export const MenuAdministrador = () => {
   const _id = localStorage.getItem('id');
   const nombre = localStorage.getItem('nombre');
   const rol = localStorage.getItem('rol');
-  const [Usuario, setisUsuario] = useState(false);
-  const [Proveedor, setisProveedor] = useState(false);
-  const [Cliente, setisCliente] = useState(false);
-  const [Complemento, setisComplemento] = useState(false);
-  const [Producto, setisProducto] = useState(false);
+  const [Administracion, setisAdministracion] = useState(false);
   const [Almacen, setisAlmacen] = useState(false);
   const [Venta, setisVenta] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(true);
@@ -128,12 +124,8 @@ export const MenuAdministrador = () => {
     });
 }
 };
-  
-  const GetUsuario = () => {setisUsuario(!Usuario);};
-  const GetProveedor = () => {setisProveedor(!Proveedor);};
-  const GetCliente = () => {setisCliente(!Cliente);};
-  const GetComplemento = () => {setisComplemento(!Complemento);};
-  const GetProducto = () => {setisProducto(!Producto);};
+
+  const GetAdministracion = () => {setisAdministracion(!Administracion);};
   const GetAlmacen = () => {setisAlmacen(!Almacen);};
   const GetVenta = () => {setisVenta(!Venta);};
 
@@ -142,8 +134,7 @@ export const MenuAdministrador = () => {
 
   function RegistrarUsuario() {navigate(`/Menu/Administrador/Usuario/Registrar`);}
   function ListarUsuario() {navigate(`/Menu/Administrador/Usuario/Listar`);}
-
-  function RegistrarCliente() {navigate(`/Menu/Administrador/Cliente/Registrar`);}
+  
   function ListarCliente() {navigate(`/Menu/Administrador/Cliente/Listar`);}
 
   function RegistrarProveedor() {navigate(`/Menu/Administrador/Proveedor/Registrar`);}
@@ -162,13 +153,9 @@ export const MenuAdministrador = () => {
 
   const handleLogout = () => {Logout(); };
   const toggleDrawer = () => { setDrawerOpen(!drawerOpen); };
-  const toggleUsuario = () => { GetUsuario(!Usuario);};
-  const toggleProveedor = () => { GetProveedor(!Proveedor);};
-  const toggleCliente = () => { GetCliente(!Cliente);};
-  const toggleComplemento = () => { GetComplemento(!Complemento);};
-  const toggleProducto = () => { GetProducto(!Producto);};
-  const toggleAlmacen = () => { GetAlmacen(!Almacen);};
-  const toggleVenta = () => { GetVenta(!Venta);};
+  const cambioAdministracion = () => { GetAdministracion(!Administracion);};
+  const cambioAlmacen = () => { GetAlmacen(!Almacen);};
+  const cambioVenta = () => { GetVenta(!Venta);};
 
   const drawerClass = drawerOpen ? 'custom-drawer' : 'custom-drawer drawer-closed';
 
@@ -197,13 +184,19 @@ export const MenuAdministrador = () => {
           }
         </div>
         <div style={{ height: '100%', flexDirection: 'column', overflowX: 'auto'}}>
-          <CustomMenu itemName={"Complementos"} itemOpen={Complemento} BtnMostrar={toggleComplemento} BtnRegistrar={RegistrarComplemento} drawerOpen={drawerOpen} icon={<AddBoxOutlined />} />
-          <CustomMenu itemName={"Usuario"} itemOpen={Usuario} BtnMostrar={toggleUsuario} BtnRegistrar={RegistrarUsuario} BtnListar={ListarUsuario} drawerOpen={drawerOpen} icon={<PeopleAltOutlined />} />
-          <CustomMenu itemName={"Proveedor"} itemOpen={Proveedor} BtnMostrar={toggleProveedor} BtnRegistrar={RegistrarProveedor} BtnListar={ListarProveedor} drawerOpen={drawerOpen} icon={<ManageAccountsOutlined />} />
-          <CustomMenu itemName={"Cliente"} itemOpen={Cliente} BtnMostrar={toggleCliente} BtnRegistrar={RegistrarCliente} BtnListar={ListarCliente} drawerOpen={drawerOpen} icon={<PhotoCameraFrontOutlined />} />
-          <CustomMenu itemName={"Producto"} itemOpen={Producto} BtnMostrar={toggleProducto} BtnRegistrar={RegistrarProducto} BtnListar={ListarProducto} drawerOpen={drawerOpen} icon={<AppRegistrationOutlined />} />
-          <CustomMenu itemName={"Almacen"} itemOpen={Almacen} BtnMostrar={toggleAlmacen} BtnRegistrar={RegistrarAlmacen} BtnListar={ListarAlmacen} drawerOpen={drawerOpen} icon={<Inventory2Outlined />} />
-          <CustomMenu itemName={"Venta"} itemOpen={Venta} BtnMostrar={toggleVenta} BtnRegistrar={RegistrarVenta} BtnListar={ListarVenta} drawerOpen={drawerOpen} icon={<MonetizationOnOutlined />} />
+          <CustomMenuAdministracion itemName={"Gestion Administrativa"} itemOpen={Administracion} BtnMostrar={cambioAdministracion} 
+          BtnRegistrar1={RegistrarComplemento} nombreBtn1={"Complementos"} 
+          BtnRegistrar2={RegistrarUsuario} BtnListar2={ListarUsuario} nombreBtn2={"Usuarios"} 
+          drawerOpen={drawerOpen} icon={<BuildOutlined />} />
+          <CustomMenuAlmacen itemName={"Gestion del almacen"} itemOpen={Almacen} BtnMostrar={cambioAlmacen} 
+          BtnRegistrar1={RegistrarProveedor} BtnListar1={ListarProveedor} nombreBtn1={"Proveedores"} 
+          BtnRegistrar2={RegistrarProducto} BtnListar2={ListarProducto} nombreBtn2={"Productos"}
+          BtnRegistrar3={RegistrarAlmacen} BtnListar3={ListarAlmacen} nombreBtn3={"Almacen"}  
+          drawerOpen={drawerOpen} icon={<InventoryOutlined />} />
+          <CustomMenuVentas itemName={"Gestion de ventas"} itemOpen={Venta} BtnMostrar={cambioVenta} 
+          BtnRegistrar1={RegistrarVenta} BtnListar1={ListarVenta} nombreBtn1={"Ventas"} 
+          BtnListar2={ListarCliente} nombreBtn2={"Clientes"}
+          drawerOpen={drawerOpen} icon={<AttachMoney />} />
         </div>
         <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '3px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>
           {drawerOpen && (

@@ -137,12 +137,12 @@ export const RegistrarComplementos = () => {
     <div id="caja_contenido">
       <Box mt={3}>
         <CustomTypography text={'Registro de Complementos'} />
-        <Grid container spacing={3}>
-        <Grid item xs={12} sm={5}>
+        <Grid container spacing={2}>
+        <Grid item xs={12} sm={12}>
           <form id="Form-1" onSubmit={btnRegistrarComplemento} className="custom-form">
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               <CustomSelect
-                number ={12}
+                number ={4.5}
                 id="select-rol"
                 label="Seleccione un tipo de complemento"
                 value={nombreComplemento}
@@ -151,42 +151,45 @@ export const RegistrarComplementos = () => {
                 icon={<DevicesOther/>}
               />
               <CustomRegisterUser
-                number={12}
+                number={4.5}
                 label="Complemento" 
                 placeholder= 'Ingrese el nombre del complemento'
                 type= 'text'
                 value={nombre}
+                required={true}
                 onChange={(e) => { 
                   const inputValue = e.target.value; 
                   const newValue = inputValue.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
                   setNombre(newValue);
                 }}
-                required={true}
                 icon={<SettingsInputComponent/>}
               />
+              <Grid item xs={12} sm={3} sx={{ '& .MuiTextField-root': {backgroundColor: '#0f1b35',  }}}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  type="submit"
+                  form="Form-1"
+                  sx={{
+                    backgroundColor: '#e2e2e2',
+                    color: '#0f1b35',
+                    marginTop: 2.5,
+                    fontWeight: 'bold',
+                    '&:hover': {
+                      backgroundColor: '#1a7b13',
+                      color: '#e2e2e2',
+                      border: '2px solid #e2e2e2',
+                    },
+                  }}
+                >Guardar Complemento
+                </Button>
+              </Grid>
             </Grid>
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              size="large"
-              type="submit"
-              sx={{
-                backgroundColor: '#e2e2e2',
-                color: '#0f1b35',
-                marginTop: 2.5,
-                fontWeight: 'bold',
-                '&:hover': {
-                  backgroundColor: '#1a7b13',
-                  color: '#e2e2e2',
-                  border: '2px solid #e2e2e2',
-                },
-              }}
-            >Guardar Complemento
-            </Button>
           </form>
         </Grid>
-        <Grid item xs={12} sm={7}>
+        <Grid item xs={12} sm={12}>
           <form id="Form-2" className="custom-form" style={{ padding: 15}}>
             <CustomRegisterUser
               number={12}

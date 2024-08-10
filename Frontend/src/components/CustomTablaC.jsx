@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination, Button, Box } from '@mui/material';
 import {  ModeEdit } from '@mui/icons-material';
 import '../assets/css/tabla.css';
@@ -6,6 +6,10 @@ import '../assets/css/tabla.css';
 const CustomTablaC = ({ usuarios, buscar, botonActualizar }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [buscar]);
   
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);

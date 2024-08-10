@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Drawer, IconButton, Box, Typography, Grid, Avatar } from '@mui/material';
@@ -32,6 +32,19 @@ export const MenuAdministrador = () => {
     const token = localStorage.getItem('token');
     return token;
   }; 
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 1100) {
+        setDrawerOpen(false);
+      } else {
+        setDrawerOpen(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const botonActualizar = () => {
     const token = obtenerToken(); 
@@ -161,7 +174,7 @@ export const MenuAdministrador = () => {
 
   return (
   <div className={`background-container-menu`}>
-    <div id="caja_menu" style={{ textAlign: 'left', width: '95%', overflowY: 'auto', maxHeight: '100vh'}}>
+    <div id="caja_menu" style={{ textAlign: 'left', width: '100%', maxHeight: '100vh', overflowY: 'auto', marginLeft: '2.5%', marginRight: '2.5%', boxSizing: 'border-box' }}>
       <Drawer variant="permanent" open={drawerOpen} className={drawerClass} >
         {drawerOpen && (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '5%', backgroundColor: '#e2e2e2' }}>
@@ -218,7 +231,7 @@ export const MenuAdministrador = () => {
         </Box>
       </Drawer>
       <div id="caja_contenido" className={drawerOpen ? 'content-open' : 'content-closed'}>
-        {/* Esto renderizará la vista de "Registrar Usuario" u otra vista según la ruta actual */}
+        {/* Esto renderizará*/}
         <Outlet/>
       </div>
     </div>

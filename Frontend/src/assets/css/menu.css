@@ -19,21 +19,21 @@
   max-height: 100vh;
 }
 .content-open {
-  margin-left: 17.5%; /* El 50px representa el ancho del menú cuando está cerrado */
+  margin-left: 310px; /* El 50px representa el ancho del menú cuando está cerrado */
 }
 
 .content-closed {
-  margin-left: 3%; /* Ajusta el margen izquierdo cuando el drawer está cerrado */
+  margin-left: 50px; /* Ajusta el margen izquierdo cuando el drawer está cerrado */
 }
 .custom-drawer .MuiPaper-root {
   background-color: #0f1b35; 
   border: 2.5px solid #0f1b35; /* Ajusta el grosor del borde */
-  width: 17.5%; /* Ajusta esta parte en JavaScript para el drawer abierto/cerrado */
+  width: 310px; /* Ajusta esta parte en JavaScript para el drawer abierto/cerrado */
   transition: width 0.3s;
 }
 
 .custom-drawer.drawer-closed .MuiPaper-root {
-  width: 3%;
+  width: 50px;
 }
 
 .custom-drawer .MuiListItemIcon-root {
@@ -82,5 +82,16 @@
   padding: 0.45%;
   font-weight: bold;
 }
+/* En tu archivo CSS global o en un archivo CSS en módulos */
+#caja_menu::-webkit-scrollbar {
+  width: 28px; /* Ajusta el ancho del scrollbar */
+}
 
+#caja_menu::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.5); /* Color del scrollbar */
+  border-radius: 40px; /* Bordes redondeados */
+}
 
+#caja_menu::-webkit-scrollbar-track {
+  background: transparent; /* Fondo del track del scrollbar */
+}

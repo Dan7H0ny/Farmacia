@@ -13,6 +13,7 @@ import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomTabla from '../components/CustomTabla';
 import CustomSelectUser from '../components/CustomSelectUser';
 import { generarPDFPersonalizado } from '../Reports/ReporteUsuario';
+import ReporteExcelUsuario from '../Reports/ReporteExcelUsuario';
 
 export const ListarUsuario = () => {
   const [usuarios, setUsuario] = useState([]);
@@ -258,8 +259,9 @@ export const ListarUsuario = () => {
       <Box mt={3}>
         <CustomTypography text={'Lista De Los Usuarios'} />
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>
+        <Grid container spacing={3} >
           <CustomRegisterUser
-            number={12}
+            number={8}
             label="Nombre"  
             placeholder= 'Buscar el nombre del usuario'
             type= 'text'
@@ -268,6 +270,15 @@ export const ListarUsuario = () => {
             required={false}
             icon={<Search/>}
           />
+          <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+            <ReporteExcelUsuario
+              data={usuarios}
+              fileName="Reporte de Usuarios"
+              sheetName="Usuarios"
+              sx={{ mt: 2 }}
+            />
+          </Grid>
+          </Grid>
         </form>
         <CustomTabla usuarios={usuarios} buscar={buscar} handleSwitchChange={handleSwitchChange} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
       </Box>

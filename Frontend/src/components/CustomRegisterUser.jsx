@@ -4,7 +4,7 @@ import { Grid, TextField, InputAdornment } from '@mui/material';
 const CustomRegisterUser = ({ number, id, label, type, value, onChange, placeholder, rows, required, multiline, readOnly, icon, maxValue, minValue, ...props }) => {
 
   return (
-    <Grid item xs={12} sm={number} sx={{ '& .MuiTextField-root': {backgroundColor: '#0f1b35',  }}}>
+    <Grid item xs={12} sm={number} sx={{marginTop: 'auto',}}>
       <TextField
         id = {id}
         label = {label}

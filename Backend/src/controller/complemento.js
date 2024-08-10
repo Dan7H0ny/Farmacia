@@ -18,7 +18,7 @@ router.post('/crear', verificacion, async (req, res) => {
 
 router.get('/mostrar', verificacion, async (req, res) => {
   try {
-    const complementos = await Complemento.find({});
+    const complementos = await Complemento.find({}).sort({ fecha_registro: -1 });
     res.json(complementos);
   } catch (error) {
     console.error(error);

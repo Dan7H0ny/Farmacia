@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, TextField, InputAdornment } from '@mui/material';
 
-const CustomRegisterUser = ({ number, id, label, type, value, onChange, placeholder, rows, required, multiline, readOnly, icon, maxValue, minValue, ...props }) => {
+const CustomRegisterUser = ({ number, id, label, type, value, onChange, placeholder, rows, required, multiline, readOnly, icon,onKeyPress, maxValue, minValue, ...props }) => {
 
   return (
     <Grid item xs={12} sm={number} sx={{marginTop: 'auto',}}>
@@ -21,6 +21,7 @@ const CustomRegisterUser = ({ number, id, label, type, value, onChange, placehol
           max: maxValue,
           min: minValue,
           readOnly: readOnly,
+          onKeyPress: onKeyPress,
           sx: { color: '#0f1b35',  backgroundColor: '#e2e2e2',  },
           startAdornment: (
             <InputAdornment position="start" sx={{color:'#0f1b35', }}>

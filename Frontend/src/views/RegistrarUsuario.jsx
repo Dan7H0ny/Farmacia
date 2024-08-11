@@ -154,6 +154,7 @@ export const RegistrarUsuario = () => {
               }}
               required={false}
               icon={<PhoneAndroid/>}
+              onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}
             />
             <CustomSelect
               number ={6}

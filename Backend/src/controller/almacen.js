@@ -18,7 +18,7 @@ router.post('/crear',verificacion, async (req, res) => {
     }
 
     const producto_ = await Producto.findById(producto);
-    if (!producto_) return res.status(400).json({ mensaje: 'El producto  no existe' });
+    if (!producto_) return res.status(400).json({ mensaje: 'Seleccione un producto existente' });
 
     const productoEnAlmacen = await Almacen.findOne({ producto });
     if (productoEnAlmacen) {
@@ -30,7 +30,6 @@ router.post('/crear',verificacion, async (req, res) => {
     await almacen.save();
     res.status(201).json({ mensaje: 'Producto Añadido exitosamente', almacen });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ mensaje: 'Error al añadir un producto al almacen' });
   }
 });

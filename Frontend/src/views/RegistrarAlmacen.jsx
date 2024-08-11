@@ -66,15 +66,20 @@ export const RegistrarAlmacen = () => {
     } 
     else 
     {
-      const mialmacen = { producto:idproducto, categoria, precioVenta, cantidad_stock, fecha_caducidad, usuario: usuario_};
-      axios.post(`${UrlReact}/almacen/crear`, mialmacen, configInicial)
-        .then(response => {
-          CustomSwal({ icono: 'success', titulo: 'Almacen Creado', mensaje: response.mensaje});
-          limpiarFormulario();
-        })
-        .catch(error => {
-          CustomSwal({ icono: 'error', titulo: 'Error al crear el Almacen', mensaje: error.mensaje});
-        });
+      if(idproducto){
+        const mialmacen = { producto:idproducto, categoria, precioVenta, cantidad_stock, fecha_caducidad, usuario: usuario_};
+          axios.post(`${UrlReact}/almacen/crear`, mialmacen, configInicial)
+          .then(response => {
+            CustomSwal({ icono: 'success', titulo: 'Almacen Creado', mensaje: response.mensaje});
+            limpiarFormulario();
+          })
+          .catch(error => {
+            CustomSwal({ icono: 'error', titulo: 'Error al crear el Almacen', mensaje: error.mensaje});
+          });
+      }
+      else{
+        CustomSwal({ icono: 'error', titulo: 'No existe el producto', mensaje: "Por favor seleccione un producto"});
+      }
     }
   }
 
@@ -89,6 +94,7 @@ export const RegistrarAlmacen = () => {
     setPrecioVenta("");
     setCantidad_stock("");
     setFechaCaducidad("");
+    setIdProducto("");
   }
   return (
     <div id="caja_contenido">
@@ -154,9 +160,10 @@ export const RegistrarAlmacen = () => {
                   placeholder= {datos.precioCompra}
                   type= 'Number'
                   value={precioVenta}
-                  onChange={(e) => setPrecioVenta(e.target.value)}
+                  onChange={(e) => {if (/^\d*\.?\d{0,2}$/.test(e.target.value)) {setPrecioVenta(e.target.value);}}}
                   required={true}
                   icon={<AttachMoney/>}
+                  onKeyPress={(e) => { if (!/[\d.]$/.test(e.key) || (e.key === '.' && precioVenta.includes('.'))) {e.preventDefault();}}}
                 />
                 <CustomRegisterUser
                   number={6}
@@ -167,6 +174,7 @@ export const RegistrarAlmacen = () => {
                   onChange={(e) => setCantidad_stock(e.target.value)}
                   required={true}
                   icon={<Filter9Plus/>}
+                  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}
                 />
                 </Grid>
                 <Button

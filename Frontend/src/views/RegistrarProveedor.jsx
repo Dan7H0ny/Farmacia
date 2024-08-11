@@ -144,6 +144,7 @@ export const RegistrarProveedor = () => {
               }}
               required={false}
               icon={<LocalPhone/>}
+              onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}
             />
             <CustomRegisterUser
               number={4}
@@ -191,6 +192,7 @@ export const RegistrarProveedor = () => {
               }}
               required={false}
               icon={<PhoneAndroid/>}
+              onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}
             />
           </Grid>
           {envioIntentado && mostrarMensajeValidacion(`<div>Por favor ingrese un número de ${mensaje} válido si es necesario</div>`)}

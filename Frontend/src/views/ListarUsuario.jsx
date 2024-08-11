@@ -269,7 +269,7 @@ export const ListarUsuario = () => {
           <CustomRegisterUser
             number={8}
             label="Nombre"  
-            placeholder= 'Buscar el nombre del usuario'
+            placeholder= 'Busca por nombre. apellido, rol o correo'
             type= 'text'
             value={buscar}
             onChange={(e) => setBuscar(e.target.value)}

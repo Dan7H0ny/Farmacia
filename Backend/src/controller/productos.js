@@ -69,7 +69,7 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
       .populate('tipo', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
-      .sort({ fecha_caducidad: 1 });
+      .sort({ fecha_registro: -1 });
     res.status(200).json({ mensaje: 'Producto actualizado exitosamente', productosEncontrados });
   } catch (error) {
     console.error(error);

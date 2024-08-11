@@ -258,7 +258,7 @@ export const ListarProveedor = () => {
             <CustomRegisterUser
               number={8}
               label="Nombre"  
-              placeholder= 'Buscar el nombre del usuario'
+              placeholder= 'Busca por marca y nombre del vendedor'
               type= 'text'
               value={buscar}
               onChange={(e) => setBuscar(e.target.value)}

@@ -109,6 +109,7 @@ export const RegistrarProducto = () => {
               onChange={(e) => setCapacidadPres(e.target.value)}
               required={true}
               icon={<Inventory/>}
+              onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}
             />
             <CustomRegisterUser
               number={12}
@@ -129,8 +130,9 @@ export const RegistrarProducto = () => {
               type= 'Number'
               required={true}
               value={precioCompra}
-              onChange={(e) => setPrecioCompra(e.target.value)}
+              onChange={(e) => {if (/^\d*\.?\d{0,2}$/.test(e.target.value)) {setPrecioCompra(e.target.value);}}}
               icon={<AttachMoney/>}
+              onKeyPress={(e) => { if (!/[\d.]$/.test(e.key) || (e.key === '.' && precioCompra.includes('.'))) {e.preventDefault();}}}
             /> 
             <CustomSelectCom
               number={4}

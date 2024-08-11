@@ -12,6 +12,8 @@ import CustomTablaProducto from '../components/CustomTablaProducto';
 import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectProvee from '../components/CustomSelectProvee';
+import { ReporteProducto } from '../Reports/ReporteProducto';
+import ReporteExcelProducto from '../Reports/ReporteExcelProducto';
 
 export const ListarProducto = () => {
   const [productos, setProductos] = useState([]);
@@ -96,11 +98,33 @@ export const ListarProducto = () => {
             cancelButtonText: 'Cancelar',
             preConfirm: () => {
               const nombre_ = document.getElementById('nombre').value;
-              const capacidad_presentacion_ = parseInt(document.getElementById('capacidad').value);
-              const precioCompra_ = parseInt(document.getElementById('precio').value);
+              const capacidad_presentacion_ = parseInt(document.getElementById('capacidad').value, 10);
+              const precioCompra_ = document.getElementById('precio').value;
               const descripcion_ = document.getElementById('descripcion').value;
               const tipo_ = tipoRef.current.getSelectedRole();
               const proveedor_ = proveedorRef.current.getSelectedRole();
+              if (nombre_ === "") {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el nombre del producto</div>');
+                return false;
+              }
+
+              if (isNaN(capacidad_presentacion_) || !Number.isInteger(capacidad_presentacion_) || capacidad_presentacion_ <= 0) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese una capacidad de presentación válida (número entero positivo)</div>');
+                return false;
+              }
+            
+              if (!/^\d+(\.\d{1,2})?$/.test(precioCompra_) || parseFloat(precioCompra_) <= 0) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un precio de compra válido (número decimal positivo con hasta dos decimales)</div>');
+                return false;
+              }
+              if (tipo_ === "") {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el tipo de presentacion</div>');
+                return false;
+              }
+              if (proveedor_ === "") {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el nombre del proveedor</div>');
+                return false;
+              }
               return { nombre_, capacidad_presentacion_, precioCompra_, descripcion_, tipo_, proveedor_ };
             },
           customClass: {
@@ -174,13 +198,19 @@ export const ListarProducto = () => {
           Swal.fire({
             title: 'MOSTRAR PRODUCTO',
             html: container,
+            showCancelButton: true, 
             confirmButtonText: 'Atras',
+            cancelButtonText: 'Imprimir',
             customClass: {
               popup: 'customs-swal-popup',
               title: 'customs-swal-title',
-              confirmButton: 'swal2-confirm custom-swal2-confirm',  
-              cancelButton: 'swal2-cancel custom-swal2-cancel',
+              confirmButton: 'swal2-cancel custom-swal2-cancel',  
+              cancelButton: 'swal2-confirm custom-swal2-confirm',
             },
+          }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+              ReporteProducto(response); 
+            }
           });
         })
         .catch(error => {
@@ -194,16 +224,26 @@ export const ListarProducto = () => {
       <Box mt={3}>
         <CustomTypography text={'Lista de Productos'} />
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>
-          <CustomRegisterUser
-            number={12}
-            label="Nombre"  
-            placeholder= 'Buscar el nombre del usuario'
-            type= 'text'
-            value={buscar}
-            onChange={(e) => setBuscar(e.target.value)}
-            required={false}
-            icon={<Search/>}
-          />
+          <Grid container spacing={3} >
+            <CustomRegisterUser
+              number={8}
+              label="Nombre"  
+              placeholder= 'Busca por producto, proveedor o el tipo de presentacion'
+              type= 'text'
+              value={buscar}
+              onChange={(e) => setBuscar(e.target.value)}
+              required={false}
+              icon={<Search/>}
+            />
+            <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+              <ReporteExcelProducto
+                data={productos}
+                fileName="Reporte de Productos"
+                sheetName="productos"
+                sx={{ mt: 2 }}
+              />
+            </Grid>
+          </Grid>
         </form>
         <CustomTablaProducto usuarios={productos} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
       </Box>

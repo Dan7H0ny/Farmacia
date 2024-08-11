@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
 import logoBase64 from './logoBase64';
 
-export const ReporteProveedor = (proveedor) => {
+export const ReporteProducto = (producto) => {
   const doc = new jsPDF({
     format: 'letter' // Especificar que el formato es carta
   });  
@@ -20,15 +20,15 @@ export const ReporteProveedor = (proveedor) => {
     incluirCelular: true,
     incluirFechaRegistro: true,
     incluirFechaActualizacion: true,
-    titulo: 'REPORTE DEL PROVEEDOR',
-    nombreArchivo: `Reporte de ${proveedor.nombre_marca}.pdf`,
+    titulo: 'REPORTE DEL PRODUCTO',
+    nombreArchivo: `Reporte de ${producto.nombre}.pdf`,
     colorFondo: '#0f1b35', // Color de fondo oscuro azul
     colorTexto: '#e2e2e2', // Color de texto gris claro
     colorEncabezado: '#000000', // Color del encabezado en negro
     tamanoFuente: 14,
     logo: logoBase64,
     firma: 'Lic. Emiliana Mamani Alonso',
-    anchoColumnaAtributos: 50,
+    anchoColumnaAtributos: 60,
     fechaImpresion: formatDateTime(new Date()),
   };
 
@@ -40,15 +40,16 @@ export const ReporteProveedor = (proveedor) => {
     return `${formattedDate} ${formattedTime}`;
   }
 
-  if (opciones.incluirMarca) tablaDatos.push(['Nombre de la marca:', proveedor.nombre_marca]);
-  if (opciones.incluirCorreo) tablaDatos.push(['Correo de la marca:', proveedor.correo ? proveedor.correo : 's/n']);
-  if (opciones.incluirTelefono) tablaDatos.push(['Telefono de la marca:', proveedor.telefono ? proveedor.telefono : 's/n']);
-  if (opciones.incluirSitioWeb) tablaDatos.push(['Sitio Web de la marca:', proveedor.sitioweb ? proveedor.sitioweb : 's/n']);
-  if (opciones.incluirNombreVendedor) tablaDatos.push(['Nombre del Vendedor:', proveedor.nombre_vendedor]);
-  if (opciones.incluirCorreoVendedor) tablaDatos.push(['Correo del Vendedor:', proveedor.correo_vendedor ? proveedor.correo_vendedor : 's/n']);
-  if (opciones.incluirCelular) tablaDatos.push(['Celular del Vendedor:', proveedor.celular ? proveedor.celular : 's/n' ]);
-  if (opciones.incluirFechaRegistro) tablaDatos.push(['Fecha de Registro', formatDateTime(new Date(proveedor.fecha_registro))]);
-  if (opciones.incluirFechaActualizacion) tablaDatos.push(['Fecha de Actualización', formatDateTime(new Date(proveedor.fecha_actualizacion))]);
+  if (opciones.incluirMarca) tablaDatos.push(['Nombre del producto:', producto.nombre]);
+  if (opciones.incluirSitioWeb) tablaDatos.push(['Descripcion del producto:', producto.descripcion ? producto.descripcion : 's/n']);
+  if (opciones.incluirCorreo) tablaDatos.push(['Proveedor del producto:', producto.proveedor.nombre_marca]);
+  if (opciones.incluirTelefono) tablaDatos.push(['Precio de compra del producto:', producto.precioCompra]);
+  if (opciones.incluirSitioWeb) tablaDatos.push(['Tipo de presentacion del producto:', producto.tipo.nombre]);
+  if (opciones.incluirNombreVendedor) tablaDatos.push(['Capacidad de Presentacion del producto:', producto.capacidad_presentacion]);
+  if (opciones.incluirCorreoVendedor) tablaDatos.push(['Usuario que registro:', producto.usuario_registro.nombre + ' ' + producto.usuario_registro.apellido ]);
+  if (opciones.incluirCelular) tablaDatos.push(['Usuario que actualizo:', producto.usuario_actualizacion.nombre + ' ' + producto.usuario_actualizacion.apellido ]);
+  if (opciones.incluirFechaRegistro) tablaDatos.push(['Fecha de Registro:', formatDateTime(new Date(producto.fecha_registro))]);
+  if (opciones.incluirFechaActualizacion) tablaDatos.push(['Fecha de Actualización:', formatDateTime(new Date(producto.fecha_actualizacion))]);
 
   // Configurar márgenes y ancho de la tabla
   const pageWidth = doc.internal.pageSize.getWidth();

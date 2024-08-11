@@ -95,45 +95,4 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
   }
 });
 
-
-router.put('/actualizarUser/:id', verificacion, async (req, res) => {
-  const { id } = req.params;
-  const { direccion, telefono, password } = req.body;
-  const fechaActual = new Date();
-  
-  try {
-    let usuarioActualizado;
-    if (password.trim() === '') {
-      usuarioActualizado = await Usuario.findByIdAndUpdate(id, { direccion, telefono, fecha_actualizacion: fechaActual }, { new: true });
-    } else {
-      const hashedPassword = await bcryptjs.hash(password, 10);
-      usuarioActualizado = await Usuario.findByIdAndUpdate(id, { direccion, telefono, password: hashedPassword, fecha_actualizacion: fechaActual}, { new: true });
-    }
-    if (!usuarioActualizado) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    }
-
-    res.json({ mensaje: 'Usuario actualizado exitosamente', usuarioActualizado });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al actualizar usuario', error: error.message });
-  }
-});
-
-// Eliminar un usuario
-router.put('/eliminar/:id',verificacion, async (req, res) => {
-  const { id } = req.params;
-  const { estado } = req.body;
-  try {
-    const usuario = await Usuario.findByIdAndUpdate(id, { estado });
-    if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    }
-    res.json({ mensaje: 'Usuario eliminado exitosamente', usuario });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al eliminar usuario' });
-  }
-});
-
 module.exports = router

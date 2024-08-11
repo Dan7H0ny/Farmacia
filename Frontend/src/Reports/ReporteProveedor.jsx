@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
 import logoBase64 from './logoBase64';
 
-export const ReporteUsuario = (usuario) => {
+export const ReporteProveedor = (proveedor) => {
   const doc = new jsPDF({
     format: 'letter' // Especificar que el formato es carta
   });  
@@ -11,17 +11,17 @@ export const ReporteUsuario = (usuario) => {
   const tablaEncabezado = [['ATRIBUTOS', 'DATOS']];
   const tablaDatos = [];
   const opciones = {
-    incluirNombre: true,
-    incluirApellido: true,
+    incluirMarca: true,
     incluirCorreo: true,
-    incluirDireccion: true,
-    incluirRol: true,
     incluirTelefono: true,
-    incluirEstado: true,
+    incluirSitioWeb: true,
+    incluirNombreVendedor: true,
+    incluirCorreoVendedor: true,
+    incluirCelular: true,
     incluirFechaRegistro: true,
     incluirFechaActualizacion: true,
     titulo: 'REPORTE DEL PERFIL DEL USUARIO',
-    nombreArchivo: `Reporte de ${usuario.nombre} ${usuario.apellido}.pdf`,
+    nombreArchivo: `Reporte de ${proveedor.nombre_marca}.pdf`,
     colorFondo: '#0f1b35', // Color de fondo oscuro azul
     colorTexto: '#e2e2e2', // Color de texto gris claro
     colorEncabezado: '#000000', // Color del encabezado en negro
@@ -40,15 +40,15 @@ export const ReporteUsuario = (usuario) => {
     return `${formattedDate} ${formattedTime}`;
   }
 
-  if (opciones.incluirNombre) tablaDatos.push(['Nombre del Usuario:', usuario.nombre]);
-  if (opciones.incluirApellido) tablaDatos.push(['Apellido del Usuario:', usuario.apellido]);
-  if (opciones.incluirCorreo) tablaDatos.push(['Correo del Usuario:', usuario.correo]);
-  if (opciones.incluirDireccion) tablaDatos.push(['Dirección del Usuario:', usuario.direccion ? usuario.direccion : 's/n']);
-  if (opciones.incluirRol) tablaDatos.push(['Rol del Usuario:', usuario.rol]);
-  if (opciones.incluirTelefono) tablaDatos.push(['Teléfono del Usuario:', usuario.telefono ? usuario.telefono : 's/n']);
-  if (opciones.incluirEstado) tablaDatos.push(['Estado del Usuario:', usuario.estado ? 'Activo' : 'Inactivo']);
-  if (opciones.incluirFechaRegistro) tablaDatos.push(['Fecha de Registro', formatDateTime(new Date(usuario.fecha_registro))]);
-  if (opciones.incluirFechaActualizacion) tablaDatos.push(['Fecha de Actualización', formatDateTime(new Date(usuario.fecha_actualizacion))]);
+  if (opciones.incluirMarca) tablaDatos.push(['Nombre de la marca:', proveedor.nombre_marca]);
+  if (opciones.incluirCorreo) tablaDatos.push(['Correo de la marca:', proveedor.correo ? proveedor.correo : 's/n']);
+  if (opciones.incluirTelefono) tablaDatos.push(['Telefono de la marca:', proveedor.telefono ? proveedor.telefono : 's/n']);
+  if (opciones.incluirSitioWeb) tablaDatos.push(['Sitio Web de la marca:', proveedor.sitioweb ? proveedor.sitioweb : 's/n']);
+  if (opciones.incluirNombreVendedor) tablaDatos.push(['Nombre del Vendedor:', proveedor.nombre_vendedor]);
+  if (opciones.incluirCorreoVendedor) tablaDatos.push(['Correo del Vendedor:', proveedor.correo_vendedor ? proveedor.correo_vendedor : 's/n']);
+  if (opciones.incluirCelular) tablaDatos.push(['Celular del Vendedor:', proveedor.celular ? proveedor.celular : 's/n' ]);
+  if (opciones.incluirFechaRegistro) tablaDatos.push(['Fecha de Registro', formatDateTime(new Date(proveedor.fecha_registro))]);
+  if (opciones.incluirFechaActualizacion) tablaDatos.push(['Fecha de Actualización', formatDateTime(new Date(proveedor.fecha_actualizacion))]);
 
   // Configurar márgenes y ancho de la tabla
   const pageWidth = doc.internal.pageSize.getWidth();

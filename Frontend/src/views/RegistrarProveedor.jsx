@@ -21,7 +21,9 @@ export const RegistrarProveedor = () => {
   const [nombre_vendedor, setNombreVendedor] = useState('');
   const [correo_vendedor, setCorreoVendedor] = useState('');
   const [celular, setCelular] = useState('');
-  const [ envioIntentado, setEnvioIntentado ] =useState(false);
+  const [ envioIntentado, setEnvioIntentado ] = useState(false);
+  
+  const [ mensaje, setMensaje ] =useState('');
 
   const navigate = useNavigate();
 
@@ -42,36 +44,46 @@ export const RegistrarProveedor = () => {
     } 
     else 
     {
-      if(telefono){
-        if(telefono.length !== 8 || telefono < 60000000 || telefono > 79999999){
-          setEnvioIntentado(true);
+      let valid = true; // Variable para controlar si todas las validaciones pasan
+      
+        if (telefono) {
+          if (telefono.length !== 8 || telefono < 60000000 || telefono > 79999999) {
+            setEnvioIntentado(true);
+            if (mensaje === 'celular') { 
+              setMensaje('telefono');
+            }
+            else{
+              setMensaje('telefono');
+            }
+            valid = false;
+          }
         }
-        else {
+      
+        if (celular) {
+          if (celular.length !== 8 || celular < 60000000 || celular > 79999999) {
+            setEnvioIntentado(true);
+            if (mensaje === 'telefono') { 
+              setMensaje('celular');
+            }
+            else{
+              setMensaje('celular');
+            }
+            valid = false;
+          }
+        }
+      
+        if (valid) {
           setEnvioIntentado(false);
-          const miProveedor = { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular};
+          const miProveedor = { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular };
           axios.post(`${UrlReact}/proveedor/crear`, miProveedor, configInicial)
             .then(response => {
-              CustomSwal({ icono: 'success', titulo: 'Proveedor Creado', mensaje: response.mensaje});
+              CustomSwal({ icono: 'success', titulo: 'Proveedor Creado', mensaje: response.mensaje });
               limpiarFormulario();
             })
             .catch(error => {
-              CustomSwal({ icono: 'error', titulo: 'Error al crear el Proveedor', mensaje: error.mensaje});
+              CustomSwal({ icono: 'error', titulo: 'Error al crear el Proveedor', mensaje: error.mensaje });
             });
         }
-        return;
-      }
-      else{
-        const miProveedor = { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular};
-        axios.post(`${UrlReact}/proveedor/crear`, miProveedor, configInicial)
-          .then(response => {
-            CustomSwal({ icono: 'success', titulo: 'Proveedor Creado', mensaje: response.mensaje});
-            limpiarFormulario();
-          })
-          .catch(error => {
-            CustomSwal({ icono: 'error', titulo: 'Error al crear el Proveedor', mensaje: error.mensaje});
-          });
-          return;
-      }
     }
   }
 
@@ -157,7 +169,7 @@ export const RegistrarProveedor = () => {
               number={6}
               label="Correo del Vendedor" 
               placeholder= 'Ingrese el correo del vendedor del proveedor'
-              type= 'text'
+              type= 'email'
               value={correo_vendedor}
               onChange={(e) => setCorreoVendedor(e.target.value)}
               required={false}
@@ -181,7 +193,7 @@ export const RegistrarProveedor = () => {
               icon={<PhoneAndroid/>}
             />
           </Grid>
-          {envioIntentado && mostrarMensajeValidacion("<div>Por favor ingrese un número de teléfono válido </div>")}
+          {envioIntentado && mostrarMensajeValidacion(`<div>Por favor ingrese un número de ${mensaje} válido si es necesario</div>`)}
           <Button
             fullWidth
             variant="contained"

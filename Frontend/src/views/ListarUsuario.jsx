@@ -12,7 +12,7 @@ import CustomSwal from '../components/CustomSwal';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomTabla from '../components/CustomTabla';
 import CustomSelectUser from '../components/CustomSelectUser';
-import { generarPDFPersonalizado } from '../Reports/ReporteUsuario';
+import { ReporteUsuario } from '../Reports/ReporteUsuario';
 import ReporteExcelUsuario from '../Reports/ReporteExcelUsuario';
 
 export const ListarUsuario = () => {
@@ -77,15 +77,21 @@ export const ListarUsuario = () => {
               const telefono_ = parseInt(document.getElementById('telefono').value);
               let password_ = document.getElementById('password').value;
               if (nombre_ === "") {
-                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el nombre del usuario, es requerido</div>');
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el nombre del usuario</div>');
                 return false;
               }
               if (apellido_ === "") {
-                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el apellido del usuario, es requerido</div>');
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el apellido del usuario</div>');
                 return false;
               }
               if (correo_ === "") {
-                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el correo del usuario, es requerido</div>');
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el correo del usuario</div>');
+                return false;
+              }
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+              if (!emailRegex.test(correo_)) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un correo electrónico válido</div>');
                 return false;
               }
               if (document.getElementById('telefono').value !== "" && (isNaN(telefono_) || telefono_ < 60000000 || telefono_ > 79999999)) {
@@ -229,7 +235,7 @@ export const ListarUsuario = () => {
             },
           }).then((result) => {
             if (result.dismiss === Swal.DismissReason.cancel) {
-              generarPDFPersonalizado(response); 
+              ReporteUsuario(response); 
             }
           });
         })
@@ -278,7 +284,7 @@ export const ListarUsuario = () => {
               sx={{ mt: 2 }}
             />
           </Grid>
-          </Grid>
+        </Grid>
         </form>
         <CustomTabla usuarios={usuarios} buscar={buscar} handleSwitchChange={handleSwitchChange} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
       </Box>

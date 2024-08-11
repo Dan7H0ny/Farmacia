@@ -10,6 +10,8 @@ import { createRoot } from 'react-dom/client';
 import CustomTablaPro from '../components/CustomTablaPro';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomTypography from '../components/CustomTypography';
+import { ReporteProveedor } from '../Reports/ReporteProveedor';
+import ReporteExcelProveedor from '../Reports/ReporteExcelProveedor';
 
 export const ListarProveedor = () => {
   const [proveedores, setproveedores] = useState([]);
@@ -71,12 +73,33 @@ export const ListarProveedor = () => {
               const nombre_vendedor_ = document.getElementById('nombre').value;
               const correo_vendedor_ = document.getElementById('correoV').value;
               const celular_ = parseInt(document.getElementById('celular').value);
-              if (document.getElementById('telefono').value !== "" && (isNaN(telefono_) || telefono_ < 60000000 || telefono_ > 79999999)) {
-                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de teléfono válido</div>');
+
+              if (nombre_marca_ === "") {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el nombre de la marca</div>');
                 return false;
               }
+              if (nombre_vendedor_ === "") {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el nombre del vendedor</div>');
+                return false;
+              }
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+              if (document.getElementById('correo').value !== "" && !emailRegex.test(correo_)) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un correo electrónico válido para el proveedor de la marca</div>');
+                return false;
+              }
+              if (document.getElementById('correoV').value !== "" && !emailRegex.test(correo_)) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un correo electrónico válido para el vendedor</div>');
+                return false;
+              }                   
+
+              if (document.getElementById('telefono').value !== "" && (isNaN(telefono_) || telefono_ < 60000000 || telefono_ > 79999999)) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de teléfono válido, si es requerido</div>');
+                return false;
+              }
+
               if (document.getElementById('celular').value !== "" && (isNaN(celular_) || celular_ < 60000000 || celular_ > 79999999)) {
-                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de teléfono válido</div>');
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de celular válido, si es requerido</div>');
                 return false;
               }
               return { nombre_marca_, correo_, telefono_, sitioweb_, nombre_vendedor_, correo_vendedor_, celular_ };
@@ -205,13 +228,19 @@ export const ListarProveedor = () => {
             Swal.fire({
               title: 'MOSTRAR PROVEEDOR',
               html: container,
+              showCancelButton: true, 
               confirmButtonText: 'Atras',
+              cancelButtonText: 'Imprimir',
               customClass: {
                 popup: 'customs-swal-popup',
                 title: 'customs-swal-title',
-                confirmButton: 'swal2-confirm custom-swal2-confirm',  
-                cancelButton: 'swal2-cancel custom-swal2-cancel',
+                confirmButton: 'swal2-cancel custom-swal2-cancel',  
+                cancelButton: 'swal2-confirm custom-swal2-confirm',
               },
+            }).then((result) => {
+              if (result.dismiss === Swal.DismissReason.cancel) {
+                ReporteProveedor(response); 
+              }
             });
           })
           .catch(error => {
@@ -225,16 +254,26 @@ export const ListarProveedor = () => {
       <Box mt={3}>
         <CustomTypography text={'Lista De Los Proveedores'} />
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>
-          <CustomRegisterUser
-            number={12}
-            label="Nombre"  
-            placeholder= 'Buscar el nombre del usuario'
-            type= 'text'
-            value={buscar}
-            onChange={(e) => setBuscar(e.target.value)}
-            required={false}
-            icon={<Search/>}
-          />
+          <Grid container spacing={3} >
+            <CustomRegisterUser
+              number={8}
+              label="Nombre"  
+              placeholder= 'Buscar el nombre del usuario'
+              type= 'text'
+              value={buscar}
+              onChange={(e) => setBuscar(e.target.value)}
+              required={false}
+              icon={<Search/>}
+            />
+            <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+              <ReporteExcelProveedor
+                data={proveedores}
+                fileName="Reporte de Proveedores"
+                sheetName="proveedores"
+                sx={{ mt: 2 }}
+              />
+            </Grid>
+          </Grid>
         </form>
         <CustomTablaPro usuarios={proveedores} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
       </Box>

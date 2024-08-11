@@ -7,6 +7,11 @@ const verificacion = require('../middlewares/verificacion');
 router.post('/crear',verificacion, async (req, res) => {
   const { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular } = req.body;
   try {
+    const proveedorExistente = await Proveedor.findOne({ nombre_marca });
+
+    if (proveedorExistente) {
+      return res.status(400).json({ mensaje: 'Esta marca ya ha sido registrada' });
+    }
     const fechaActual = new Date();
     const newproveedor = new Proveedor({ nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
     await newproveedor.save();
@@ -20,7 +25,7 @@ router.post('/crear',verificacion, async (req, res) => {
 // Obtener todos los Proveedors
 router.get('/mostrar',verificacion, async (req, res) => {
   try {
-    const Proveedores = await Proveedor.find({});
+    const Proveedores = await Proveedor.find({}).sort({ fecha_registro: -1 });
     res.json(Proveedores);
   } catch (error) {
     console.error(error);
@@ -47,16 +52,26 @@ router.put('/actualizar/:id',verificacion, async (req, res) => {
   const { id } = req.params;
   let { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor, celular } = req.body;
   try {
-    console.log(telefono, celular)
+    const proveedorExistente = await Proveedor.findById(id);
+    if (!proveedorExistente) {
+      return res.status(404).json({ mensaje: 'Proveedor no encontrado' });
+    }
+
+    if (nombre_marca.toLowerCase() !== proveedorExistente.nombre_marca.toLowerCase()) {
+      const marcaDuplicada = await Proveedor.findOne({ nombre_marca: { $regex: new RegExp(`^${nombre_marca}$`, 'i') } });
+      if (marcaDuplicada) {
+        return res.status(400).json({ mensaje: 'La marca ya esta registrado, ingrese otra marca' });
+      }
+    }
+
     const fechaActual = new Date();
-    let updateFields = { nombre_marca, correo, sitioweb, nombre_vendedor, correo_vendedor, fecha_actualizacion: fechaActual };
-    if (celular !== '0') {updateFields.celular = celular;}
-    if (telefono !== '00000000') {updateFields.telefono = telefono;}
+    let updateFields = { nombre_marca, correo, telefono, sitioweb, nombre_vendedor, correo_vendedor,celular, fecha_actualizacion: fechaActual };
+
     const proveedorActualizado = await Proveedor.findByIdAndUpdate(id, updateFields, { new: true });
     if (!proveedorActualizado) {
-      return res.status(404).json({ mensaje: 'Cliente no encontrado' });
+      return res.status(404).json({ mensaje: 'Proveedor no encontrado' });
     }
-    res.json({ mensaje: 'Cliente actualizado exitosamente', proveedorActualizado });
+    res.json({ mensaje: 'Proveedor actualizado exitosamente', proveedorActualizado });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar el Proveedor' });

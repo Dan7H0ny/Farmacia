@@ -1,27 +1,15 @@
 import React from 'react';
-import { Button, Grid, Switch } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { createRoot } from 'react-dom/client';
 import Swal from 'sweetalert2';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import CustomActualizarUser from '../components/CustomActualizarUser';
-import CustomSelectUser from '../components/CustomSelectUser';
-import { DateRange, People } from '@mui/icons-material';
-import styled from 'styled-components';
-
-const CustomSwitch = styled(Switch)(({ theme }) => ({
-  '& .MuiSwitch-switchBase.Mui-checked': {
-    color: '#e2e2e2',
-  },
-  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-    backgroundColor: '#e2e2e2',
-  },
-}));
+import { DateRange, Person, Approval } from '@mui/icons-material';
 
 const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
 
   const btnImprimir = () => {
-    const roles = [{ nombre: 'Administrador' }, { nombre: 'Cajero' }];
 
     function formatDateTime(date) {
       const optionsDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -35,17 +23,10 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
     const root = createRoot(container);
     root.render(
       <Grid container spacing={2}>
+        <CustomActualizarUser number={6} id="marca" label="Marca" type="text" icon={<Approval />} />
+        <CustomActualizarUser number={6} id="nombre" label="Nombre del Vendedor" type="text" icon={<Person />} />
         <CustomActualizarUser number={6} id="fechaInicio" label="Fecha de Inicio" type="date" icon={<DateRange />} />
         <CustomActualizarUser number={6} id="fechaFin" label="Fecha Fin" type="date" icon={<DateRange />} />
-        <CustomSelectUser number={6} id="rol" label="Seleccione un rol para el usuario" value={''} roles={roles} icon={<People />} />
-        <Grid item xs={12} sm={6} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <label htmlFor="estado" style={{ marginRight: '10px' }}>Estado:</label>
-          <CustomSwitch 
-            onChange={(event, checked) => document.getElementById('estado').checked = checked} 
-            color="primary"
-          />
-          <input type="checkbox" id="estado" hidden />
-        </Grid>
       </Grid>
     );
 
@@ -60,16 +41,16 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
         cancelButton: 'swal2-cancel custom-swal2-cancel',
       },
       preConfirm: () => {
+        const marca = document.getElementById('marca').value;
+        const nombre = document.getElementById('nombre').value;
         const fechaInicio = document.getElementById('fechaInicio').value;
         const fechaFin = document.getElementById('fechaFin').value;
-        const rol = document.getElementById('rol').textContent;
-        const estado = document.getElementById('estado').checked;
 
-        return { fechaInicio, fechaFin, rol, estado };
+        return { marca, nombre, fechaInicio, fechaFin };
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        const { fechaInicio, fechaFin, rol, estado } = result.value;
+        const { marca, nombre, fechaInicio, fechaFin } = result.value;
 
         const DatosConFecha = data.filter(d => {
           const fechaRegistro = new Date(d.fecha_registro);
@@ -84,21 +65,21 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
             return false; 
           }
         
-          const matchRol = rol ? d.rol.toLowerCase() === rol.toLowerCase() : true;
-          const matchEstado = estado !== undefined ? d.estado === estado : true;
+          const matchMarca = marca ? (d.nombre_marca && d.nombre_marca.toLowerCase().includes(marca.toLowerCase())) : true;
+          const matchNombre = nombre ? (d.nombre_vendedor && d.nombre_vendedor.toLowerCase().includes(nombre.toLowerCase())) : true;
         
-          return matchFecha && matchRol && matchEstado;
+          return matchFecha && matchMarca && matchNombre;
         });        
-
+      
         const DatosActualizados = DatosConFecha.map((item, index) => ({
           'N°': index + 1,
-          'Nombre del Usuario': item.nombre,
-          'Apellido del Usuario': item.apellido,
-          'Correo del Usuario': item.correo,
-          'Direccion del Usuario': item.direccion ? item.direccion : 's/n',
-          'Rol del Usuario': item.rol,
-          'Telefono del Usuario': item.telefono ? item.telefono : 's/n',
-          'Estado del Usuario': item.estado ? 'Activo' : 'Inactivo',
+          'Nombre de la marca': item.nombre_marca,
+          'Correo del Proveedor': item.correo ? item.correo :'s/n',
+          'Telefono del Proveedor': item.telefono ? item.telefono :'s/n',
+          'Sitio Web del Proveedor': item.sitioweb ? item.sitioweb : 's/n',
+          'Nombre del Vendedor': item.nombre_vendedor,
+          'Correo del Vendedor': item.correo_vendedor ? item.correo_vendedor : 's/n',
+          'Celular del Vendedor': item.celular ? item.celular : 's/n',
           'Fecha de Registro': formatDateTime(new Date(item.fecha_registro)),
           'Fecha de Actualización': formatDateTime(new Date(item.fecha_actualizacion)),
         }));
@@ -107,7 +88,7 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
         const worksheet = workbook.addWorksheet(sheetName || 'Sheet1');
 
         // Agregar encabezados
-        const headers = ["N°", "Nombre del Usuario", "Apellido del Usuario", "Correo del Usuario", "Direccion del Usuario", "Rol del Usuario", "Telefono del Usuario", "Estado del Usuario", "Fecha de Registro", "Fecha de Actualización"];
+        const headers = ["N°", "Nombre de la marca", "Correo del Proveedor", "Telefono del Proveedor", "Sitio Web del Proveedor", "Nombre del Vendedor", "Correo del Vendedor", "Celular del Vendedor", "Fecha de Registro", "Fecha de Actualización"];
         worksheet.addRow(headers).eachCell({ includeEmpty: true }, (cell, colNumber) => {
           cell.font = { bold: true, color: { argb: 'e2e2e2' } };
           cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };

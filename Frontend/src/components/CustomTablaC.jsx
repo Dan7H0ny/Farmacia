@@ -34,6 +34,8 @@ const CustomTablaC = ({ usuarios, buscar, botonActualizar }) => {
 
   return (
     <Box sx={{ overflowX: 'auto', width: '100%' }}>
+      <Grid container spacing={3}>
+      <Grid item xs={12} sm={12}>
       <Table className="table table-bordered"  style={{ marginTop: '1.5%', border: '2px solid #e2e2e2', }}>
           <TableHead className="text-center" sx={{ '& .MuiTableCell-root': {color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', fontWeight: 'bold', border: '2px solid #e2e2e2'} }}>
             <TableRow >
@@ -58,7 +60,8 @@ const CustomTablaC = ({ usuarios, buscar, botonActualizar }) => {
             ))}
           </TableBody>
         </Table>
-        <Grid item xs={12} sm={12} sx={{ marginTop: 2, '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+        </Grid>
+        <Grid item xs={12} sm={12} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
           <TablePagination
             component="div"
             count={filtrarDatos.length}
@@ -96,6 +99,7 @@ const CustomTablaC = ({ usuarios, buscar, botonActualizar }) => {
               }
             }}
           />
+        </Grid>
         </Grid>
     </Box>
   );

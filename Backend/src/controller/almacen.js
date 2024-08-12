@@ -156,6 +156,11 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
   const { producto, categoria, precioVenta, cantidad_stock, fecha_caducidad, usuario } = req.body;
 
   try {
+    const almacenExistente = await Almacen.findById(id);
+
+    if (!almacenExistente) {
+      return res.status(400).json({ mensaje: 'No se encontró el almacén.' });
+    }
     const fechaActual = new Date();
     const fechaCaducidad = new Date(fecha_caducidad);
 
@@ -168,8 +173,14 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
 
     // Verificar si el producto existe
     const producto_ = await Producto.findById(producto);
-    if (!producto_) {
-      return res.status(400).json({ mensaje: 'El producto no existe' });
+    if (!producto_) return res.status(400).json({ mensaje: 'Seleccione un producto existente' });
+
+    if (producto !== almacenExistente.producto.toString()) {
+      const productoEnAlmacen = await Almacen.findOne({ producto });
+    
+      if (productoEnAlmacen) {
+        return res.status(400).json({ mensaje: 'El producto ya está registrado en el almacén.' });
+      }
     }
 
     // Actualizar el almacen

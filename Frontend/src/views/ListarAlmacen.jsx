@@ -12,6 +12,8 @@ import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectProducto from '../components/CustomSelectProducto';
 import CustomTablaAlmacen from '../components/CustomTablaAlmacen';
+import ReporteExcelAlmacen from '../Reports/ReporteExcelAlmacen';
+import { ReporteAlmacen } from '../Reports/ReporteAlmacen';
 
 export const ListarAlmacen = () => {
   const [almacen, setAlmacen] = useState([]);
@@ -98,27 +100,27 @@ export const ListarAlmacen = () => {
               const precioVenta_ = parseInt(document.getElementById('precioVenta').value);
               const stock_ = parseInt(document.getElementById('stock').value);
               const fecha_ = document.getElementById('fecha').value;
-              if(producto_._id === producto._id){
-                return{ producto_, categoria_, stock_, precioVenta_, fecha_ };
+              if (!producto_) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Seleccione un producto</div>');
+                return false;
               }
-              else{
-                return axios.get(`${UrlReact}/almacen/buscarproducto/${producto_._id}`, configInicial)
-                .then(response => {
-                  if (response.mensaje === 'Almacen no encontrado') {
-                    return { producto_, categoria_, stock_, precioVenta_, fecha_ };
-                  } else {
-                    CustomSwal({ 
-                      icono: 'error', 
-                      titulo: 'Error al actualizar el almacén', 
-                      mensaje: 'El producto ya está almacenado' 
-                    });
-                    return false;
-                  }
-                })
-                .catch(error => {
-                  return { producto_, categoria_, stock_, precioVenta_, fecha_ };
-                });
-            }
+              if (!categoria_) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Seleccione una categoría</div>');
+                return false;
+              }
+              if (!/^\d+(\.\d{1,2})?$/.test(precioVenta_) || parseFloat(precioVenta_) <= 0) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un precio de venta válido</div>');
+                return false;
+              }
+              if (isNaN(stock_) || !Number.isInteger(stock_) || stock_ <= 0) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese una capacidad válida (número entero positivo)</div>');
+                return false;
+              }
+              if (!fecha_) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Seleccione una fecha de caducidad válida</div>');
+                return false;
+              }
+            return{ producto_, categoria_, stock_, precioVenta_, fecha_ };
           },
           customClass: {
             popup: 'customs-swal-popup',
@@ -130,7 +132,7 @@ export const ListarAlmacen = () => {
           if (result.isConfirmed) {
             const { producto_, categoria_, stock_, precioVenta_, fecha_ } = result.value;
             axios.put(`${UrlReact}/almacen/actualizar/${_id}`, {
-              producto: producto_,
+              producto: producto_._id,
               categoria: categoria_,
               cantidad_stock: stock_,
               precioVenta: precioVenta_, 
@@ -203,13 +205,19 @@ export const ListarAlmacen = () => {
           Swal.fire({
             title: 'DATOS DEL PRODUCTO EN EL ALMACEN',
             html: container,
+            showCancelButton: true, 
             confirmButtonText: 'Atras',
+            cancelButtonText: 'Imprimir',
             customClass: {
               popup: 'customs-swal-popup',
               title: 'customs-swal-title',
-              confirmButton: 'swal2-confirm custom-swal2-confirm',  
-              cancelButton: 'swal2-cancel custom-swal2-cancel',
+              cancelButton: 'swal2-confirm custom-swal2-confirm',  
+              confirmButton: 'swal2-cancel custom-swal2-cancel',
             },
+          }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+              ReporteAlmacen(response); 
+            }
           });
         })
         .catch(error => {
@@ -223,16 +231,26 @@ export const ListarAlmacen = () => {
       <Box mt={3}>
         <CustomTypography text={'Control de Almacen'} />
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>
-          <CustomRegisterUser
-            number={12}
-            label="Nombre"  
-            placeholder= 'Buscar el nombre del usuario'
-            type= 'text'
-            value={buscar}
-            onChange={(e) => setBuscar(e.target.value)}
-            required={false}
-            icon={<Search/>}
-          />
+          <Grid container spacing={2} >
+            <CustomRegisterUser
+              number={8}
+              label="Nombre"  
+              placeholder= 'Buscar por producto, categoria y fecha de caducidad'
+              type= 'text'
+              value={buscar}
+              onChange={(e) => setBuscar(e.target.value)}
+              required={false}
+              icon={<Search/>}
+            />
+            <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+              <ReporteExcelAlmacen
+                data={almacen}
+                fileName="Reporte del almacen"
+                sheetName="almacen"
+                sx={{ mt: 2 }}
+              />
+            </Grid>
+          </Grid>
         </form>
         <CustomTablaAlmacen usuarios={almacen} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
       </Box>

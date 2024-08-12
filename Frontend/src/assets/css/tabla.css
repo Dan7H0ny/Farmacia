@@ -1,3 +1,46 @@
-.table-hover tr:hover {
-    color: red;
+
+@media (width <= 750px) {
+  .ocultar-en-movil {
+    display: none !important;
   }
+    /* Opcional: Ajustar los botones para que se vean mejor en pantallas pequeñas */
+  .MuiButton-root {
+    padding: 4px; /* Reduce el padding en botones */
+    min-width: 32px; /* Establece un ancho mínimo */
+  }
+  
+    /* Opcional: Ajusta las celdas de tabla */
+  .MuiTableCell-root {
+    padding: 8px;
+  }  
+}
+@media (width <= 600px) {
+  .ocultar-en-movil2 {
+    display: none !important;
+  }
+    /* Opcional: Ajustar los botones para que se vean mejor en pantallas pequeñas */
+  .MuiButton-root {
+    padding: 4px; /* Reduce el padding en botones */
+    min-width: 32px; /* Establece un ancho mínimo */
+  }
+  
+    /* Opcional: Ajusta las celdas de tabla */
+  .MuiTableCell-root {
+    padding: 8px;
+  }  
+}
+@media (width <= 950px) {
+  .ocultar-en-movil3 {
+    display: none !important;
+  }
+    /* Opcional: Ajustar los botones para que se vean mejor en pantallas pequeñas */
+  .MuiButton-root {
+    padding: 4px; /* Reduce el padding en botones */
+    min-width: 32px; /* Establece un ancho mínimo */
+  }
+  
+    /* Opcional: Ajusta las celdas de tabla */
+  .MuiTableCell-root {
+    padding: 8px;
+  }  
+}

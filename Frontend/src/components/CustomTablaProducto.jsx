@@ -34,14 +34,16 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar }
 
   return (
     <Box sx={{ overflowX: 'auto', width: '100%' }}>
+      <Grid container spacing={3}>
+      <Grid item xs={12} sm={12}>
       <Table className="table table-bordered"  style={{ marginTop: '1.5%', border: '2px solid #e2e2e2' }}>
           <TableHead className="text-center" sx={{ '& .MuiTableCell-root': {color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', fontWeight: 'bold', border: '2px solid #e2e2e2'} }}>
             <TableRow >
               <TableCell>#</TableCell>
               <TableCell>Producto</TableCell>
-              <TableCell>Proveedor</TableCell>
-              <TableCell>Presentacion</TableCell>
-              <TableCell>Capacidad</TableCell>
+              <TableCell className="ocultar-en-movil2">Proveedor</TableCell>
+              <TableCell className="ocultar-en-movil">Presentacion</TableCell>
+              <TableCell className="ocultar-en-movil">Capacidad</TableCell>
               <TableCell>Precio</TableCell>
               <TableCell>Detalles</TableCell>
               <TableCell>Editar</TableCell>
@@ -52,9 +54,9 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar }
               <TableRow key={index}>
                 <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
                 <TableCell>{x.nombre}</TableCell>
-                <TableCell>{x.proveedor.nombre_marca}</TableCell>
-                <TableCell>{x.tipo.nombre}</TableCell>
-                <TableCell>{x.capacidad_presentacion}</TableCell>
+                <TableCell className="ocultar-en-movil2">{x.proveedor.nombre_marca}</TableCell>
+                <TableCell className="ocultar-en-movil">{x.tipo.nombre}</TableCell>
+                <TableCell className="ocultar-en-movil">{x.capacidad_presentacion}</TableCell>
                 <TableCell>{x.precioCompra}</TableCell>
                 <TableCell >
                   <Button variant="contained" onClick={() => botonMostrar(x) } sx={{backgroundColor: "#0f1b35", color:" #e2e2e2", border: '2px solid #e2e2e2'}}>
@@ -70,7 +72,8 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar }
             ))}
           </TableBody>
         </Table>
-        <Grid item xs={12} sm={12} sx={{ marginTop: 2, '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+        </Grid>
+        <Grid item xs={12} sm={12} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
           <TablePagination
             component="div"
             count={filtrarDatos.length}
@@ -108,6 +111,7 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar }
               }
             }}
           />
+        </Grid>
         </Grid>
     </Box>
   );

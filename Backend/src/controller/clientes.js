@@ -5,10 +5,10 @@ const verificacion = require('../middlewares/verificacion');
 
 // Crear un cliente
 router.post('/crear', verificacion, async (req, res) => {
-  const { nombreCompleto, correo, telefono, numberIdentity, plus, extension, stringIdentity, usuario_ } = req.body;
+  const { nombreCompleto, correo, telefono, numberIdentity, plus, combinedIdentity, extension, stringIdentity, usuario_ } = req.body;
   try {
     const fechaActual = new Date();
-    const nitDuplicado = await Cliente.findOne({ numberIdentity });
+    const nitDuplicado = await Cliente.findOne({ combinedIdentity });
     if (nitDuplicado) {
       return res.status(400).json({ mensaje: 'El Numero de identificacion ya está registrado.' });
     }
@@ -18,6 +18,7 @@ router.post('/crear', verificacion, async (req, res) => {
       telefono,
       numberIdentity,
       plus,
+      combinedIdentity,
       extension,
       stringIdentity,
       usuario_registro: usuario_,
@@ -26,7 +27,11 @@ router.post('/crear', verificacion, async (req, res) => {
       fecha_actualizacion: fechaActual
     });
     await cliente.save();
-    res.status(201).json({ mensaje: 'Cliente creado exitosamente', cliente });
+    const clientes = await Cliente.find({})
+      .populate('usuario_registro', 'nombre apellido')
+      .populate('stringIdentity', 'nombre')
+      .sort({ fecha_registro: -1 });
+    res.status(201).json({ mensaje: 'Cliente creado exitosamente', clientes });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al crear cliente', error: error.message });
   }
@@ -113,7 +118,8 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
     }
     const clientes = await Cliente.find({})
       .populate('usuario_registro', 'nombre apellido')
-      .populate('stringIdentity', 'nombre');
+      .populate('stringIdentity', 'nombre')
+      .sort({ fecha_registro: -1 });
     res.json({ mensaje: 'Cliente actualizado exitosamente', clientes });
   } catch (error) {
     console.error(error);

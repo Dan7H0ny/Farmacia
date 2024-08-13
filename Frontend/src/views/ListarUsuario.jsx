@@ -76,19 +76,23 @@ export const ListarUsuario = () => {
               const direccion_ = document.getElementById('direccion').value;
               const telefono_ = parseInt(document.getElementById('telefono').value);
               let password_ = document.getElementById('password').value;
-              if (nombre_ === "") {
-                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el nombre del usuario</div>');
+              
+              const nameRegex = /^[A-Za-záéíóúüñÁÉÍÓÚÑ\s]+$/;
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              
+              if (!nameRegex.test(nombre_)) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un nombre válido (solo letras y espacios)</div>');
                 return false;
               }
-              if (apellido_ === "") {
-                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el apellido del usuario</div>');
+            
+              if (!nameRegex.test(apellido_)) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un apellido válido (solo letras y espacios)</div>');
                 return false;
               }
               if (correo_ === "") {
                 Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el correo del usuario</div>');
                 return false;
               }
-              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
               if (!emailRegex.test(correo_)) {
                 Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un correo electrónico válido</div>');

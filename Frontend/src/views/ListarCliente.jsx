@@ -12,6 +12,8 @@ import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomTablaClient from '../components/CustomTablaClient';
 import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
+import { ReporteCliente } from '../Reports/ReporteCliente';
+import ReporteExcelCliente from '../Reports/ReporteExcelCliente';
 
 export const ListarCliente = () => {
   const [clientes, setClientes] = useState([]);
@@ -49,7 +51,7 @@ export const ListarCliente = () => {
           CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
           navigate('/Menu/Administrador')
         }
-        else {setClientes(response);console.log(response)}
+        else {setClientes(response);}
       })
       .catch(error => { console.log(error);});
   },[navigate, token, configInicial, UrlReact]);
@@ -62,7 +64,6 @@ export const ListarCliente = () => {
       axios.get(`${UrlReact}/cliente/buscar/${cliente._id}`, configInicial)
         .then(response => {
           const { _id, nombreCompleto, correo, telefono, numberIdentity, extension, plus, stringIdentity } = response;
-          console.log(complementos)
           const container = document.createElement('div');
           const root = createRoot(container);
           root.render(
@@ -90,6 +91,30 @@ export const ListarCliente = () => {
               const plus_ = parseInt(document.getElementById('plus').value);
               const stringIdentity_ = proveedorRef.current.getSelectedRole();
               const extension_ = document.getElementById('extension').value;
+
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+              if (!nombreCompleto_) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el nombre del cliente</div>');
+                return false;
+              }
+              if (document.getElementById('correo').value !== "" && !emailRegex.test(correo_)) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un correo electrónico válido para el cliente</div>');
+                return false;
+              }
+
+              if (document.getElementById('telefono').value !== "" && (isNaN(telefono_) || telefono_ < 60000000 || telefono_ > 79999999)) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de teléfono válido, si es requerido</div>');
+                return false;
+              }
+              if (!numberIdentity_) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese el numero de identificacion del cliente</div>');
+                return false;
+              }
+              if (!stringIdentity_) {
+                Swal.showValidationMessage('<div class="custom-validation-message">Por favor seleccione el tipo de identificacion del cliente</div>');
+                return false;
+              }
               return { nombreCompleto_, correo_, telefono_, numberIdentity_, plus_, stringIdentity_, extension_ };
             },
           customClass: {
@@ -214,13 +239,19 @@ export const ListarCliente = () => {
           Swal.fire({
             title: 'MOSTRAR CLIENTE',
             html: container,
+            showCancelButton: true, 
             confirmButtonText: 'Atras',
+            cancelButtonText: 'Imprimir',
             customClass: {
               popup: 'customs-swal-popup',
               title: 'customs-swal-title',
-              confirmButton: 'swal2-confirm custom-swal2-confirm',  
-              cancelButton: 'swal2-cancel custom-swal2-cancel',
+              confirmButton: 'swal2-cancel custom-swal2-cancel',  
+              cancelButton: 'swal2-confirm custom-swal2-confirm',
             },
+          }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+              ReporteCliente(response); 
+            }
           });
         })
         .catch(error => {
@@ -234,8 +265,9 @@ export const ListarCliente = () => {
       <Box mt={3}>
         <CustomTypography text={'Lista De Los Clientes'} />
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>
+        <Grid container spacing={3} >
           <CustomRegisterUser
-            number={12}
+            number={8}
             label="Nombre"  
             placeholder= 'Buscar el nombre del usuario'
             type= 'text'
@@ -244,6 +276,15 @@ export const ListarCliente = () => {
             required={false}
             icon={<Search/>}
           />
+          <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+            <ReporteExcelCliente
+              data={clientes}
+              fileName="Reporte de Clientes"
+              sheetName="Clientes"
+              sx={{ mt: 2 }}
+            />
+          </Grid>
+        </Grid>
         </form>
         <CustomTablaClient usuarios={clientes} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
       </Box>

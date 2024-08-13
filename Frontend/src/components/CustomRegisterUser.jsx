@@ -17,6 +17,7 @@ const CustomRegisterUser = ({ number, id, label, type, value, onChange, placehol
         fullWidth
         required = {required}
         margin="normal"
+        
         InputProps={{
           max: maxValue,
           min: minValue,

@@ -1,13 +1,36 @@
-import React from 'react';
-import { Button, Grid, Typography, Checkbox, FormControlLabel } from '@mui/material';
+import React,{useRef,useMemo,useEffect,useState} from 'react';
+import axios from 'axios';
+import { Button, Grid } from '@mui/material';
 import { createRoot } from 'react-dom/client';
 import Swal from 'sweetalert2';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import CustomActualizarUser from '../components/CustomActualizarUser';
-import { DateRange } from '@mui/icons-material';
+import CustomSelectC from '../components/CustomSelectC';
+import CustomSwal from '../components/CustomSwal';
+import {Person, Badge, Numbers, DateRange, Extension } from '@mui/icons-material';
 
-const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
+const ReporteExcelCliente = ({ data, fileName, sheetName }) => {
+  const [ complementos, setComplementos ] = useState([]);
+  const identidadSelect = useRef();
+  const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({
+    headers: { Authorization: `Bearer ${token}` }
+  }), [token]);
+
+  useEffect(() => {
+    const nombre = 'Identificación'
+    axios.get(`${UrlReact}/complemento/buscarNombre/${nombre}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+        }
+        else {setComplementos(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [token, configInicial, UrlReact]);
 
   const btnImprimir = () => {
 
@@ -23,50 +46,12 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
     const root = createRoot(container);
     root.render(
       <Grid container spacing={2}>
+        <CustomActualizarUser number={12} id="nombreCompleto" label="Nombre Completo" type="text" required={true} icon={<Person />} />
+        <CustomActualizarUser number={8} id="combinatedIdentity" label="Numero de Identidad" type="number" icon={<Numbers />} />
+        <CustomActualizarUser number={4} id="extension" label="Extension" type="text" required={false} icon={<Extension />} />
+        <CustomSelectC number={12} id="identidad-select" label="Seleccione la identidad del cliente" value={''} roles={complementos} ref={identidadSelect} icon={<Badge />}/>
         <CustomActualizarUser number={6} id="fechaInicio" label="Fecha de Inicio" type="date" icon={<DateRange />} />
         <CustomActualizarUser number={6} id="fechaFin" label="Fecha Fin" type="date" icon={<DateRange />} />
-        <Grid item xs={12} sm={6}>
-          <Typography variant="h6">Seleccione un rol para el usuario</Typography>
-          <FormControlLabel
-            control={
-              <Checkbox
-                id="rolAdministrador"
-                color="primary"
-              />
-            }
-            label="Administrador"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                id="rolCajero"
-                color="primary"
-              />
-            }
-            label="Cajero"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Typography variant="h6">Seleccione el estado</Typography>
-          <FormControlLabel
-            control={
-              <Checkbox
-                id='estadoActivo'
-                color="primary"
-              />
-            }
-            label="Activo"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                id='estadoInactivo'
-                color="primary"
-              />
-            }
-            label="Inactivo"
-          />
-        </Grid>
       </Grid>
     );
 
@@ -81,38 +66,20 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
         cancelButton: 'swal2-cancel custom-swal2-cancel',
       },
       preConfirm: () => {
+        const nombreCompleto = document.getElementById('nombreCompleto').value;
+        const combinatedIdentity = parseInt(document.getElementById('combinatedIdentity').value);
+        const extension = document.getElementById('extension').value;
+        const stringIdentity = identidadSelect.current.getRoleName();
         const fechaInicio = document.getElementById('fechaInicio').value;
         const fechaFin = document.getElementById('fechaFin').value;
-        const rolAdministrador = document.getElementById('rolAdministrador').checked;
-        const rolCajero = document.getElementById('rolCajero').checked;
-        const estadoActivo = document.getElementById('estadoActivo').checked;
-        const estadoInactivo = document.getElementById('estadoInactivo').checked;
+        const TipoIdentidad = stringIdentity ? stringIdentity : false;
 
-        let rol = null;
-        if (rolAdministrador && rolCajero) {
-          Swal.showValidationMessage('Solo uno de los roles puede ser marcado');
-          return false; // Prevenir la confirmación
-        } else if (rolAdministrador) {
-          rol = 'Administrador';
-        } else if (rolCajero) {
-          rol = 'Cajero';
-        }
-
-        let estado = undefined;
-        if (estadoActivo && estadoInactivo) {
-          Swal.showValidationMessage('Solo uno de los estados puede ser marcado');
-          return false; // Prevenir la confirmación
-        } else if (estadoActivo) {
-          estado = true;
-        } else if (estadoInactivo) {
-          estado = false;
-        }
-
-        return { fechaInicio, fechaFin, rol, estado };
+        return { nombreCompleto, combinatedIdentity, extension, TipoIdentidad, fechaInicio, fechaFin };
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        const { fechaInicio, fechaFin, rol, estado } = result.value;
+        const { nombreCompleto, combinatedIdentity, extension, TipoIdentidad, fechaInicio, fechaFin } = result.value;
+        const identidad = combinatedIdentity ? combinatedIdentity.toString() : false;
 
         const DatosConFecha = data.filter(d => {
           const fechaRegistro = new Date(d.fecha_registro);
@@ -126,22 +93,25 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
             Swal.showValidationMessage('Ambas fechas son obligatorias para filtrar por fecha.');
             return false; 
           }
+
+          const matchNombreCompleto = nombreCompleto ? (d.nombreCompleto && d.nombreCompleto.toLowerCase().includes(nombreCompleto.toLowerCase())) : true;
+          const matchCombinadoIdentidad = identidad ? (d.combinedIdentity && d.combinedIdentity.toLowerCase().includes(identidad.toLowerCase())) : true;
+          const matchExtension = extension ? (d.extension && d.extension.toLowerCase().includes(extension.toLowerCase())) : true;
+          const matchString = TipoIdentidad ? (d.stringIdentity.nombre && d.stringIdentity.nombre.toLowerCase().includes(TipoIdentidad.toLowerCase())) : true;
         
-          const matchRol = rol ? d.rol.toLowerCase() === rol.toLowerCase() : true;
-          const matchEstado = estado !== undefined ? d.estado === estado : true;
-        
-          return matchFecha && matchRol && matchEstado;
+          return matchFecha && matchNombreCompleto && matchExtension && matchCombinadoIdentidad && matchString;
         });        
 
         const DatosActualizados = DatosConFecha.map((item, index) => ({
           'N°': index + 1,
-          'Nombre del Usuario': item.nombre,
-          'Apellido del Usuario': item.apellido,
-          'Correo del Usuario': item.correo,
-          'Direccion del Usuario': item.direccion ? item.direccion : 's/n',
-          'Rol del Usuario': item.rol,
-          'Telefono del Usuario': item.telefono ? item.telefono : 's/n',
-          'Estado del Usuario': item.estado ? 'Activo' : 'Inactivo',
+          'Nombre del Cliente': item.nombreCompleto,
+          'Correo del Cliente': item.correo ? item.correo : 's/n',
+          'Telefono del Cliente': item.telefono ? item.telefono : 's/n',
+          'Número de Identidad': item.combinedIdentity,
+          'Extensión': item.extension ? item.extension : 's/n',
+          'Tipo de Identidad': item.stringIdentity.nombre,
+          'Usuario que Registró': item.usuario_registro.nombre + ' ' + item.usuario_registro.apellido,
+          'Usuario que Actualizó': item.usuario_actualizacion.nombre + ' ' + item.usuario_actualizacion.apellido,
           'Fecha de Registro': formatDateTime(new Date(item.fecha_registro)),
           'Fecha de Actualización': formatDateTime(new Date(item.fecha_actualizacion)),
         }));
@@ -150,7 +120,7 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
         const worksheet = workbook.addWorksheet(sheetName || 'Sheet1');
 
         // Agregar encabezados
-        const headers = ["N°", "Nombre del Usuario", "Apellido del Usuario", "Correo del Usuario", "Direccion del Usuario", "Rol del Usuario", "Telefono del Usuario", "Estado del Usuario", "Fecha de Registro", "Fecha de Actualización"];
+        const headers = ["N°", "Nombre del Cliente", "Correo del Cliente", "Telefono del Cliente", "Número de Identidad", "Extensión", "Tipo de Identidad", "Usuario que Registró", "Usuario que Actualizó", "Fecha de Registro", "Fecha de Actualización"];
         worksheet.addRow(headers).eachCell({ includeEmpty: true }, (cell, colNumber) => {
           cell.font = { bold: true, color: { argb: 'e2e2e2' } };
           cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
@@ -239,4 +209,4 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
   );
 };
 
-export default ReporteExcelUsuario;
+export default ReporteExcelCliente;

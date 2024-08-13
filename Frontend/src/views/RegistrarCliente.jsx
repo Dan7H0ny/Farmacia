@@ -90,7 +90,6 @@ export const RegistrarCliente = ( ) => {
     }
     else{
       const combinedIdentity = plus ? `${numberIdentity}-${plus}` : `${numberIdentity}`;
-      console.log(usuario_)
       const nuevoCliente = {
         nombreCompleto,
         correo,

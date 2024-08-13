@@ -6,6 +6,10 @@ const CustomSelectC = forwardRef(({ number, id, label, value, roles, icon }, ref
 
   useImperativeHandle(ref, () => ({
     getSelectedRole: () => selectedRole,
+    getRoleName: () => {
+      const selectedRoleObject = roles.find(role => role._id === selectedRole);
+      return selectedRoleObject ? selectedRoleObject.nombre : '';
+    }
   }));
 
   return (

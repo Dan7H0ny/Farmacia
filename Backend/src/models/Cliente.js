@@ -54,15 +54,6 @@ const clienteSchema = new mongoose.Schema({
   }
 });
 
-clienteSchema.pre('save', function(next) {
-  if (this.plus !== undefined && this.plus !== null) {
-    this.combinedIdentity = `${this.numberIdentity}-${this.plus}`;
-  } else {
-    this.combinedIdentity = `${this.numberIdentity}`;
-  }
-  next();
-});
-
 const Cliente = mongoose.model('Cliente', clienteSchema);
 
 module.exports = Cliente;

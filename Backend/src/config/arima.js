@@ -66,17 +66,7 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
   let agotado = false;
   let diaAgotamiento;
 
-  // Establece un valor predeterminado para `porcentajeError`
-  let porcentajeError = 100;  // Supongamos que 100 significa un error máximo por defecto
-
-  if (datosHistoricos.length > 0 && primeraPrediccion.length > 0) {
-    const ultimaVentaReal = datosHistoricos[datosHistoricos.length - 1].totalVentas;
-    const ultimaPrediccion = primeraPrediccion[0];  // Usar solo la primera predicción para el cálculo
-
-    if (ultimaVentaReal > 0) { // Asegurarse de que no haya división por cero
-      porcentajeError = ((Math.abs(ultimaPrediccion - ultimaVentaReal) / ultimaVentaReal) * 100).toFixed(2);
-    }
-  }
+  const erroresAbsolutosMedios = calcularErrorAbsolutoMedio(primeraPrediccion, datosHistoricos);
 
   for (let i = 0; i < primeraPrediccion.length; i++) {
     const ventaDiaActual = primeraPrediccion[i];
@@ -94,8 +84,21 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
     nombreProducto: producto.producto.nombre, 
     prediccion: { ventas: primeraPrediccion, stockRestante: Math.max(capacidadTotal, 0) }, 
     diaAgotamiento,
-    porcentajeError: parseFloat(porcentajeError), // Añadir el porcentaje de error al resultado
+    datosHistoricos: datosHistoricos.length,
+    porcentajeError: parseFloat(erroresAbsolutosMedios), // Añadir el porcentaje de error al resultado
   };
+}
+
+function calcularErrorAbsolutoMedio(predicciones, datosHistoricos) {
+  let sumaErrores = 0;
+  let count = Math.min(predicciones.length, datosHistoricos.length);
+
+  for (let i = 0; i < count; i++) {
+    const error = Math.abs(predicciones[i] - datosHistoricos[i].totalVentas);
+    sumaErrores += error;
+  }
+
+  return (sumaErrores / count).toFixed(2);
 }
 
 function calcularCapacidadTotalInicial(producto) {

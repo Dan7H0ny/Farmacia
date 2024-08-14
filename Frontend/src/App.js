@@ -7,7 +7,6 @@ import { RegistrarComplementos } from './views/RegistrarComplementos';
 import { Login } from './views/Login';
 import { MenuAdministrador } from './views/MenuAdministrador';
 import { MenuCajero } from './views/MenuCajero';
-import { Dashboard } from './views/Dashboard'; 
 import { RegistrarUsuario } from './views/RegistrarUsuario';
 import { ListarUsuario } from './views/ListarUsuario';
 import { ListarCliente } from './views/ListarCliente';
@@ -32,7 +31,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           {rol === 'Administrador' && (
             <Route path="/Menu/Administrador" element={<MenuAdministrador />}>
-              <Route path="Dashboard" element={<Dashboard />} />
               <Route path="Usuario/Registrar" element={<RegistrarUsuario />} />
               <Route path="Usuario/Listar" element={<ListarUsuario />} />
               <Route path="Cliente/Listar" element={<ListarCliente />} />
@@ -50,7 +48,6 @@ function App() {
           )}
           {rol === 'Cajero' && (
             <Route path="/Menu/Cajero" element={<MenuCajero />}>
-              <Route path="Dashboard" element={<Dashboard />} />
               <Route path="Complemento/Registrar" element={<RegistrarComplementos />} />
               <Route path="Cliente/Listar" element={<ListarCliente />} />
               <Route path="Venta/Registrar" element={<RegistrarVenta />} />

@@ -28,7 +28,6 @@ export const RegistrarProducto = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
-
   useEffect(() => {
     axios.get(`${UrlReact}/proveedor/mostrar`, configInicial)
       .then(response => {

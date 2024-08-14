@@ -6,7 +6,6 @@ const InfoCard = ({ title, value, icon, color, onClick }) => {
     <Card style={{
       borderRadius: '15px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
-      padding: '20px',
       backgroundColor: '#0f1b35',
       border: '2px solid #e2e2e2',
       color: '#e2e2e2'

@@ -3,6 +3,7 @@ const cron = require('node-cron');
 const { predecirVentasParaTodosLosProductosARIMA } = require('../config/arima');
 const Prediccion = require('../models/Prediccion');
 const Notificacion = require('../models/Notificacion');
+const Venta = require('../models/Venta');
 
 const router = express.Router();
 
@@ -79,11 +80,54 @@ router.post('/mostrar/categoria', async (req, res) => {
   }
 });
 
+router.post('/mostrar/meses', async (req, res) => {
+  const { mes } = req.body; // Obtenemos el mes desde el frontend
+
+  try {
+    // Filtrar ventas por mes
+    const ventasDelMes = await Venta.find({
+      fecha_registro: {
+        $gte: new Date(new Date().getFullYear(), mes - 1, 1),
+        $lt: new Date(new Date().getFullYear(), mes, 1)
+      }
+    }).populate('productos.producto');
+
+    // Calcular el total de ventas por producto
+    const productosVentas = {};
+
+    ventasDelMes.forEach(venta => {
+      venta.productos.forEach(prod => {
+        if (!productosVentas[prod.nombre]) {
+          productosVentas[prod.nombre] = {
+            cantidad: 0,
+            totalVentas: 0
+          };
+        }
+        productosVentas[prod.nombre].cantidad += prod.cantidad_producto;
+        productosVentas[prod.nombre].totalVentas += prod.precio_venta;
+      });
+    });
+
+    // Ordenar productos por cantidad vendida y tomar los 10 más vendidos
+    const topProductos = Object.entries(productosVentas)
+      .sort((a, b) => b[1].cantidad - a[1].cantidad)
+      .slice(0, 5)
+      .map(([nombre, datos]) => ({
+        nombre,
+        cantidad: datos.cantidad,
+        totalVentas: datos.totalVentas / datos.cantidad // Promedio de ventas por producto
+      }));
+
+    res.status(200).json(topProductos);
+  } catch (error) {
+    res.status(500).json({ error: 'Ocurrió un error al obtener las ventas mensuales' });
+  }
+});
 
 // Función para guardar o actualizar predicciones en la base de datos
 async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
   for (let productos of productosConDiaAgotamiento) {
-    const { producto, nombreCategoria, nombreProducto, prediccion, diaAgotamiento, porcentajeError} = productos;
+    const { producto, nombreCategoria, nombreProducto, prediccion, diaAgotamiento, datosHistoricos, porcentajeError} = productos;
 
     // Buscar la predicción existente en la base de datos por el ID del producto
     let prediccionExistente = await Prediccion.findOne({ productos: producto });
@@ -94,6 +138,7 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
       prediccionExistente.nombreProducto = nombreProducto;
       prediccionExistente.prediccion = prediccion;
       prediccionExistente.diaAgotamiento = diaAgotamiento;
+      prediccionExistente.datosHistoricos = datosHistoricos;
       prediccionExistente.porcentajeError = porcentajeError;
       await prediccionExistente.save();
     
@@ -115,6 +160,7 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
         nombreProducto,
         prediccion,
         diaAgotamiento,
+        datosHistoricos,
         porcentajeError
       });
       await nuevaPrediccion.save();

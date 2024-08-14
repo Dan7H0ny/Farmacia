@@ -27,6 +27,10 @@ const prediccionSchema = new mongoose.Schema({
     type: Number, 
     optional: true
   },
+  datosHistoricos:{
+    type: Number, 
+    optional: true
+  },
   porcentajeError: { 
     type: Number,
     required: true

@@ -154,8 +154,14 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
 
       if (productoData && diferenciaCantidad !== 0) {
         productoData.cantidad_stock += diferenciaCantidad;
-        await productoData.save();
       }
+      if (productoData.cantidad_stock <= 0) {
+        productoData.estado = false;
+      }
+      else if(productoData.cantidad_stock > 0){
+        productoData.estado = true;
+      }
+      await productoData.save();
     }
 
     const ventaActualizada = await Venta.findByIdAndUpdate(

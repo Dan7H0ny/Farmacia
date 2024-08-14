@@ -96,7 +96,7 @@ const InfoDonutChart = () => {
         <Typography variant="h6" component="div" align="center">
           {mostrarCaducidad ? 'PRODUCTOS PRÓXIMOS A CADUCAR' : 'PRODUCTOS CON BAJO STOCK'}
         </Typography>
-        <div style={{ height: '300px'}}>
+        <div style={{ height: '400px'}}>
         <Doughnut data={chartData} options={{
           responsive: true,
           maintainAspectRatio: false,

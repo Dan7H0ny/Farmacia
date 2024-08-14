@@ -8,7 +8,8 @@ const CustomAutocompleteProducto = ({ productos, productosAñadidos, setProducto
         <Autocomplete
           multiple
           options={productos}
-          getOptionLabel={(option) => option.producto.nombre || ''}
+          getOptionLabel={(option) => option.producto.nombre}
+          isOptionEqualToValue={(option, value) => option._id === value._id}
           value={productosAñadidos}
           onChange={(event, newValue) => {
             setProductosAñadidos(newValue);

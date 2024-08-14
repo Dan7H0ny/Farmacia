@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Drawer, IconButton, Box, Typography, Grid, Avatar } from '@mui/material';
-import { MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, InventoryOutlined, AttachMoney, SupervisedUserCircle, BuildOutlined, DashboardOutlined, Person } from '@mui/icons-material';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, InventoryOutlined, AttachMoney, SupervisedUserCircle, BuildOutlined, Person } from '@mui/icons-material';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
 import CustomActualizarUser from '../components/CustomActualizarUser';
@@ -14,6 +14,7 @@ import CustomSwal from '../components/CustomSwal';
 import CustomMenuAlmacen from '../components/CustomMenuAlmacen';
 import CustomMenuAdministracion from '../components/CustomMenuAdministracion';
 import CustomMenuVentas from '../components/CustomMenuVentas';
+import Dashboard from '../components/Dashboard';
 
 export const MenuAdministrador = () => {
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ export const MenuAdministrador = () => {
   const [Almacen, setisAlmacen] = useState(false);
   const [Venta, setisVenta] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const location = useLocation();
+  const rutaDashboard = location.pathname === '/Menu/Administrador';
   
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
   function Logout() { cerrarSesion(); navigate('/login'); return null }
@@ -139,7 +142,6 @@ export const MenuAdministrador = () => {
   const GetAlmacen = () => {setisAlmacen(!Almacen);};
   const GetVenta = () => {setisVenta(!Venta);};
 
-  function Dashboard() {navigate(`/Menu/Administrador/Dashboard`);}
   function Home() {navigate(`/Menu/Administrador`);}
 
   function RegistrarUsuario() {navigate(`/Menu/Administrador/Usuario/Registrar`);}
@@ -184,9 +186,6 @@ export const MenuAdministrador = () => {
           </IconButton>
           {drawerOpen &&
           <>
-            <IconButton onClick={Dashboard} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
-              <DashboardOutlined sx={{ color: '#e2e2e2' }} />
-            </IconButton>
             <IconButton onClick={Home} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
               <HomeOutlined sx={{ color: '#e2e2e2' }} />
             </IconButton>
@@ -228,7 +227,7 @@ export const MenuAdministrador = () => {
         </Box>
       </Drawer>
       <div id="caja_contenido" className={drawerOpen ? 'content-open' : 'content-closed'}>
-        {/* Esto renderizará*/}
+        {rutaDashboard && <Dashboard/>}
         <Outlet/>
       </div>
     </div>

@@ -178,6 +178,7 @@ const CustomAutocompleteCliente = ({ clientes, setClientes, idcliente, setIdClie
       <Autocomplete
         options={clientes}
         getOptionLabel={(option) => option.nombreCompleto + ' - ' + option.numberIdentity }
+        isOptionEqualToValue={(option, value) => option._id === value._id}
         value={idcliente}
         onChange={(event, newValue) => {
           setIdCliente(newValue);

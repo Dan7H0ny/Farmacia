@@ -39,6 +39,12 @@ router.post('/crear', verificacion, async (req, res) => {
       if (productoData) {
         const capacidadRestante = productoData.cantidad_stock - producto.cantidad_producto;
         productoData.cantidad_stock = capacidadRestante;
+        if (productoData.cantidad_stock <= 0) {
+          productoData.estado = false;
+        }
+        else if(productoData.cantidad_stock > 0){
+          productoData.estado = true;
+        }
         await productoData.save();
       } else {
         console.log(`El producto ${producto.producto} no se encontró en la base de datos`);

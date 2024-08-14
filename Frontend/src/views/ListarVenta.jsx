@@ -12,11 +12,14 @@ import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomTablaVentas from '../components/CustomTablaVentas';
 import ExportExcelButton from '../components/ExportExcelButton';
 import CustomUpdate from '../components/CustomUpdate';
+import { ReporteVenta } from '../Reports/ReporteVenta';
 
 export const ListarVenta = () => {
   const [ventas, setVentas] = useState([]);
   const [buscar, setBuscar] = useState('');
+  const [usuario, setUsuario] = useState('');
   const rol = localStorage.getItem('rol');
+  const usuario_ = localStorage.getItem('id');
 
   const navigate = useNavigate();  
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
@@ -25,6 +28,18 @@ export const ListarVenta = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setUsuario(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate, token, configInicial, UrlReact, usuario_]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/venta/mostrar`, configInicial )
@@ -71,13 +86,19 @@ export const ListarVenta = () => {
           Swal.fire({
             title: 'DATOS DEL PRODUCTO EN EL ALMACEN',
             html: container,
+            showCancelButton: true, 
             confirmButtonText: 'Atras',
+            cancelButtonText: 'Imprimir',
             customClass: {
               popup: 'customs-swal-popup',
               title: 'customs-swal-title',
-              confirmButton: 'swal2-confirm custom-swal2-confirm',  
-              cancelButton: 'swal2-cancel custom-swal2-cancel',
+              cancelButton: 'swal2-confirm custom-swal2-confirm',  
+              confirmButton: 'swal2-cancel custom-swal2-cancel',
             },
+          }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+              ReporteVenta(response, usuario); 
+            }
           });
         })
         .catch(error => {

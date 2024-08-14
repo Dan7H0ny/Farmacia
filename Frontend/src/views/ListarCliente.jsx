@@ -18,6 +18,7 @@ import ReporteExcelCliente from '../Reports/ReporteExcelCliente';
 export const ListarCliente = () => {
   const [clientes, setClientes] = useState([]);
   const [buscar, setBuscar] = useState('');
+  const [usuario, setUsuario] = useState('');
   const [ complementos, setComplementos ] = useState([]);
   const usuario_ = localStorage.getItem('id');
   const proveedorRef = useRef();
@@ -30,6 +31,18 @@ export const ListarCliente = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setUsuario(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate, token, configInicial, UrlReact, usuario_]);
 
   useEffect(() => {
     const nombre = 'Identificación'
@@ -250,7 +263,7 @@ export const ListarCliente = () => {
             },
           }).then((result) => {
             if (result.dismiss === Swal.DismissReason.cancel) {
-              ReporteCliente(response); 
+              ReporteCliente(response, usuario); 
             }
           });
         })

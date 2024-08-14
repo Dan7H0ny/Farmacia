@@ -20,6 +20,7 @@ export const ListarAlmacen = () => {
   const [productos, setProductos] = useState([]);
   const [complementos, setComplementos] = useState([]);
   const [buscar, setBuscar] = useState('');
+  const [usuario, setUsuario] = useState('');
   const usuario_ = localStorage.getItem('id');
   const navigate = useNavigate();
   const categoriaRef = useRef();
@@ -31,6 +32,18 @@ export const ListarAlmacen = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setUsuario(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate, token, configInicial, UrlReact, usuario_]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/producto/mostrar`, configInicial )
@@ -216,7 +229,7 @@ export const ListarAlmacen = () => {
             },
           }).then((result) => {
             if (result.dismiss === Swal.DismissReason.cancel) {
-              ReporteAlmacen(response); 
+              ReporteAlmacen(response, usuario); 
             }
           });
         })

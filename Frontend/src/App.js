@@ -10,7 +10,6 @@ import { MenuCajero } from './views/MenuCajero';
 import { Dashboard } from './views/Dashboard'; 
 import { RegistrarUsuario } from './views/RegistrarUsuario';
 import { ListarUsuario } from './views/ListarUsuario';
-import { RegistrarCliente } from './views/RegistrarCliente';
 import { ListarCliente } from './views/ListarCliente';
 import { RegistrarProveedor } from './views/RegistrarProveedor';
 import { ListarProveedor } from './views/ListarProveedor';
@@ -36,7 +35,6 @@ function App() {
               <Route path="Dashboard" element={<Dashboard />} />
               <Route path="Usuario/Registrar" element={<RegistrarUsuario />} />
               <Route path="Usuario/Listar" element={<ListarUsuario />} />
-              <Route path="Cliente/Registrar" element={<RegistrarCliente />} />
               <Route path="Cliente/Listar" element={<ListarCliente />} />
               <Route path="Proveedor/Registrar" element={<RegistrarProveedor />} />
               <Route path="Proveedor/Listar" element={<ListarProveedor />} />
@@ -54,7 +52,6 @@ function App() {
             <Route path="/Menu/Cajero" element={<MenuCajero />}>
               <Route path="Dashboard" element={<Dashboard />} />
               <Route path="Complemento/Registrar" element={<RegistrarComplementos />} />
-              <Route path="Cliente/Registrar" element={<RegistrarCliente />} />
               <Route path="Cliente/Listar" element={<ListarCliente />} />
               <Route path="Venta/Registrar" element={<RegistrarVenta />} />
               <Route path="Venta/Listar" element={<ListarVenta />} />

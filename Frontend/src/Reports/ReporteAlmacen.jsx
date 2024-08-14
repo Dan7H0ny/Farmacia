@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
 import logoBase64 from './logoBase64';
 
-export const ReporteAlmacen = (almacen) => {
+export const ReporteAlmacen = (almacen, usuario) => {
   const doc = new jsPDF({
     format: 'letter' // Especificar que el formato es carta
   });  
@@ -19,7 +19,7 @@ export const ReporteAlmacen = (almacen) => {
     colorEncabezado: '#000000', // Color del encabezado en negro
     tamanoFuente: 14,
     logo: logoBase64,
-    firma: 'Lic. Emiliana Mamani Alonso',
+    firma: `Lic. ${usuario.nombre} ${usuario.apellido}`,
     anchoColumnaAtributos: 60,
     fechaImpresion: formatDateTime(new Date()),
   };

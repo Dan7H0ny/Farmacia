@@ -16,6 +16,8 @@ import ReporteExcelProveedor from '../Reports/ReporteExcelProveedor';
 export const ListarProveedor = () => {
   const [proveedores, setproveedores] = useState([]);
   const [buscar, setBuscar] = useState('');
+  const [usuario, setUsuario] = useState('');
+  const usuario_ = localStorage.getItem('id');
 
   const navigate = useNavigate();
 
@@ -25,6 +27,18 @@ export const ListarProveedor = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setUsuario(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate, token, configInicial, UrlReact, usuario_]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/proveedor/mostrar`, configInicial)
@@ -234,12 +248,12 @@ export const ListarProveedor = () => {
               customClass: {
                 popup: 'customs-swal-popup',
                 title: 'customs-swal-title',
-                confirmButton: 'swal2-cancel custom-swal2-cancel',  
+                confirmButton: 'swal2-cancel custom-swal2-cancel',
                 cancelButton: 'swal2-confirm custom-swal2-confirm',
               },
             }).then((result) => {
               if (result.dismiss === Swal.DismissReason.cancel) {
-                ReporteProveedor(response); 
+                ReporteProveedor(response, usuario); 
               }
             });
           })

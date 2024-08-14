@@ -28,10 +28,7 @@ export const MenuAdministrador = () => {
   
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
   function Logout() { cerrarSesion(); navigate('/login'); return null }
-  const obtenerToken = () => {
-    const token = localStorage.getItem('token');
-    return token;
-  }; 
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token; }; 
 
   useEffect(() => {
     const handleResize = () => {

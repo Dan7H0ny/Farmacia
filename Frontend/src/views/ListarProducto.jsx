@@ -19,6 +19,8 @@ export const ListarProducto = () => {
   const [productos, setProductos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [ complementos, setComplementos ] = useState([]);
+  const [usuario, setUsuario] = useState('');
+
   const [buscar, setBuscar] = useState('');
   const usuario_ = localStorage.getItem('id');
   const navigate = useNavigate();
@@ -31,6 +33,18 @@ export const ListarProducto = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setUsuario(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate, token, configInicial, UrlReact, usuario_]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/producto/mostrar`, configInicial )
@@ -209,7 +223,7 @@ export const ListarProducto = () => {
             },
           }).then((result) => {
             if (result.dismiss === Swal.DismissReason.cancel) {
-              ReporteProducto(response); 
+              ReporteProducto(response, usuario); 
             }
           });
         })

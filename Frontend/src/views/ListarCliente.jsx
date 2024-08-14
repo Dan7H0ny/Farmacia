@@ -281,7 +281,7 @@ export const ListarCliente = () => {
         <Grid container spacing={3} >
           <CustomRegisterUser
             number={8}
-            label="Nombre"  
+            label="Buscar"  
             placeholder= 'Buscar el nombre del usuario'
             type= 'text'
             value={buscar}

@@ -10,9 +10,9 @@ import CustomSwal from '../components/CustomSwal';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomTablaVentas from '../components/CustomTablaVentas';
-import ExportExcelButton from '../components/ExportExcelButton';
 import CustomUpdate from '../components/CustomUpdate';
 import { ReporteVenta } from '../Reports/ReporteVenta';
+import ReporteExcelVenta from '../Reports/ReporteExcelVenta';
 
 export const ListarVenta = () => {
   const [ventas, setVentas] = useState([]);
@@ -125,8 +125,8 @@ export const ListarVenta = () => {
           <Grid container spacing={3} >
             <CustomRegisterUser
               number={8}
-              label="Nombre"  
-              placeholder= 'Buscar el nombre del cliente'
+              label="Buscar"  
+              placeholder= 'Buscar por el nombre del cliente o el nombre del producto'
               type= 'text'
               value={buscar}
               onChange={(e) => setBuscar(e.target.value)}
@@ -134,9 +134,9 @@ export const ListarVenta = () => {
               icon={<Search/>}
             />
             <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
-              <ExportExcelButton
+              <ReporteExcelVenta
                 data={ventas}
-                fileName="Reporte de Ventas"
+                fileName="Reporte de las Ventas"
                 sheetName="Ventas"
                 sx={{ mt: 2 }}
               />

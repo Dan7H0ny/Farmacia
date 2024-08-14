@@ -247,7 +247,7 @@ export const ListarAlmacen = () => {
           <Grid container spacing={2} >
             <CustomRegisterUser
               number={8}
-              label="Nombre"  
+              label="Buscar"  
               placeholder= 'Buscar por producto, categoria y fecha de caducidad'
               type= 'text'
               value={buscar}

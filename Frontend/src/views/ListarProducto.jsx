@@ -241,7 +241,7 @@ export const ListarProducto = () => {
           <Grid container spacing={3} >
             <CustomRegisterUser
               number={8}
-              label="Nombre"  
+              label="Buscar"  
               placeholder= 'Busca por producto, proveedor o el tipo de presentacion'
               type= 'text'
               value={buscar}

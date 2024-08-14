@@ -69,11 +69,11 @@ const CustomTablaVentas = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
               <TableCell>
                 {x.productos.map((productoItem, prodIndex) => (
                   <div key={prodIndex}>
-                    { productoItem.precio_venta }
+                    { productoItem.precio_venta.toFixed(2) }
                   </div>
                 ))}
               </TableCell>
-              <TableCell>{x.precio_total}</TableCell>
+              <TableCell>{x.precio_total.toFixed(2)}</TableCell>
               <TableCell>{format(x.fecha_registro, 'dd/MM/yyyy')}</TableCell>
               <TableCell>
                 <Button variant="contained" onClick={() => botonMostrar(x)} sx={{ backgroundColor: "#0f1b35", color: "#e2e2e2", border: '2px solid #e2e2e2' }}>

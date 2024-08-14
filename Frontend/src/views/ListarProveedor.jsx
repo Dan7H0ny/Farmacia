@@ -271,7 +271,7 @@ export const ListarProveedor = () => {
           <Grid container spacing={3} >
             <CustomRegisterUser
               number={8}
-              label="Nombre"  
+              label="Buscar"  
               placeholder= 'Busca por marca y nombre del vendedor'
               type= 'text'
               value={buscar}

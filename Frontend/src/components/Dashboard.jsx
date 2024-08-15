@@ -102,10 +102,12 @@ const Dashboard = () => {
             <Grid item xs={12} sm={12} >
               <InfoCard title="ALMACEN" value={productos} icon={<ProductionQuantityLimits/>} color={'#635bff'} />
             </Grid>
-            <Grid item xs={12} sm={12} >
-              <InfoExtraerDatos setPredicciones={setPredicciones}/>
-              <InfoBarChar predicciones={predicciones}/>
-            </Grid>
+            {predicciones && (
+              <Grid item xs={12} sm={12}>
+                <InfoExtraerDatos setPredicciones={setPredicciones} />
+                <InfoBarChar predicciones={predicciones} />
+              </Grid>
+            )}
           </Grid>
         </Grid>
         <Grid item xs={12} sm={5}>
@@ -118,9 +120,11 @@ const Dashboard = () => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={12}>
-          <InfoTable predicciones={tableDatos}/>
-        </Grid>
+        {tableDatos && (
+          <Grid item xs={12} sm={12}>
+            <InfoTable predicciones={tableDatos}/>
+          </Grid>
+        )} 
       </Grid>
     </div>
   );

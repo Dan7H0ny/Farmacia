@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const utiles = require('./config/newuser');
-//const crearDatos  = require('./config/cargar-notificacion');
 require('dotenv').config();
 
 app.set('key', process.env.TOKEN_LLAVE);
@@ -27,19 +26,19 @@ app.use('/prediccion', require('./controller/prediccion'));
 app.use('/notificacion', require('./controller/notificacion'));
 app.use('/pedidos', require('./controller/pedidos'));
 
+// Conéctate a MongoDB usando la URI definida
 mongoose.connect(process.env.BD_CONEXION, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-}).then(() => {
+})
+.then(() => {
   console.log('Conectado a la base de datos');
-  utiles.primerUsuario(function() {
+  utiles.primerUsuario(() => {
     app.listen(process.env.PUERTO_HTTP, () => {
       console.log(`Servidor iniciado en el puerto ${process.env.PUERTO_HTTP}`);
-      // crearDatos(() => {
-      //   console.log('Proceso de creación de complementos');
-      // });
     });
   });
-}).catch((error) => {
+})
+.catch((error) => {
   console.error('Error connecting to MongoDB:', error);
 });

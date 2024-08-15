@@ -43,7 +43,7 @@ const generarPrecioVenta = function(precioCompra) {
   return Math.round(precio * 10) / 10;
 };
 
-const crearDatos = async function(callback) {
+const cargarAlmacen = async function(callback) {
   try {
     const usuarios = await Usuario.find();
     const productos = await Producto.find();
@@ -89,4 +89,4 @@ const crearDatos = async function(callback) {
   }
 };
 
-module.exports = crearDatos;
+module.exports = cargarAlmacen;

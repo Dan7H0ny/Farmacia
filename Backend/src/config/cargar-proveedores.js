@@ -18,7 +18,23 @@ const generarFechaAleatoria = function() {
   return fechaAleatoria;
 };
 
-const crearDatos = async function(callback) {
+const generarNombreVendedor = function() {
+  const nombreCompleto = [
+    'Maria Prado Giraldo', 'Jose Antonio Tejada', 'Joaquina Barba', 'Ainara Villar', 'Fernanda Matas', 
+    'Santos Macias', 'Pablo Jose Linares', 'Pilar Vivas', 'Jose Daniel Buendia', 'Nabil Pascual', 
+    'Maria Alicia Castaño', 'Jose Ignacio Olmedo', 'Pedro Luis Ripoll', 'Mirian Guevara', 'Laila Garca', 
+    'Fernando Betancor', 'Ruth Parra', 'Meritxell Cordoba', 'Patricio Rueda', 'Raquel Vergara', 
+    'Luca Lucena', 'Estefania Salguero', 'Alexis Medrano', 'Feliciano Paniagua', 'Amadeo del Olmo',
+    'Elsa Vilches', 'Lola Bustos', 'Alfonso Miguez', 'Valeriano Rosales', 'Iban Cantero', 
+    'Rafael Luna', 'Ferran Domingo', 'Avelino Salmeron', 'Miriam Frutos', 'Saida Zamora', 
+    'Adrian Morcillo', 'Estefania Miralles', 'Saul Alfonso', 'Valentin Prats', 'Maria Carmen Francisco', 
+    'Erika Bejarano', 'Blanca Segarra', 'Jennifer Benito', 'Nabil Amor', 'Igor Alvarez', 
+    'Maria Consolacion Garces', 'Alejandra Bustamante', 'Carmen Rosa Gascon', 'Aitana Muñiz', 'Dario Da-Silva'
+  ];
+  return nombreCompleto[Math.floor(Math.random() * nombreCompleto.length)];
+};
+
+const cargarProveedores = async function(callback) {
   try {
     const proveedores = nombresMarca.map(nombreMarca => {
       const nombreVendedor = generarNombreVendedor();
@@ -48,4 +64,4 @@ const crearDatos = async function(callback) {
   }
 };
 
-module.exports = crearDatos;
+module.exports = cargarProveedores;

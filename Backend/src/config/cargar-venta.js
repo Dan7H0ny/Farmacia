@@ -25,7 +25,7 @@ const generarFechaAleatoria = function() {
   return fechaRegistro;
 };
 
-const crearDatosVentas = async function(callback) {
+const cargarVentas = async function(callback) {
   try {
     const clientes = await Cliente.find();
     const productos = await Almacen.find()
@@ -42,7 +42,7 @@ const crearDatosVentas = async function(callback) {
 
     const ventas = [];
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 3000; i++) {
       const cliente = clientes[Math.floor(Math.random() * clientes.length)]._id;
       const usuarioRegistra = usuarios[Math.floor(Math.random() * usuarios.length)]._id;
       const usuarioUpdate = usuarios[Math.floor(Math.random() * usuarios.length)]._id;
@@ -93,4 +93,4 @@ const crearDatosVentas = async function(callback) {
   }
 };
 
-module.exports = crearDatosVentas;
+module.exports = cargarVentas;

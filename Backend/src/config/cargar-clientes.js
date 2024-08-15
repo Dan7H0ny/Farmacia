@@ -21,13 +21,12 @@ const generarNombreCompleto = function() {
 
 const generarCorreo = function(nombreCompleto) {
   const dominios = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
-  const nombre = nombreCompleto.split(' ')[0].toLowerCase();
-  const apellido = nombreCompleto.split(' ')[1].toLowerCase();
+  const [nombre, apellido] = nombreCompleto.toLowerCase().split(' ');
   return `${nombre}.${apellido}@${dominios[Math.floor(Math.random() * dominios.length)]}`;
 };
 
 const generarNumberIdentity = function() {
-  const length = Math.floor(Math.random() * 5) + 8; // Genera un número entre 8 y 12
+  const length = Math.floor(Math.random() * 5) + 8; // Genera un número entre 8 y 12 dígitos
   const min = Math.pow(10, length - 1);
   const max = Math.pow(10, length) - 1;
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -35,27 +34,23 @@ const generarNumberIdentity = function() {
 
 const generarUsuario = async function() {
   const usuarios = await Usuario.find();
-  return usuarios[Math.floor(Math.random() * usuarios.length)]._id;
+  return usuarios.length > 0 ? usuarios[Math.floor(Math.random() * usuarios.length)]._id : null;
 };
 
 const generarStringIdentity = async function() {
   const complementos = await Complemento.find({ nombreComplemento: 'Identificación' });
-  if (complementos.length === 0) {
-    return null;
-  }
-  return complementos[Math.floor(Math.random() * complementos.length)]._id;
- };
+  return complementos.length > 0 ? complementos[Math.floor(Math.random() * complementos.length)]._id : null;
+};
 
 const generarFechaAleatoria = function() {
   const fechaActual = new Date();
   const fechaInicio = new Date();
   fechaInicio.setMonth(fechaInicio.getMonth() - 1);
 
-  const fechaAleatoria = new Date(fechaInicio.getTime() + Math.random() * (fechaActual.getTime() - fechaInicio.getTime()));
-  return fechaAleatoria;
+  return new Date(fechaInicio.getTime() + Math.random() * (fechaActual.getTime() - fechaInicio.getTime()));
 };
 
-const crearDatos = async function(callback) {
+const crearDatos = async function() {
   try {
     const clientes = [];
 
@@ -73,9 +68,9 @@ const crearDatos = async function(callback) {
       clientes.push({
         nombreCompleto,
         correo,
-        telefono:null,
+        telefono: null,
         numberIdentity,
-        plus:null,
+        plus: null,
         combinedIdentity: numberIdentity,
         stringIdentity,
         extension: '',
@@ -86,12 +81,14 @@ const crearDatos = async function(callback) {
       });
     }
 
-    await Cliente.insertMany(clientes);
-    console.log('Datos insertados correctamente');
+    if (clientes.length > 0) {
+      await Cliente.insertMany(clientes);
+      console.log('Datos insertados correctamente');
+    } else {
+      console.log('No se generaron datos para insertar');
+    }
   } catch (error) {
     console.error('Error al insertar los datos:', error);
-  } finally {
-    callback();
   }
 };
 

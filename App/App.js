@@ -68,16 +68,14 @@ const registrarNotificacionesActivadas = async () => {
     return;
   }
 
-  const tokenData = await Notifications.getExpoPushTokenAsync();
+  const expoPushToken  = await Notifications.getExpoPushTokenAsync();
   
-  const token = tokenData.data;
-  const deviceId = Device.osBuildId;
+  const token = expoPushToken.data;
   // Enviar el token y el deviceId al servidor
   try {
-    const response = await axios.post(`${URL_BASE}/api/registrarToken`, { token, deviceId });
-    console.log('Token registered:', response.data);
+    await axios.post(`${URL_BASE}/notificacion/registrarToken`, { token });
   } catch (error) {
-    console.error('Error registering token:', error);
+    console.error('Error al registrar el token:', error);
   }
 };
 

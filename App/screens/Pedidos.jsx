@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, TextInput, Linking, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomSwal from '../components/CustomSwal';
@@ -13,6 +13,7 @@ const Pedidos = () => {
   const [productos, setProductos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [cantidad, setCantidad] = useState({}); // Estado para la cantidad
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -32,34 +33,62 @@ const Pedidos = () => {
     FiltradoDeDatos();
   }, []);
 
-  const handleButtonClick = (item, tipo) => {
+  const handleButtonClick = async (item, tipo) => {
     const proveedor = item.producto.proveedor || {}; // Manejar si proveedor es undefined
-  
-    switch (tipo) {
-      case 'web':
-        if (proveedor.sitioweb) {
-          // Redirigir a la URL
-          Linking.openURL(proveedor.sitioweb).catch((err) => console.error('Error al abrir la URL:', err));
+    const cantidadPedida = cantidad[item._id] || 1;
+    const productoNombre = item.producto.nombre;
+    Alert.alert(
+      'Confirmar envío',
+      `¿Está seguro que desea enviar el pedido del ${productoNombre}?`,
+      [
+        {
+          text: 'Cancelar',
+          onPress: () => console.log('Cancelado'),
+          style: 'cancel'
+        },
+        {
+          text: 'Enviar',
+          onPress: async () => {
+            try {
+              const token = await AsyncStorage.getItem('token');
+              await axios.post(
+                `${URL_BASE}/pedidos/crear`,
+                { producto: item.producto._id, cantidad: cantidadPedida * item.producto.capacidad_presentacion },
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+              CustomSwal({ icono: 'success', titulo: 'Pedido creado', mensaje: 'El pedido ha sido creado exitosamente.' });
+              switch (tipo) {
+                case 'web':
+                  if (proveedor.sitioweb) {
+                    // Redirigir a la URL
+                    Linking.openURL(proveedor.sitioweb).catch((err) => console.error('Error al abrir la URL:', err));
+                  }
+                  break;
+                case 'whatsapp':
+                  if (proveedor.telefono) {
+                    const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${cantidadPedida * item.producto.capacidad_presentacion} unidades de ${productoNombre}.`;
+                    const url = `whatsapp://send?phone=+591${proveedor.telefono}&text=${encodeURIComponent(mensaje)}`;
+                    Linking.openURL(url).catch((err) => console.error('Error al abrir WhatsApp:', err));
+                  }
+                  break;
+          
+                case 'email':
+                  if (proveedor.correo) {
+                    const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${cantidadPedida * item.producto.capacidad_presentacion} unidades de ${productoNombre}.`;
+                    const url = `mailto:${proveedor.correo}?subject=Consulta sobre ${productoNombre}&body=${encodeURIComponent(mensaje)}`;
+                    Linking.openURL(url).catch((err) => console.error('Error al enviar el correo:', err));
+                  }
+                  break;
+              }
+            } catch (error) {
+              CustomSwal({ icono: 'error', titulo: 'Error', mensaje: 'Hubo un problema al crear el pedido.' });
+            }
+          }
         }
-        break;
-      case 'whatsapp':
-        if (proveedor.telefono) {
-          // Iniciar un chat en WhatsApp
-          const url = `whatsapp://send?phone=+591${proveedor.telefono}`;
-          Linking.openURL(url).catch((err) => console.error('Error al abrir WhatsApp:', err));
-        }
-        break;
-      case 'email':
-        if (proveedor.correo) {
-          // Enviar un correo electrónico
-          const url = `mailto:${proveedor.correo}`;
-          Linking.openURL(url).catch((err) => console.error('Error al enviar el correo:', err));
-        }
-        break;
-      default:
-        break;
-    }
+      ]
+    );
   };
+  
 
   // Filtrar los productos según el término de búsqueda
   const filtrarProductos = productos.filter(p =>
@@ -83,6 +112,10 @@ const Pedidos = () => {
 
   const DsProductos = filtrarProductos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+  const handleCantidadChange = (id, value) => {
+    setCantidad(prev => ({ ...prev, [id]: value }));
+  };
+
   return (
     <LinearGradient colors={['#e0ffff', '#91daff']} style={styles.gradient}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
@@ -105,7 +138,16 @@ const Pedidos = () => {
             return (
               <View style={styles.notificationItem}>
                 <Text style={styles.itemText}>{item.producto.nombre}</Text>
-                <View style={styles.buttonContainer}>
+                <View style={styles.rightContainer}>
+                  {proveedor.sitioweb || proveedor.telefono || proveedor.correo ? (
+                    <TextInput
+                      style={styles.inputCantidad}
+                      placeholder="1"
+                      keyboardType="numeric"
+                      value={cantidad[item._id] ? cantidad[item._id].toString() : ''}
+                      onChangeText={text => handleCantidadChange(item._id, text)}
+                    />
+                  ) : null}
                   {proveedor.sitioweb && (
                     <TouchableOpacity style={styles.button} onPress={() => handleButtonClick(item, 'web')}>
                       <Icon name="public" size={24} color="#fff" />

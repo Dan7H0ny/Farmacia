@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Drawer, IconButton, Grid, Box, Typography, Avatar } from '@mui/material';
-import { AttachMoney, MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, SupervisedUserCircle, Person, DashboardOutlined } from '@mui/icons-material';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { AttachMoney, MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, SupervisedUserCircle, Person } from '@mui/icons-material';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
 import CustomActualizarUser from '../components/CustomActualizarUser';
@@ -11,6 +11,7 @@ import imagen from '../assets/images/LogoFar.png';
 import '../assets/css/swalform.css';
 import CustomSwal from '../components/CustomSwal';
 import CustomMenuVentas from '../components/CustomMenuVentas';
+import InfoFarmacia from '../components/InfoFarmacia'
 
 export const MenuCajero = () => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ export const MenuCajero = () => {
   const rol = localStorage.getItem('rol');
   const [Venta, setisVenta] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const location = useLocation();
+  const rutaDashboard = location.pathname === '/Menu/Cajero';
   
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
   function Logout() {
@@ -118,7 +121,6 @@ export const MenuCajero = () => {
 };
   const GetVenta = () => {setisVenta(!Venta);};
 
-  function Dashboard() {navigate(`/Menu/Cajero/Dashboard`);}
   function Home() {navigate(`/Menu/Cajero`);}
 
   function ListarCliente() {navigate(`/Menu/Cajero/Cliente/Listar`);}
@@ -150,9 +152,6 @@ export const MenuCajero = () => {
           </IconButton>
           {drawerOpen &&
           <>
-            <IconButton onClick={Dashboard} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
-              <DashboardOutlined sx={{ color: '#e2e2e2' }} />
-            </IconButton>
             <IconButton onClick={Home} sx={{ width: drawerOpen ? '25%' : '100%', transition: 'width 0.3s' }}>
               <HomeOutlined sx={{ color: '#e2e2e2' }} />
             </IconButton>
@@ -185,7 +184,7 @@ export const MenuCajero = () => {
         </Box>
       </Drawer>
       <div id="caja_contenido" className={drawerOpen ? 'content-open' : 'content-closed'}>
-        {/* Esto renderizará la vista de "Registrar Usuario" u otra vista según la ruta actual */}
+        {rutaDashboard && <InfoFarmacia/>}
         <Outlet/>
       </div>
     </div>

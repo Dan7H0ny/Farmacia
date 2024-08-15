@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const utiles = require('./config/newuser');
-const crearDatos  = require('./config/cargar-notificacion');
+//const crearDatos  = require('./config/cargar-notificacion');
 require('dotenv').config();
 
 app.set('key', process.env.TOKEN_LLAVE);
@@ -25,7 +25,7 @@ app.use('/producto', require('./controller/productos'));
 app.use('/venta', require('./controller/ventas'));
 app.use('/prediccion', require('./controller/prediccion'));
 app.use('/notificacion', require('./controller/notificacion'));
-app.use('/api', require('./controller/token'));
+app.use('/pedidos', require('./controller/pedidos'));
 
 mongoose.connect(process.env.BD_CONEXION, {
   useNewUrlParser: true,
@@ -36,7 +36,7 @@ mongoose.connect(process.env.BD_CONEXION, {
     app.listen(process.env.PUERTO_HTTP, () => {
       console.log(`Servidor iniciado en el puerto ${process.env.PUERTO_HTTP}`);
       // crearDatos(() => {
-      //    console.log('Proceso de creación de complementos');
+      //   console.log('Proceso de creación de complementos');
       // });
     });
   });

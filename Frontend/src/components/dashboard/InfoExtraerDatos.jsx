@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Grid, Button } from '@mui/material';
 import { ProductionQuantityLimits, AllInbox } from '@mui/icons-material';
 import CustomRegisterUser from '../CustomRegisterUser';
@@ -10,11 +10,14 @@ const InfoExtraerDatos = ({setPredicciones}) => {
   const [categoria, setCategoria] = useState('');
   
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({ headers: { Authorization: `Bearer ${token}` }}), [token]);
 
   const btnObtenerProducto = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`${UrlReact}/prediccion/mostrar/nombre`, { nombreProducto: producto });
+      const response = await axios.post(`${UrlReact}/prediccion/mostrar/nombre`, { nombreProducto: producto }, configInicial);
       setPredicciones(response); 
     } catch (error) {
       CustomSwal({ icono: 'error', titulo: 'Error al obtener las predicciones', mensaje: error.response?.data?.error || error.message });
@@ -24,7 +27,7 @@ const InfoExtraerDatos = ({setPredicciones}) => {
   const btnObtenerCategoria = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`${UrlReact}/prediccion/mostrar/categoria`, { nombreCategoria: categoria });
+      const response = await axios.post(`${UrlReact}/prediccion/mostrar/categoria`, { nombreCategoria: categoria }, configInicial);
       setPredicciones(response); 
     } catch (error) {
       CustomSwal({ icono: 'error', titulo: 'Error al obtener las predicciones', mensaje: error.response?.data?.error || error.message });

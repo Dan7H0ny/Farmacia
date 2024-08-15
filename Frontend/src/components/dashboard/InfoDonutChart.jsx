@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { Doughnut } from 'react-chartjs-2';
 import { Card, CardContent, Typography, Button, Box } from '@mui/material';
@@ -14,11 +14,14 @@ const InfoDonutChart = () => {
   const [productos, setProductos] = useState([]);
   const [mostrarCaducidad, setMostrarCaducidad] = useState(true);
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({ headers: { Authorization: `Bearer ${token}` }}), [token]);
 
   useEffect(() => {
     const DatosAlmacen = async () => {
       try {
-        const response = await axios.get(`${UrlReact}/almacen/mostrar`);
+        const response = await axios.get(`${UrlReact}/almacen/mostrar`, configInicial);
         setProductos(response);
         actualizarDatos(response);
       } catch (error) {
@@ -27,7 +30,7 @@ const InfoDonutChart = () => {
     };
 
     DatosAlmacen();
-  }, [UrlReact]);
+  }, [UrlReact, configInicial]);
 
   const actualizarDatos = (productos, filtroPorCaducidad = true) => {
     const sortedProductos = productos.sort((a, b) => filtroPorCaducidad

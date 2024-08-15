@@ -6,6 +6,7 @@ import CustomSwal from '../components/CustomSwal';
 import URL_BASE from '../config';
 import { LinearGradient } from 'expo-linear-gradient';
 import styles from '../styles/NotificacionStyles';
+import * as Notifications from 'expo-notifications';
 
 const Notificacion = () => {
   const [notificaciones, setNotificaciones] = useState([]);
@@ -14,11 +15,13 @@ const Notificacion = () => {
   const itemsPerPage = 5;
 
   useEffect(() => {
-    const FiltradoDeDatos = async () => {
+    const fetchNotificaciones = async () => {
       const token = await AsyncStorage.getItem('token');
       if (token) {
         try {
+          const datatoken = await Notifications.getExpoPushTokenAsync();
           const response = await axios.get(`${URL_BASE}/notificacion/mostrar`, {
+            params: { id: datatoken.data },  
             headers: { Authorization: `Bearer ${token}` }
           });
           setNotificaciones(response.data);
@@ -27,29 +30,52 @@ const Notificacion = () => {
         }
       }
     };
-    FiltradoDeDatos();
+    fetchNotificaciones();
   }, []);
 
   const SwitchEstado = async (producto) => {
     const token = await AsyncStorage.getItem('token');
+    console.log(producto.estado)
     try {
-      const updatedEstado = !producto.estado;
-      await axios.put(`${URL_BASE}/notificacion/actualizar`, {
-        id: producto._id,
-        estado: updatedEstado
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setNotificaciones(prevNotificaciones => prevNotificaciones.map(p => p._id === producto._id ? { ...p, estado: updatedEstado } : p));
+      const updatedEstado = !producto.estado;  // Alterna el estado
+      const datatoken = await Notifications.getExpoPushTokenAsync();
+      
+      // Realiza la petición PUT al backend para actualizar el estado de la predicción específica
+      await axios.put(
+        `${URL_BASE}/notificacion/actualizar`, 
+        { 
+          id:producto.prediccion._id,  // Pasa el ID de la predicción y el nuevo estado
+          estado: updatedEstado 
+        }, 
+        {
+          params: { token: datatoken.data }, 
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      // Actualiza el estado local de la notificación en el frontend
+      setNotificaciones(prevNotificaciones => prevNotificaciones.map(notificacion => 
+        notificacion.token === datatoken.data ? { 
+          ...notificacion, 
+          notificaciones: notificacion.notificaciones.map(prediccion => 
+            prediccion._id === producto._id ? { ...prediccion, estado: updatedEstado } : prediccion
+          )
+        } : notificacion
+      ));
+      
       CustomSwal({ icono: 'success', titulo: 'Estado Actualizado', mensaje: 'Actualización exitosa' });
     } catch (error) {
-      CustomSwal({ icono: 'error', titulo: 'Error', mensaje: error.response.data.mensaje });
+      console.error(error);
+      CustomSwal({ icono: 'error', titulo: 'Error', mensaje: error.response?.data?.mensaje || 'Error en la actualización' });
     }
   };
+  
 
   // Filtrar las notificaciones según el término de búsqueda
-  const filteredNotificaciones = notificaciones.filter(notificacion =>
-    notificacion.prediccion.nombreProducto.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredNotificaciones = notificaciones.flatMap(not => 
+    not.notificaciones.filter(prediccion => 
+      prediccion.prediccion && prediccion.prediccion.nombreProducto && 
+      prediccion.prediccion.nombreProducto.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   );
 
   // Calcular el número total de páginas basado en las notificaciones filtradas
@@ -91,7 +117,7 @@ const Notificacion = () => {
               <Text style={styles.itemText}>{item.prediccion.nombreProducto}</Text>
               <Switch
                 value={item.estado}
-                onValueChange={() => SwitchEstado(item)}
+                onValueChange={() => SwitchEstado(item)}  // Pasa el nuevo estado
                 style={styles.switch}
               />
             </View>

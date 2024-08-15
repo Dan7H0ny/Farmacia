@@ -4,11 +4,12 @@ const { predecirVentasParaTodosLosProductosARIMA } = require('../config/arima');
 const Prediccion = require('../models/Prediccion');
 const Notificacion = require('../models/Notificacion');
 const Venta = require('../models/Venta');
+const verificacion = require('../middlewares/verificacion');
 
 const router = express.Router();
 
 // Ruta para mostrar las primeras predicciones filtradas por diaAgotamiento
-router.post('/mostrar/predicciones', async (req, res) => {
+router.post('/mostrar/predicciones',  verificacion, async (req, res) => {
   try {
     const productosConDiaAgotamiento = await predecirVentasParaTodosLosProductosARIMA(7);
     await actualizarPrediccionesEnBD(productosConDiaAgotamiento);
@@ -27,7 +28,7 @@ router.post('/mostrar/predicciones', async (req, res) => {
 
 
 // Ruta para mostrar predicciones filtradas por nombre del producto
-router.post('/mostrar/nombre', async (req, res) => {
+router.post('/mostrar/nombre', verificacion, async (req, res) => {
   try {
     const { nombreProducto } = req.body; // Obtener el nombre del producto desde el cuerpo de la solicitud
     if (!nombreProducto) {
@@ -54,7 +55,7 @@ router.post('/mostrar/nombre', async (req, res) => {
 });
 
 // Ruta para mostrar predicciones filtradas por categoría
-router.post('/mostrar/categoria', async (req, res) => {
+router.post('/mostrar/categoria', verificacion, async (req, res) => {
   try {
     const { nombreCategoria } = req.body; // Obtener el nombre de la categoría desde el cuerpo de la solicitud
     if (!nombreCategoria) {
@@ -80,7 +81,7 @@ router.post('/mostrar/categoria', async (req, res) => {
   }
 });
 
-router.post('/mostrar/meses', async (req, res) => {
+router.post('/mostrar/meses', verificacion, async (req, res) => {
   const { mes } = req.body; // Obtenemos el mes desde el frontend
 
   try {
@@ -141,17 +142,6 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
       prediccionExistente.datosHistoricos = datosHistoricos;
       prediccionExistente.porcentajeError = porcentajeError;
       await prediccionExistente.save();
-    
-      // Actualizar o crear la notificación correspondiente
-      let notificacionExistente = await Notificacion.findOne({ prediccion: prediccionExistente._id });
-      if (notificacionExistente) {
-        notificacionExistente.estado = false; // Actualizar el estado de la notificación
-        await notificacionExistente.save();
-      } else {
-        // Si no existe la notificación, crear una nueva
-        const notificacionNueva = new Notificacion({ prediccion: prediccionExistente._id, estado: false });
-        await notificacionNueva.save();
-      }
     } else {
       // Si no existe, crear una nueva predicción
       const nuevaPrediccion = new Prediccion({
@@ -164,9 +154,6 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
         porcentajeError
       });
       await nuevaPrediccion.save();
-      // Crear una nueva notificación para la nueva predicción
-      const notificacionNueva = new Notificacion({ prediccion: nuevaPrediccion._id, estado: false });
-      await notificacionNueva.save();
     }    
   }
 }

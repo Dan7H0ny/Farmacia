@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button, Grid, Card, CardContent, Typography, Select, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import axios from 'axios';
 
@@ -8,6 +8,9 @@ const InfoMeses = () => {
   const [loading, setLoading] = useState(false);
 
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
+  const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
+  const token = obtenerToken();
+  const configInicial = useMemo(() => ({ headers: { Authorization: `Bearer ${token}` }}), [token]);
   const meses = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -21,7 +24,7 @@ const InfoMeses = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${UrlReact}/prediccion/mostrar/meses`, { mes: meses.indexOf(mes) + 1 });
+      const response = await axios.post(`${UrlReact}/prediccion/mostrar/meses`, { mes: meses.indexOf(mes) + 1 }, configInicial);
       setResultados(response);
     } catch (error) {
       console.error('Error al obtener los datos:', error);

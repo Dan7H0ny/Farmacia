@@ -11,6 +11,7 @@ import InfoMeses from './dashboard/InfoMeses';
 import InfoTable from './dashboard/InfoTable';
 import { Grid} from '@mui/material';
 import {Person2TwoTone, ExtensionSharp, ProductionQuantityLimits } from '@mui/icons-material';
+import InfoPedidos from './dashboard/InfoPedidos';
 
 const Dashboard = () => {
   const [clientes, setClientes] = useState([]);
@@ -26,7 +27,7 @@ const Dashboard = () => {
   const configInicial = useMemo(() => ({ headers: { Authorization: `Bearer ${token}` }}), [token]);
 
   useEffect(() => {
-    axios.post(`${UrlReact}/prediccion/mostrar/predicciones`)
+    axios.post(`${UrlReact}/prediccion/mostrar/predicciones`, configInicial)
       .then(response => {
         const prediccionesFiltradas = response.filter(prediccion => prediccion.diaAgotamiento >= 1 && prediccion.diaAgotamiento <= 7).sort((a, b) => a.diaAgotamiento - b.diaAgotamiento).slice(0, 5);
         setPredicciones(prediccionesFiltradas);
@@ -35,7 +36,7 @@ const Dashboard = () => {
       .catch(error => {
         CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.mensaje ? error.response.data.mensaje : 'Error desconocido',});
       });
-  }, [UrlReact]);
+  }, [UrlReact, configInicial]);
   
   
   useEffect(() => {
@@ -83,15 +84,13 @@ const Dashboard = () => {
       });
   }, [navigate, token, configInicial, UrlReact]);
 
-  const btnSeleccionMes = async (event) => {
-    event.preventDefault();
-
-  };
-
   return (
     <div id="caja_contenido" >
       <CustomTypography text={'Dashboard'} />
       <Grid container spacing={3}>
+        <Grid item xs={12} sm={12}>
+          <InfoPedidos/>
+        </Grid>
         <Grid item xs={12} sm={7} >  
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} >
@@ -115,7 +114,7 @@ const Dashboard = () => {
               <InfoDonutChart/>
             </Grid>
             <Grid item xs={12} sm={12}> 
-              <InfoMeses onMesSeleccionado={btnSeleccionMes}/>
+              <InfoMeses/>
             </Grid>
           </Grid>
         </Grid>

@@ -130,25 +130,32 @@ router.post('/registrarToken', async (req, res) => {
   }
 });
 
-
 async function enviarNotificaciones() {
     const messages = [];
 
     try {
-        // Obtener todas las notificaciones activas cuyo estado sea true
-        const notificacionesActivas = await Notificacion.find({ estado: true }).populate('prediccion');
+        // Obtener todas las notificaciones activas
+        const notificacionesActivas = await Notificacion.find({ 'notificaciones.estado': true })
+            .populate('notificaciones.prediccion');
+
+        // Extraer todos los tokens únicos
+        const tokensSet = new Set(notificacionesActivas.map(notificacion => notificacion.token));
+        const tokens = Array.from(tokensSet);
 
         if (notificacionesActivas.length > 0) {
-            // Filtrar las predicciones que tienen diaAgotamiento definido
-            const productosActivos = notificacionesActivas
-                .map(notificacion => notificacion.prediccion)
-                .filter(prediccion => prediccion.diaAgotamiento && prediccion.diaAgotamiento !== null);
+            // Filtrar las predicciones con diaAgotamiento definido
+            const productosActivos = notificacionesActivas.flatMap(notificacion => 
+                notificacion.notificaciones
+                    .filter(not => not.estado && not.prediccion.diaAgotamiento)
+                    .map(not => ({ 
+                        ...not.prediccion._doc, 
+                        estado: not.estado 
+                    }))
+            );
 
             if (productosActivos.length > 0) {
-                const tokens = await Token.find(); // Obtener todos los tokens registrados
-
                 productosActivos.forEach(producto => {
-                    tokens.forEach(({ token }) => {
+                    tokens.forEach(token => {
                         messages.push({
                             to: token,
                             sound: 'default',
@@ -179,8 +186,8 @@ async function enviarNotificaciones() {
     }
 }
 
-cron.schedule('0 */6 * * *', () => {
-    enviarNotificaciones();
+cron.schedule('* * * * *', () => {
+  enviarNotificaciones();
 });
 
 module.exports = router;

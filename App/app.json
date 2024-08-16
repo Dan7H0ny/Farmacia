@@ -18,7 +18,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/LogoFar.png",
         "backgroundColor": "#0f1b35"
-      }
+      },
+      "package": "com.danthony.farmacia"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -28,6 +29,12 @@
         "projectId": "4ef9143c-aa49-48d5-aaab-99c7ec7cde69"
       }
     },
-    "owner": "danthony"
+    "owner": "danthony",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/4ef9143c-aa49-48d5-aaab-99c7ec7cde69"
+    }
   }
 }

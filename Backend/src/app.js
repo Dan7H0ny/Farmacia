@@ -5,7 +5,6 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const utiles = require('./config/newuser');
 require('dotenv').config();
-
 app.set('key', process.env.TOKEN_LLAVE);
 app.use(cors());
 app.options('*', cors());
@@ -34,7 +33,7 @@ mongoose.connect(process.env.BD_CONEXION, {
 .then(() => {
   console.log('Conectado a la base de datos');
   utiles.primerUsuario(() => {
-    app.listen(process.env.PUERTO_HTTP, () => {
+    app.listen(process.env.PUERTO_HTTP, '0,0,0,0',() => {
       console.log(`Servidor iniciado en el puerto ${process.env.PUERTO_HTTP}`);
     });
   });

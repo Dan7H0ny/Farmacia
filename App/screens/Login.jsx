@@ -45,7 +45,7 @@ export const Login = () => {
         iniciarSesion(_id, nombre, rol, token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         if (rol === 'Administrador') {
-          navigation.navigate('Menu');
+          () => navigation.navigate('Menu');
         } else {
           CustomSwal({ icono: 'error', titulo: 'Acceso Denegado', mensaje: 'No tienes permisos de administrador' });
         }

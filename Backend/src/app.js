@@ -13,17 +13,17 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Configuración de rutas existentes
-app.use('/', require('./controller/autentificacion'));
-app.use('/complemento', require('./controller/complemento'));
-app.use('/almacen', require('./controller/almacen'));
-app.use('/usuario', require('./controller/usuarios'));
-app.use('/cliente', require('./controller/clientes'));
-app.use('/proveedor', require('./controller/proveedores'));
-app.use('/producto', require('./controller/productos'));
-app.use('/venta', require('./controller/ventas'));
-app.use('/prediccion', require('./controller/prediccion'));
-app.use('/notificacion', require('./controller/notificacion'));
-app.use('/pedidos', require('./controller/pedidos'));
+app.use('/api', require('./controller/autentificacion'));
+app.use('/api/complemento', require('./controller/complemento'));
+app.use('/api/almacen', require('./controller/almacen'));
+app.use('/api/usuario', require('./controller/usuarios'));
+app.use('/api/cliente', require('./controller/clientes'));
+app.use('/api/proveedor', require('./controller/proveedores'));
+app.use('/api/producto', require('./controller/productos'));
+app.use('/api/venta', require('./controller/ventas'));
+app.use('/api/prediccion', require('./controller/prediccion'));
+app.use('/api/notificacion', require('./controller/notificacion'));
+app.use('/api/pedidos', require('./controller/pedidos'));
 
 // Conéctate a MongoDB usando la URI definida
 mongoose.connect(process.env.BD_CONEXION, {

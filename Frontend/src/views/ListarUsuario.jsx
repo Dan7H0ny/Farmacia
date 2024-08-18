@@ -14,6 +14,7 @@ import CustomTabla from '../components/CustomTabla';
 import CustomSelectUser from '../components/CustomSelectUser';
 import { ReporteUsuario } from '../Reports/ReporteUsuario';
 import ReporteExcelUsuario from '../Reports/ReporteExcelUsuario';
+import { useAutenticarContexto } from '../contextos/autenticar';
 
 export const ListarUsuario = () => {
   const [usuarios, setUsuario] = useState([]);
@@ -21,7 +22,8 @@ export const ListarUsuario = () => {
   const [user, setUser] = useState('');
   
   const usuario_ = localStorage.getItem('id');
-
+  const { cerrarSesion } = useAutenticarContexto();
+  function Logout() { cerrarSesion(); navigate('/login'); return null }
   const navigate = useNavigate();
   const roles = [{ nombre: 'Administrador' }, { nombre: 'Cajero' }, ];
 
@@ -266,15 +268,20 @@ export const ListarUsuario = () => {
   const handleSwitchChange = async (event, id) => {
     const nuevoEstado = event.target.checked ? true : false;
     try {
-      await axios.put(`${UrlReact}/usuario/eliminar/${id}`, { estado: nuevoEstado }, configInicial);
-      setUsuario((prevUsuarios) =>
-        prevUsuarios.map((usuario) =>
-          usuario._id === id ? { ...usuario, estado: nuevoEstado } : usuario
-        )
-      );
-      CustomSwal({ icono: 'success', titulo: 'Estado Actualizado', mensaje: 'El usuario a cambiado de estado ahora esta: ' + (nuevoEstado ? 'activo' : 'inactivo')}); 
+      await axios.put(`${UrlReact}/usuario/eliminar/${id}`, { estado: nuevoEstado, usuario: usuario_ }, configInicial);
+      if(id === usuario_){
+        Logout()
+      }
+      else{
+        setUsuario((prevUsuarios) =>
+          prevUsuarios.map((usuario) =>
+            usuario._id === id ? { ...usuario, estado: nuevoEstado } : usuario
+          )
+        );
+      }
+      CustomSwal({ icono: 'success', titulo: 'Estado Actualizado', mensaje:'El usuario a cambiado de estado ahora esta: ' + (nuevoEstado ? 'activo' : 'inactivo')}); 
     } catch (error) {
-      console.error('Error al cambiar el estado del usuario:', error);
+      CustomSwal({ icono: 'error', titulo: 'No se puede Actualizar', mensaje: error.mensaje})
     }
   };
 

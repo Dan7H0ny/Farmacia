@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {  Box , Grid, Button } from '@mui/material';
+import {  Box , Grid, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {ProductionQuantityLimits, AttachMoney, Description, AddBusiness, AllInbox, Inventory} from '@mui/icons-material';
+import {ProductionQuantityLimits, Description, AddBusiness, AllInbox, Inventory} from '@mui/icons-material';
 import '../assets/css/menu.css';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
@@ -130,7 +130,7 @@ export const RegistrarProducto = () => {
               required={true}
               value={precioCompra}
               onChange={(e) => {if (/^\d*\.?\d{0,2}$/.test(e.target.value)) {setPrecioCompra(e.target.value);}}}
-              icon={<AttachMoney/>}
+              icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>}
               onKeyPress={(e) => { if (!/[\d.]$/.test(e.key) || (e.key === '.' && precioCompra.includes('.'))) {e.preventDefault();}}}
             /> 
             <CustomSelectCom

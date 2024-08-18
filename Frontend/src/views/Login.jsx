@@ -97,6 +97,7 @@ export const Login = () => {
               id="txtusu"
               label="Correo"
               type="email"
+              autocomplete="username" 
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
               placeholder="Admin@123.com"
@@ -108,6 +109,7 @@ export const Login = () => {
                 id="txtpas"
                 label="Password"
                 type="password"
+                autocomplete="current-password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="**********"

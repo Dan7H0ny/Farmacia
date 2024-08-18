@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef,useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Grid, Box  } from '@mui/material';
+import { Grid, Box, Typography } from '@mui/material';
 import { Search, Description, ProductionQuantityLimits, Group, AddBusiness, AttachMoney, VerifiedUser, CalendarMonth, Filter9Plus, DateRange, Dangerous } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
@@ -90,14 +90,16 @@ export const ListarAlmacen = () => {
       axios.get(`${UrlReact}/almacen/buscar/${almacen._id}`, configInicial)
         .then(response => {
           const { _id, producto, categoria, precioVenta, cantidad_stock, fecha_caducidad } = response;
+          const stock = Math.floor(cantidad_stock / producto.capacidad_presentacion);
+          const residuo = cantidad_stock % producto.capacidad_presentacion; 
           const container = document.createElement('div');
           const root = createRoot(container);
           root.render(
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12} sx={{marginTop: 'auto',}}><CustomSelectProducto productos={productos} id={producto._id} ref={productoRef}/></Grid>
               <CustomSelectC number={6} id="categoria" label="Seleccione la categoria" value={categoria._id} roles={complementos} ref={categoriaRef} icon={<AddBusiness />}/>
-              <CustomActualizarUser number={6} id="precioVenta" label="Precio de Venta" type="Number" defaultValue={precioVenta} required={true} icon={<AttachMoney />} />
-              <CustomActualizarUser number={6} id="stock" label="Cantidad de Stock" type="Number" defaultValue={cantidad_stock} required={true} icon={<Filter9Plus />} />
+              <CustomActualizarUser number={6} id="precioVenta" label="Precio de Venta" type="Number" defaultValue={precioVenta} required={true} icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />
+              <CustomActualizarUser number={6} id="stock" label={`Stock en ${producto.tipo.nombre}`} type="Number" defaultValue={stock} required={true} icon={<Filter9Plus />} />
               <CustomActualizarUser number={6} id="fecha" label="Fecha de Caducidad" type="Date" defaultValue={new Date(fecha_caducidad).toISOString().split('T')[0]} required={true} icon={<DateRange />} />
             </Grid>
           );
@@ -144,10 +146,11 @@ export const ListarAlmacen = () => {
         }).then((result) => {
           if (result.isConfirmed) {
             const { producto_, categoria_, stock_, precioVenta_, fecha_ } = result.value;
+            const nuevaCantidad= (stock_ * producto.capacidad_presentacion) + residuo
             axios.put(`${UrlReact}/almacen/actualizar/${_id}`, {
               producto: producto_._id,
               categoria: categoria_,
-              cantidad_stock: stock_,
+              cantidad_stock: nuevaCantidad,
               precioVenta: precioVenta_, 
               fecha_caducidad: fecha_,
               usuario_actualizacion: usuario_,
@@ -201,7 +204,7 @@ export const ListarAlmacen = () => {
                     <CustomActualizarUser number={12} label="Precio" defaultValue={precioVenta} readOnly={true} icon={<AttachMoney />} />
                   </Grid>
                   <Grid item xs={12} sm={6} sx={{marginTop: 'auto',}}>
-                    <CustomActualizarUser number={12} label="Stock" defaultValue={cantidad_stock} readOnly={true} icon={<Description />} />
+                    <CustomActualizarUser number={12} label="Presentacion o Unidad" defaultValue={Math.floor(cantidad_stock / producto.capacidad_presentacion) + ' o ' + cantidad_stock} readOnly={true} icon={<Description />} />
                   </Grid>
                 </Grid>
                 <CustomActualizarUser number={12} label="Estado" defaultValue={estado ? "Activo" : "Inactivo"}  readOnly = {true} icon={estado ? <VerifiedUser color="success" /> : <Dangerous color="error" />} />

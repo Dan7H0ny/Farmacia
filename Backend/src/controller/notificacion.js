@@ -186,7 +186,7 @@ async function enviarNotificaciones() {
     }
 }
 
-cron.schedule('* * * * *', () => {
+cron.schedule('* 1 * * *', () => {
   enviarNotificaciones();
 });
 

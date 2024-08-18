@@ -2,7 +2,7 @@
 import React from 'react';
 import { TextField, InputAdornment } from '@mui/material';
 
-const CustomTextField = ({ id, label, type, value, onChange, placeholder, required, icon, ...props }) => {
+const CustomTextField = ({ id, label, type, value, onChange, placeholder, required, icon, autocomplete, ...props }) => {
   return (
     <TextField
       id={id}
@@ -13,6 +13,10 @@ const CustomTextField = ({ id, label, type, value, onChange, placeholder, requir
       placeholder={placeholder}
       fullWidth
       required={required}
+      inputProps={{ 
+        autoComplete: autocomplete, // Utiliza `inputProps` para el atributo `autocomplete`
+        ...props.inputProps // Permite la extensión de `inputProps`
+      }}
       InputProps={{
         sx: { color: '#0f1b35' },
         startAdornment: (

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
-import { Button, Grid, Box } from '@mui/material';
+import { Button, Grid, Box, Typography } from '@mui/material';
 import '../assets/css/menu.css';
 import { useNavigate } from 'react-router-dom';
-import {AddBusiness, Filter9Plus, DateRange, AttachMoney, Search, ProductionQuantityLimits} from '@mui/icons-material';
+import {AddBusiness, Filter9Plus, DateRange} from '@mui/icons-material';
 import CustomSwal from '../components/CustomSwal';
 import CustomTypography from '../components/CustomTypography';
 import CustomRegisterUser from '../components/CustomRegisterUser';
@@ -14,14 +14,13 @@ import CustomSubtitulo from '../components/CustomSubtitulo';
 export const RegistrarAlmacen = () => {
   const [producto, setProducto] = useState([]);
   const [idproducto, setIdProducto] = useState('');
-  const [datos, setDatos] = useState('');
   const [complementos, setComplementos] = useState([]);
   const [categoria, setCategoria] = useState('');
   const [precioVenta, setPrecioVenta] = useState('');
   const [cantidad_stock, setCantidad_stock] = useState('');
   const [fecha_caducidad, setFechaCaducidad] = useState(''); 
   const usuario_ = localStorage.getItem('id');
-  const [buscar, setBuscar] = useState('')
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const navigate = useNavigate();
 
@@ -67,7 +66,7 @@ export const RegistrarAlmacen = () => {
     else 
     {
       if(idproducto){
-        const mialmacen = { producto:idproducto, categoria, precioVenta, cantidad_stock, fecha_caducidad, usuario: usuario_};
+        const mialmacen = { producto:selectedProduct._id, categoria, precioVenta, cantidad_stock: cantidad_stock*selectedProduct.capacidad_presentacion, fecha_caducidad, usuario: usuario_};
           axios.post(`${UrlReact}/almacen/crear`, mialmacen, configInicial)
           .then(response => {
             CustomSwal({ icono: 'success', titulo: 'Almacen Creado', mensaje: response.mensaje});
@@ -83,13 +82,7 @@ export const RegistrarAlmacen = () => {
     }
   }
 
-  const btnAñadir = (producto) => {
-    setDatos(producto)
-    setIdProducto(producto._id)
-  }
-
   const limpiarFormulario = () => {
-    setDatos("");
     setCategoria("");
     setPrecioVenta("");
     setCantidad_stock("");
@@ -101,42 +94,15 @@ export const RegistrarAlmacen = () => {
       <Box mt={3}>
         <CustomTypography text={'Registro de almacen'} />
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} sx={{marginTop: 'auto',}}>
-            <CustomSubtitulo text={'Elige el producto'}/>
-            <form id="Form-2" className="custom-form">
-              <CustomRegisterUser
-                number={12}
-                label="Nombre"  
-                placeholder= 'Buscar el nombre del producto'
-                type= 'text'
-                value={buscar}
-                onChange={(e) => setBuscar(e.target.value)}
-                required={true}
-                icon={<Search/>}
-              />
-              <CustomForm productos={producto} buscar={buscar} btnAñadir={btnAñadir}/>
-            </form>
-          </Grid>
-          <Grid item xs={12} sm={6} sx={{marginTop: 'auto',}}>
+          <Grid item xs={12} sm={12} sx={{marginTop: 'auto',}}>
             <form id="Form-1" onSubmit={btnRegistrarAlmacen} className="custom-form">
               <Grid container spacing={2}>
-                <CustomRegisterUser
-                  number={12}
-                  label="Producto" 
-                  placeholder= 'Seleccione el producto de la izquierda'
-                  type= 'text'
-                  rows={5.5}
-                  multiline= {true} 
-                  value={datos?
-                    `Producto:\t\t${datos.nombre}\nProveedor:\t\t${datos.proveedor.nombre_marca}\nTipo:\t\t\t${datos.tipo.nombre}\nCapacidad:\t\t${datos.capacidad_presentacion}\nPrecio de compra:\t${datos.precioCompra}` 
-                    : ''}
-                  onChange={(e) => setDatos(e.target.value)}
-                  required={true}
-                  readOnly={true}
-                  icon={<ProductionQuantityLimits/>}
-                />
+                <Grid item xs={12} sm={12}>
+                <CustomSubtitulo text={'Elige el producto'}/>
+                </Grid>
+                <CustomForm productos={producto} selectedProduct={selectedProduct} setSelectedProduct={setSelectedProduct}/>
                 <CustomSelectCom
-                  number={12}
+                  number={7}
                   id="categoria"
                   label="Seleccione la categoria"
                   value={categoria}
@@ -145,7 +111,7 @@ export const RegistrarAlmacen = () => {
                   icon={<AddBusiness />}
                 />
                 <CustomRegisterUser
-                  number={12}
+                  number={5}
                   label="Fecha Caducidad" 
                   placeholder= 'Ingrese la fecha de caducidad'
                   type= 'date'
@@ -157,17 +123,17 @@ export const RegistrarAlmacen = () => {
                 <CustomRegisterUser
                   number={6}
                   label="Precio" 
-                  placeholder= {datos.precioCompra}
+                  placeholder= "Ingrese el precio de Venta"
                   type= 'Number'
                   value={precioVenta}
                   onChange={(e) => {if (/^\d*\.?\d{0,2}$/.test(e.target.value)) {setPrecioVenta(e.target.value);}}}
                   required={true}
-                  icon={<AttachMoney/>}
+                  icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>}
                   onKeyPress={(e) => { if (!/[\d.]$/.test(e.key) || (e.key === '.' && precioVenta.includes('.'))) {e.preventDefault();}}}
                 />
                 <CustomRegisterUser
                   number={6}
-                  label="Stock" 
+                  label={selectedProduct ? selectedProduct.tipo.nombre : 'STOCK'}
                   placeholder= 'Ingrese la cantidad de stock que tiene este prodcuto'
                   type= 'Number'
                   value={cantidad_stock}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Grid, Box  } from '@mui/material';
-import { Search, Description, ProductionQuantityLimits, AllInbox, Group, AddBusiness, AttachMoney, Inventory, CalendarMonth } from '@mui/icons-material';
+import { Grid, Box, Typography  } from '@mui/material';
+import { Search, Description, ProductionQuantityLimits, AllInbox, Group, AddBusiness, Inventory, CalendarMonth } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import CustomTypography from '../components/CustomTypography';
@@ -98,7 +98,7 @@ export const ListarProducto = () => {
             <Grid container spacing={2}>
               <CustomActualizarUser number={12} id="nombre" label="Nombre del Producto" type="text" defaultValue={nombre} required={true} icon={<ProductionQuantityLimits />} />
               <CustomActualizarUser number={6} id="capacidad" label="Capacidad de presentacion" type="Number" defaultValue={capacidad_presentacion} required={true} icon={<Inventory />} />
-              <CustomActualizarUser number={6} id="precio" label="Precio" type="Number" defaultValue={precioCompra} required={true} icon={<AttachMoney />} />
+              <CustomActualizarUser number={6} id="precio" label="Precio" type="Number" defaultValue={precioCompra} required={true} icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />
               <CustomActualizarUser number={12} id="descripcion" label="Descripcion" type="text" defaultValue={descripcion} required={true} icon={<Description />} />
               <CustomSelectC number={6} id="identidad-select" label="Seleccione el tipo de presentacion" value={tipo._id} roles={complementos} ref={tipoRef} icon={<AllInbox />}/>
               <CustomSelectProvee number={6} id="proveedor-select" label="Seleccione el proveedor del producto" value={proveedor._id} roles={proveedores} ref={proveedorRef}/>
@@ -199,7 +199,7 @@ export const ListarProducto = () => {
             <Grid container spacing={2}>
               <CustomActualizarUser number={12} label="Nombre del Producto" defaultValue={nombre} readOnly = {true} icon={<ProductionQuantityLimits />} />
               <CustomActualizarUser number={6} label="Nombre del Proveedor" defaultValue={proveedor.nombre_marca} readOnly={true} icon={<AddBusiness />} />
-              <CustomActualizarUser number={6} label="Precio" defaultValue={precioCompra} readOnly={true} icon={<AttachMoney />} />
+              <CustomActualizarUser number={6} label="Precio" defaultValue={precioCompra} readOnly={true} icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />
               <CustomActualizarUser number={12} label="Descripcion" defaultValue={descripcion} readOnly={true} icon={<Description />} />
               <CustomActualizarUser number={6} label="Tipo de presentacion" defaultValue={tipo.nombre} readOnly = {true} icon={<AllInbox/>} />
               <CustomActualizarUser number={6} label="Capacidad de presentacion" defaultValue={capacidad_presentacion} readOnly={true} icon={<Inventory />} />

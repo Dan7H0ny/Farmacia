@@ -22,7 +22,7 @@ const CustomAutocompleteProducto = ({ productos, productosAñadidos, setProducto
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Seleccione los productos requeridos"
+              label="Seleccione el producto solicitado"
               variant="outlined"
               fullWidth
               InputProps={{

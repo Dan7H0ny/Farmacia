@@ -94,5 +94,63 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
     res.status(500).json({ mensaje: 'Error al actualizar usuario', error: error.message });
   }
 });
+router.put('/actualizarUser/:id', verificacion, async (req, res) => {
+  const { id } = req.params;
+  const { direccion, telefono, password } = req.body;
+  const fechaActual = new Date();
+  
+  try {
+    let usuarioActualizado;
+    if (password.trim() === '') {
+      usuarioActualizado = await Usuario.findByIdAndUpdate(id, { direccion, telefono, fecha_actualizacion: fechaActual }, { new: true });
+    } else {
+      const hashedPassword = await bcryptjs.hash(password, 10);
+      usuarioActualizado = await Usuario.findByIdAndUpdate(id, { direccion, telefono, password: hashedPassword, fecha_actualizacion: fechaActual}, { new: true });
+    }
+    if (!usuarioActualizado) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    res.json({ mensaje: 'Usuario actualizado exitosamente', usuarioActualizado });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al actualizar usuario', error: error.message });
+  }
+});
+
+// Eliminar un usuario
+router.put('/eliminar/:id', verificacion, async (req, res) => {
+  const { id } = req.params;
+  const { estado, usuario_id } = req.body;
+
+  try {
+    // Buscamos el usuario que se va a modificar
+    const usuario = await Usuario.findById(id);
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    // Verificamos si el usuario a modificar es el único administrador activo
+    const esUnicoAdmin = await Usuario.countDocuments({ rol: 'Administrador', estado: true }) === 1;
+    const esUsuarioAdmin = usuario.rol === 'Administrador';
+
+    // Si el usuario a actualizar es el único administrador activo, no actualizamos su estado
+    if (esUnicoAdmin && esUsuarioAdmin && estado === false) {
+      return res.status(400).json({ mensaje: 'No se puede desactivar al único administrador' });
+    }
+
+    // Actualizamos el estado del usuario
+    usuario.estado = estado;
+    await usuario.save();
+
+    res.json({ mensaje: 'Estado del usuario actualizado', usuario });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al actualizar el usuario' });
+  }
+});
+
+
+
 
 module.exports = router

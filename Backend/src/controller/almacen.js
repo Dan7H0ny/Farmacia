@@ -214,9 +214,15 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
       );
     }
 
-    // Obtener todos los almacenes actualizados
     const almacenesEncontrados = await Almacen.find({})
-      .populate('producto', 'nombre')
+      .populate({
+      path: 'producto',
+      select: 'nombre capacidad_presentacion precioCompra categoria',
+      populate: [
+        { path: 'tipo', select: 'nombre' },
+        { path: 'proveedor', select: 'nombre_marca' }
+      ]
+      })
       .populate('categoria', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')

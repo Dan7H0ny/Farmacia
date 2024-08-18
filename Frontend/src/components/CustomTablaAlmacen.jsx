@@ -45,7 +45,7 @@ const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar })
                 <TableCell className="ocultar-en-movil2">Categoria</TableCell>
                 <TableCell className="ocultar-en-movil">Fecha Caducidad</TableCell>
                 <TableCell className="ocultar-en-movil2">Estado</TableCell>
-                <TableCell className="ocultar-en-movil">Stock</TableCell>
+                <TableCell className="ocultar-en-movil2">Presentacion o Unidad</TableCell>
                 <TableCell className="ocultar-en-movil">Precio</TableCell>
                 <TableCell>Detalles</TableCell>
                 <TableCell>Editar</TableCell>
@@ -57,11 +57,11 @@ const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar })
                   <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
                   <TableCell>{x.producto.nombre}</TableCell>
                   <TableCell className="ocultar-en-movil2">{x.categoria.nombre}</TableCell>
-                  <TableCell className="ocultar-en-movil">{new Date(x.fecha_caducidad).toISOString().split('T')[0]}</TableCell>
+                  <TableCell className="ocultar-en-movil">{new Date(x.fecha_caducidad).toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})}</TableCell>
                   <TableCell className="ocultar-en-movil2">
                     {x.estado ? <VerifiedUser color="success" /> : <Dangerous color="error" />}
                   </TableCell>
-                  <TableCell className="ocultar-en-movil">{x.cantidad_stock}</TableCell>
+                  <TableCell className="ocultar-en-movil2">{Math.floor(x.cantidad_stock / x.producto.capacidad_presentacion)+ ' o ' +x.cantidad_stock}</TableCell>
                   <TableCell className="ocultar-en-movil">{x.precioVenta.toFixed(2)}</TableCell>
                   <TableCell>
                     <Button variant="contained" onClick={() => botonMostrar(x)} sx={{ backgroundColor: "#0f1b35", color: "#e2e2e2", border: '2px solid #e2e2e2' }}>

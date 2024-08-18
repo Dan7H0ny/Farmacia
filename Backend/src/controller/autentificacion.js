@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
 const router = express.Router();
 const nodemailer = require('nodemailer');
+const verificacion = require('../middlewares/verificacion');
 
 router.post('/login', async (req, res) => {
   const { correo, password } = req.body;
@@ -18,11 +19,13 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
     }
     if (!usuarioEncontrado.estado ) {
+      res.clearCookie('token');
       return res.status(401).json({ mensaje: 'Usuario inactivo' });
     }
+    const { _id, nombre, rol } = usuarioEncontrado;
     const payload = {
       check: true,
-      id: usuarioEncontrado._id,
+      id: _id,
     };
     
     const token = jwt.sign(payload, process.env.TOKEN_LLAVE, {
@@ -34,66 +37,11 @@ router.post('/login', async (req, res) => {
       maxAge: 900000,
     });
 
-    res.json({
-      mensaje: 'autentificacion correcta',
-      _id: usuarioEncontrado._id,
-      nombre: usuarioEncontrado.nombre,
-      rol: usuarioEncontrado.rol,
-      token: token,
-    });
+    res.json({ mensaje: 'Ingreso autorizado', _id: _id, nombre: nombre, rol: rol, token: token,});
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error en el servidor' });
   }
-});
-
-
-const verificacion = express.Router();
-
-verificacion.use((req, res, next) => {
-  let token = req.cookies.token || req.headers['x-access-token'] || req.headers.authorization;
-
-  if (!token) {
-    res.status(401).send({
-      error: 'Es necesario un token de autenticación',
-    });
-    return;
-  }
-
-  if (token.startsWith('Bearer ')) {
-    token = token.slice(7, token.length);
-  }
-
-  jwt.verify(token, process.env.TOKEN_LLAVE, (error, decoded) => {
-    if (error) {
-      if (error.name === 'TokenExpiredError') {
-        // Token expirado, generar un nuevo token
-        const payload = {
-          check: true,
-          id: decoded.id,
-        };
-        const newToken = jwt.sign(payload, process.env.TOKEN_LLAVE, {
-          expiresIn: process.env.TOKEN_EXPIRACION,
-        });
-
-        // Actualizar el token en la respuesta o en el objeto `req`
-        res.cookie('token', newToken, {
-          httpOnly: true,
-          maxAge: 900000,
-        });
-        //asigna el token para que otros controladores puedan acceder a el
-        req.token = newToken;
-      } else {
-        return res.status(403).send({
-          mensaje: 'Token no valido',
-        });
-      }
-    } else {
-      // Token válido, se añade la información decodificada al objeto `req`
-      req.decoded = decoded;
-    }
-    next();
-  });
 });
   
 router.get('/info', verificacion, (req, res) => {

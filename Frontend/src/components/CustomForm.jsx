@@ -1,125 +1,79 @@
-import React, { useState } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination, Button, Box } from '@mui/material';
-import { AddCircleOutlineOutlined } from '@mui/icons-material';
+import React from 'react';
+import { Autocomplete, TextField, Grid, Box } from '@mui/material';
 import '../assets/css/tabla.css';
 
-const CustomForm = ({ productos, buscar, btnAñadir }) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(3);
-
-  const handleChangePage = (event, newPage) => {
-    setCurrentPage(newPage);
+const CustomForm = ({ productos, setSelectedProduct, selectedProduct }) => {
+  const handleProductChange = (event, value) => {
+    setSelectedProduct(value);
   };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setCurrentPage(0);
-  };
-
-  const filtrarDatos = productos.filter(elemento => {
-    const { nombre, proveedor, tipo } = elemento;
-    const busqueda = buscar.toLowerCase();
-    return (
-      nombre.toLowerCase().includes(busqueda) ||
-      proveedor.nombre_marca.toLowerCase().includes(busqueda) ||
-      tipo.nombre.toLowerCase().includes(busqueda) 
-    );
-  });
-
-  const paginaDatos = filtrarDatos.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage);
-
-  const createTransposedData = () => {
-    const headers = ["Producto", "Proveedor", "Presentacion", "Capacidad", "Precio", "Añadir"];
-    const transposedData = headers.map((header) => [header, ...paginaDatos.map(row => {
-      switch (header) {
-        case "Producto":
-          return row.nombre;
-        case "Proveedor":
-          return row.proveedor.nombre_marca;
-        case "Presentacion":
-          return row.tipo.nombre;
-        case "Capacidad":
-          return row.capacidad_presentacion;
-        case "Precio":
-          return row.precioCompra;
-        case "Añadir":
-          return (
-            <Button variant="contained" color="success" onClick={() => btnAñadir(row)} sx={{backgroundColor: "#0f1b35", color:" #e2e2e2", border: '2px solid #e2e2e2'}}>
-              <AddCircleOutlineOutlined  />
-            </Button>
-          );
-        default:
-          return null;
-      }
-    })]);
-
-    return transposedData;
-  };
-
-  const transposedData = createTransposedData();
 
   return (
-    <Box sx={{ overflowX: 'auto', width: '100%' }}>
-      <Table className="table table-bordered" style={{ marginTop: '1.5%', border: '2px solid #e2e2e2' }}>
-        <TableHead className="text-center" sx={{ '& .MuiTableCell-root': {color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', fontWeight: 'bold', border: '2px solid #e2e2e2'} }}>
-          <TableRow>
-            <TableCell>#</TableCell>
-            {paginaDatos.map((_, index) => (
-              <TableCell key={index}>{index + 1 + currentPage * rowsPerPage}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', border: '2px solid #e2e2e2' } }}>
-          {transposedData.map((row, index) => (
-            <TableRow key={index}>
-              {row.map((cell, cellIndex) => (
-                <TableCell key={cellIndex}>{cell}</TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Grid item xs={12} sm={12} sx={{ marginTop: 2, '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35" } }}>
-        <TablePagination
-          component="div"
-          count={filtrarDatos.length}
-          page={currentPage}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Filas por página"
-          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
-          rowsPerPageOptions={[3]}
-          sx={{
-            border: '2px solid #e2e2e2',
-            '& .MuiTablePagination-toolbar': {
-              backgroundColor: "#0f1b35",
-              color: '#e2e2e2',
-              display: 'flex',
-              justifyContent: 'center',
-            },
-            '& .MuiTablePagination-selectLabel': {
-              color: '#e2e2e2',
-              margin: '0 1%',
-            },
-            '& .MuiTablePagination-input': {
-              color: '#e2e2e2',
-              margin: '0 1%',
-            },
-            '& .MuiTablePagination-selectIcon': {
-              color: '#e2e2e2',
-            },
-            '& .MuiTablePagination-displayedRows': {
-              color: '#e2e2e2',
-              margin: '0 1%',
-            },
-            '& .MuiTablePagination-actions': {
-              color: '#e2e2e2',
-            }
-          }}
-        />
-      </Grid>
-    </Box>
+    <Grid item xs={12} sm={12}>
+      <Autocomplete
+        options={productos}
+        getOptionLabel={(option) => option.nombre}
+        renderOption={(props, option) => (
+          <li {...props}>
+            {option.nombre} - {option.proveedor.nombre_marca} - {option.tipo.nombre}
+          </li>
+        )}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Seleccione el producto requerido"
+            variant="outlined"
+            fullWidth
+            InputProps={{
+              ...params.InputProps,
+              sx: { backgroundColor: '#e2e2e2', color: '#0f1b35' } // Cambia el color de fondo y del texto aquí
+            }}
+            sx={{
+              backgroundColor: '#0f1b35', // Cambia el color de fondo del TextField aquí
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#0f1b35', // Cambia el color del borde aquí
+                },
+                '&:hover fieldset': {
+                  borderColor: '#0f1b35', // Cambia el color del borde al pasar el ratón aquí
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: '#0095b0',
+                backgroundColor: '#e2e2e2',
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#0095b0',
+                backgroundColor: '#e2e2e2',
+                fontSize: '25px',
+              },
+            }}
+          />
+        )}
+        onChange={handleProductChange}
+        sx={{ marginBottom: 2 }}
+      />
+      {selectedProduct && (
+        <Box sx={{ border: '2px solid #e2e2e2', padding: 3, borderRadius: 1, backgroundColor: "#0f1b35", color: '#e2e2e2' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12}>
+              <strong>Producto:</strong> {selectedProduct.nombre}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <strong>Proveedor:</strong> {selectedProduct.proveedor.nombre_marca}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <strong>Presentación:</strong> {selectedProduct.tipo.nombre}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <strong>Capacidad:</strong> {selectedProduct.capacidad_presentacion}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <strong>Precio:</strong> {selectedProduct.precioCompra}
+            </Grid>
+          </Grid>
+        </Box>
+      )}
+    </Grid>
   );
 };
 

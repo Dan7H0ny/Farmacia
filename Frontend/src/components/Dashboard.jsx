@@ -11,7 +11,6 @@ import InfoMeses from './dashboard/InfoMeses';
 import InfoTable from './dashboard/InfoTable';
 import { Grid} from '@mui/material';
 import {Person2TwoTone, ExtensionSharp, ProductionQuantityLimits } from '@mui/icons-material';
-import InfoPedidos from './dashboard/InfoPedidos';
 
 const Dashboard = () => {
   const [clientes, setClientes] = useState([]);
@@ -88,9 +87,6 @@ const Dashboard = () => {
     <div id="caja_contenido" >
       <CustomTypography text={'Dashboard'} />
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={12}>
-          <InfoPedidos/>
-        </Grid>
         <Grid item xs={12} sm={7} >  
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} >

@@ -14,6 +14,7 @@ import CustomSelectProducto from '../components/CustomSelectProducto';
 import CustomTablaAlmacen from '../components/CustomTablaAlmacen';
 import ReporteExcelAlmacen from '../Reports/ReporteExcelAlmacen';
 import { ReporteAlmacen } from '../Reports/ReporteAlmacen';
+import InfoPedidos from '../components/dashboard/InfoPedidos';
 
 export const ListarAlmacen = () => {
   const [almacen, setAlmacen] = useState([]);
@@ -245,6 +246,10 @@ export const ListarAlmacen = () => {
   return (
     <div id="caja_contenido">
       <Box mt={3}>
+        <CustomTypography text={'Pedidos pendientes'} />        
+        <Grid item xs={12} sm={12}>
+          <InfoPedidos/>
+        </Grid>
         <CustomTypography text={'Control de Almacen'} />
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>
           <Grid container spacing={2} >

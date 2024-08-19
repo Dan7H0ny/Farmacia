@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Grid, Box, Typography  } from '@mui/material';
+import { Grid, Box, Typography } from '@mui/material';
 import { Search, Description, ProductionQuantityLimits, AllInbox, Group, AddBusiness, Inventory, CalendarMonth } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
@@ -12,6 +12,7 @@ import CustomTablaProducto from '../components/CustomTablaProducto';
 import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectProvee from '../components/CustomSelectProvee';
+import CustomsPedidos from '../components/CustomsPedidos';
 import { ReporteProducto } from '../Reports/ReporteProducto';
 import ReporteExcelProducto from '../Reports/ReporteExcelProducto';
 
@@ -231,6 +232,47 @@ export const ListarProducto = () => {
           CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: error});
         });
     }
+  };
+  
+  const btnPedir = (producto) => {
+    if (!token) {
+      CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+      navigate('/Menu/Administrador');
+    } else {
+      axios.get(`${UrlReact}/producto/buscar/${producto._id}`, configInicial)
+        .then(response => {
+          const { _id, proveedor, nombre, precioCompra, tipo, capacidad_presentacion } = response;
+          const container = document.createElement('div');
+          const root = createRoot(container);
+          root.render(
+            <Grid container spacing={2}>
+              <CustomActualizarUser number={12} label="Nombre del Producto" defaultValue={nombre} readOnly = {true} icon={<ProductionQuantityLimits />} />
+              <CustomActualizarUser number={6} label="Nombre del Proveedor" defaultValue={proveedor.nombre_marca} readOnly={true} icon={<AddBusiness />} />
+              <CustomActualizarUser number={6} label="Precio" defaultValue={precioCompra} readOnly={true} icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />          
+              <CustomActualizarUser number={6} label="Capacidad de presentacion" defaultValue={capacidad_presentacion} readOnly={true} icon={<Inventory />} />
+              <CustomActualizarUser number={6} label="Tipo de presentacion" defaultValue={tipo.nombre} readOnly = {true} icon={<AllInbox/>} />
+              <CustomsPedidos proveedor={proveedor} ProductoId={_id} tipoNombre={tipo.nombre} capacidad_presentacion={capacidad_presentacion}/>
+            </Grid>
+          );
+          Swal.fire({
+            title: 'HACER PEDIDO',
+            html: container,
+            showCancelButton: false,
+            showConfirmButton:false,
+            confirmButtonText: 'Hacer Pedido',
+            cancelButtonText: 'Cancelar pedido',
+            customClass: {
+              popup: 'customs-swal-popup',
+              title: 'customs-swal-title',
+              confirmButton: 'swal2-confirm custom-swal2-confirm',
+              cancelButton: 'swal2-cancel custom-swal2-cancel',
+            },
+          })
+        })
+        .catch(error => {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: error});
+        });
+    }
   }; 
  
   return (
@@ -259,7 +301,7 @@ export const ListarProducto = () => {
             </Grid>
           </Grid>
         </form>
-        <CustomTablaProducto usuarios={productos} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
+        <CustomTablaProducto usuarios={productos} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar} botonPedir={btnPedir}/>
       </Box>
     </div>
   )

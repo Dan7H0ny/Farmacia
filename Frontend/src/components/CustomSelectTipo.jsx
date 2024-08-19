@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
-import { Select, MenuItem, FormControl, InputLabel, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
-const CustomSelectTipo = ({ tipo, cantidadStock, capacidadPresentacion }) => {
-  // Inicializar el estado con "Unidades" para preseleccionar esta opción
+const CustomSelectTipo = ({ tipo, producto, NuevoValor, onTipoChange}) => {
   const [selectedTipo, setSelectedTipo] = useState('Unidades');
+  const opciones = ['Unidades', tipo].filter(opcion => opcion !== null);
 
-  const handleChange = (event) => {
+  useEffect(() => {
+    const valorMostrar = selectedTipo === 'Unidades'
+      ? producto.cantidad_stock
+      : Math.floor(producto.cantidad_stock / producto.producto.capacidad_presentacion);
+
+    // Actualizar el valor mostrado en el componente padre
+    NuevoValor(valorMostrar);
+
+  }, [selectedTipo, producto, tipo, NuevoValor]);
+
+  const handleTipoChange = (event) => {
     setSelectedTipo(event.target.value);
+    if (onTipoChange) {
+      onTipoChange();
+    }
   };
-
-  // Agregar la opción "Unidades" a las opciones de tipo.nombre
-  const opciones = ['Unidades', tipo];
-
-  // Determina el valor a mostrar basado en la opción seleccionada
-  const valorMostrar = selectedTipo === 'Unidades' ? cantidadStock :  Math.floor(cantidadStock / capacidadPresentacion);
 
   return (
     <FormControl fullWidth>
@@ -34,7 +41,7 @@ const CustomSelectTipo = ({ tipo, cantidadStock, capacidadPresentacion }) => {
       <Select
         labelId="tipo-label"
         value={selectedTipo}
-        onChange={handleChange}
+        onChange={handleTipoChange}
         label="Seleccionar Tipo"
         sx={{
           backgroundColor: '#e2e2e2',
@@ -64,9 +71,6 @@ const CustomSelectTipo = ({ tipo, cantidadStock, capacidadPresentacion }) => {
           </MenuItem>
         ))}
       </Select>
-      <Typography variant="body1" sx={{ color: '#e2e2e2', marginTop: 1 }}>
-        {valorMostrar}
-      </Typography>
     </FormControl>
   );
 };

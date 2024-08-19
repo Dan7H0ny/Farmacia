@@ -39,7 +39,7 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
   try {
     
     const producto = await Producto.findById(id)
-      .populate('proveedor', 'nombre_marca')
+      .populate('proveedor', 'nombre_marca correo telefono sitioweb')
       .populate('tipo', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')

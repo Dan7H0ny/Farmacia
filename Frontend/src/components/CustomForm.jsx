@@ -23,6 +23,7 @@ const CustomForm = ({ productos, setSelectedProduct, selectedProduct }) => {
             label="Seleccione el producto requerido"
             variant="outlined"
             fullWidth
+            required
             InputProps={{
               ...params.InputProps,
               sx: { backgroundColor: '#e2e2e2', color: '#0f1b35' } // Cambia el color de fondo y del texto aquí

@@ -3,7 +3,7 @@ import { Box, Grid, Button } from '@mui/material';
 import { AttachMoney } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import { ReporteVenta } from '../Reports/ReporteVenta';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import CustomRegisterUser from '../components/CustomRegisterUser';
@@ -26,9 +26,7 @@ export const RegistrarVenta = () => {
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
   const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
   const token = obtenerToken();
-  const configInicial = useMemo(() => ({
-    headers: { Authorization: `Bearer ${token}` }
-  }), [token]);
+  const configInicial = useMemo(() => ({headers: { Authorization: `Bearer ${token}` }}), [token]);
 
   const [cantidad, setCantidad] = useState({});
   const [precioTotal, setPrecioTotal] = useState(0);
@@ -55,16 +53,6 @@ export const RegistrarVenta = () => {
       };
     });
     setProductosElegidos(updatedProductosElegidos);
-  }, [cantidad, productosAñadidos]);
-  
-
-  useEffect(() => {
-    // Calcular el precio total basado en los productos y cantidades
-    const total = productosAñadidos.reduce((acc, producto) => {
-      const cant = cantidad[producto._id] || 1; // Valor por defecto 1
-      return acc + (cant * producto.precioVenta);
-    }, 0);
-    setPrecioTotal(total);
   }, [cantidad, productosAñadidos]);
 
   useEffect(() => {
@@ -115,11 +103,13 @@ export const RegistrarVenta = () => {
       };
       axios.post(`${UrlReact}/venta/crear`, miventa, configInicial)
         .then(response => {
+          ReporteVenta(response, usuario_); 
           CustomSwal({ icono: 'success', titulo: 'Venta Creado', mensaje: response.mensaje});
           limpiarFormulario();
           setReloadProductos(prev => !prev);
         })
         .catch(error => {
+          console.log(error)
           CustomSwal({ icono: 'error', titulo: 'Error al crear la venta', mensaje: error.mensaje});
         });
     }
@@ -143,7 +133,7 @@ export const RegistrarVenta = () => {
         <Grid container spacing={3}>
           <CustomAutocompleteCliente clientes={clientes} setClientes={setClientes} idcliente={idcliente} setIdCliente={setIdCliente} inputCliente={inputCliente} setInputCliente={setInputCliente} usuario_={usuario_}/>
           <CustomAutocompleteProducto productos={productos} productosAñadidos={productosAñadidos} setProductosAñadidos={setProductosAñadidos} inputValue={inputValue} setInputValue={setInputValue}/>
-          <CustomListaProductos productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad}/>
+          <CustomListaProductos productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad} setPrecioTotal={setPrecioTotal}/>
           <Grid item xs={12} sm={8}></Grid>
           <CustomRegisterUser
             number={4}

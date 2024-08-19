@@ -182,7 +182,7 @@ export const ActualizarVenta = () => {
         <Grid container spacing={2}>
           <CustomAutocompleteCliente clientes={clientes} setClientes={setClientes} idcliente={idcliente} setIdCliente={setIdCliente} inputCliente={inputCliente} setInputCliente={setInputCliente} usuario_={usuario_}/>
           <CustomAutocompleteProducto productos={productos} productosAñadidos={productosAñadidos} setProductosAñadidos={setProductosAñadidos} inputValue={inputValue} setInputValue={setInputValue}/>
-          <CustomListaProductos productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad}/>
+          <CustomListaProductos productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad} setPrecioTotal={setPrecioTotal}/>
           <CustomRegisterUser
             number={12}
             label="Precio Total"

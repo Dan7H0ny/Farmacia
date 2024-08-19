@@ -188,7 +188,7 @@ const CustomAutocompleteCliente = ({ clientes, setClientes, idcliente, setIdClie
           setInputCliente(newInputValue);
         }}
         renderInput={(params) => (
-        <TextField {...params} label="Elija al cliente" variant="outlined" fullWidth 
+        <TextField {...params} label="Elija al cliente" variant="outlined" fullWidth required
           InputProps={{
             ...params.InputProps,
             sx: { backgroundColor: '#e2e2e2', color: '#0f1b35' } // Cambia el color de fondo y del texto aquí

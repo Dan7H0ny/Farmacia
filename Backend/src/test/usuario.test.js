@@ -32,16 +32,10 @@ describe('Usuarios API', () => {
       correo: 'juan.perez@example.com',
       password: 'contraseña123'
     };
-
-    // Log de datos de entrada
-    console.log(`Solicitud enviada: POST /api/usuarios/crear - ${JSON.stringify(usuarioData)}`);
     
     const response = await request(app)
       .post('/api/usuarios/crear')
       .send(usuarioData);
-
-    // Log de respuesta
-    console.log(`Respuesta recibida: ${JSON.stringify(response.body)}`);
   
     expect(response.statusCode).toBe(201);
     expect(response.body).toHaveProperty('mensaje', 'Usuario creado exitosamente');
@@ -60,9 +54,6 @@ describe('Usuarios API', () => {
       correo: 'duplicado@example.com',
       password: 'contraseña123'
     };
-
-    // Log de datos de entrada
-    console.log(`Solicitud enviada para crear usuario con correo duplicado: POST /api/usuarios/crear - ${JSON.stringify(usuarioData1)}`);
     
     await request(app)
       .post('/api/usuarios/crear')
@@ -77,16 +68,10 @@ describe('Usuarios API', () => {
       correo: 'duplicado@example.com',
       password: 'otraContraseña123'
     };
-
-    // Log de datos de entrada
-    console.log(`Solicitud enviada para crear usuario con correo duplicado: POST /api/usuarios/crear - ${JSON.stringify(usuarioData2)}`);
     
     const response = await request(app)
       .post('/api/usuarios/crear')
       .send(usuarioData2);
-
-    // Log de respuesta
-    console.log(`Respuesta recibida: ${JSON.stringify(response.body)}`);
 
     expect(response.statusCode).toBe(400);
     expect(response.body).toHaveProperty('mensaje', 'El correo ya está registrado, ingrese otro correo distinto');
@@ -108,13 +93,8 @@ describe('Usuarios API', () => {
       .post('/api/usuarios/crear')
       .send(usuarioData);
 
-    // Log de solicitud para obtener todos los usuarios
-    console.log('Solicitud enviada: GET /api/usuarios/mostrar');
     
     const response = await request(app).get('/api/usuarios/mostrar');
-    
-    // Log de respuesta
-    console.log(`Respuesta recibida: ${JSON.stringify(response.body)}`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
@@ -135,14 +115,9 @@ describe('Usuarios API', () => {
       fecha_actualizacion: new Date()
     }).save();
 
-    // Log de datos del usuario creado
-    console.log(`Usuario creado para obtener por ID: ${JSON.stringify(usuario)}`);
     
     const response = await request(app).get(`/api/usuarios/buscar/${usuario._id}`);
     
-    // Log de solicitud y respuesta
-    console.log(`Solicitud enviada: GET /api/usuarios/buscar/${usuario._id}`);
-    console.log(`Respuesta recibida: ${JSON.stringify(response.body)}`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty('nombre', 'Carlos');
@@ -172,17 +147,11 @@ describe('Usuarios API', () => {
       correo: 'laura.ramirez@example.com',
       password: ''
     };
-
-    // Log de datos del usuario antes de la actualización
-    console.log(`Usuario creado para actualizar: ${JSON.stringify(usuario)}`);
     
     const response = await request(app)
       .put(`/api/usuarios/actualizar/${usuario._id}`)
       .send(updateData);
 
-    // Log de solicitud y respuesta
-    console.log(`Solicitud enviada: PUT /api/usuarios/actualizar/${usuario._id} - ${JSON.stringify(updateData)}`);
-    console.log(`Respuesta recibida: ${JSON.stringify(response.body)}`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty('mensaje', 'Usuario actualizado exitosamente');
@@ -204,16 +173,11 @@ describe('Usuarios API', () => {
       fecha_actualizacion: new Date()
     }).save();
 
-    // Log de datos del usuario antes de la eliminación
-    console.log(`Usuario creado para eliminar: ${JSON.stringify(usuario)}`);
-    
+
     const response = await request(app)
       .put(`/api/usuarios/eliminar/${usuario._id}`)
       .send({ estado: false });
 
-    // Log de solicitud y respuesta
-    console.log(`Solicitud enviada: PUT /api/usuarios/eliminar/${usuario._id} - ${JSON.stringify({ estado: false })}`);
-    console.log(`Respuesta recibida: ${JSON.stringify(response.body)}`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty('mensaje', 'Estado del usuario actualizado');
@@ -230,16 +194,10 @@ describe('Usuarios API', () => {
       telefono: 75969491,
       password: 'otraContraseña123'
     };
-
-    // Log de datos de entrada
-    console.log(`Solicitud enviada para crear usuario sin correo: POST /api/usuarios/crear - ${JSON.stringify(usuarioData)}`);
     
     const response = await request(app)
       .post('/api/usuarios/crear')
       .send(usuarioData);
-
-    // Log de respuesta
-    console.log(`Respuesta recibida: ${JSON.stringify(response.body)}`);
 
     expect(response.statusCode).toBe(400);
     expect(response.body).toHaveProperty('mensaje', 'Faltan datos requeridos: nombre, apellido, rol, correo, o password');
@@ -251,13 +209,8 @@ describe('Usuarios API', () => {
       throw new Error('Error en la base de datos');
     });
 
-    // Log de solicitud para manejar error de base de datos
-    console.log('Solicitud enviada: GET /api/usuarios/mostrar');
     
     const response = await request(app).get('/api/usuarios/mostrar');
-    
-    // Log de respuesta
-    console.log(`Respuesta recibida: ${JSON.stringify(response.body)}`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toHaveProperty('mensaje', 'Error en la base de datos');

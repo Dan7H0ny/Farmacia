@@ -23,5 +23,16 @@
     "nodemon": "^3.1.4",
     "regression": "^2.0.1",
     "tslib": "^2.6.2"
+  },
+  "scripts": {
+    "test": "jest --config src/jest.config.js"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-html-reporter": "^3.10.2",
+    "jest-html-reporters": "^3.1.7",
+    "jest-stare": "^2.5.2",
+    "mongodb-memory-server": "^10.0.0",
+    "supertest": "^7.0.0"
   }
 }

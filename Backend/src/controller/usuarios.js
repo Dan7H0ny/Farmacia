@@ -5,8 +5,12 @@ const bcryptjs = require('bcryptjs');
 const verificacion = require('../middlewares/verificacion');
 
 // Crear un usuario
-router.post('/crear',verificacion, async (req, res) => {
+router.post('/crear', verificacion, async (req, res) => {
   const { nombre, apellido, rol, direccion, telefono, correo, password } = req.body;
+
+  if (!nombre || !apellido || !rol || !correo || !password) {
+    return res.status(400).json({ mensaje: 'Faltan datos requeridos: nombre, apellido, rol, correo, o password' });
+  }
   try {
     const hashedPassword = await bcryptjs.hash(password, 10);
     const fechaActual = new Date();
@@ -22,18 +26,17 @@ router.post('/crear',verificacion, async (req, res) => {
 });
 
 // Obtener todos los usuarios
-router.get('/mostrar',verificacion, async (req, res) => {
+router.get('/mostrar', verificacion, async (req, res) => {
   try {
     const usuarios = await Usuario.find({});
     res.json(usuarios);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al obtener usuarios' });
+    res.status(500).json({ mensaje: 'Error en la base de datos' });
   }
 });
 
 // Obtener todos los roles
-router.get('/roles',verificacion, async (req, res) => {
+router.get('/roles', async (req, res) => {
   try {
     const usuario = await Usuario.findById(id);
     res.json(usuario.rol);
@@ -44,7 +47,7 @@ router.get('/roles',verificacion, async (req, res) => {
 });
 
 // Obtener un usuario
-router.get('/buscar/:id',verificacion, async (req, res) => {
+router.get('/buscar/:id', verificacion, async (req, res) => {
   const { id } = req.params;
   try {
     const usuario = await Usuario.findById(id);
@@ -121,7 +124,7 @@ router.put('/actualizarUser/:id', verificacion, async (req, res) => {
 // Eliminar un usuario
 router.put('/eliminar/:id', verificacion, async (req, res) => {
   const { id } = req.params;
-  const { estado, usuario_id } = req.body;
+  const { estado } = req.body;
 
   try {
     // Buscamos el usuario que se va a modificar
@@ -149,8 +152,5 @@ router.put('/eliminar/:id', verificacion, async (req, res) => {
     res.status(500).json({ mensaje: 'Error al actualizar el usuario' });
   }
 });
-
-
-
 
 module.exports = router

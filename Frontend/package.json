@@ -12,10 +12,7 @@
     "@mui/material": "^5.15.20",
     "@mui/system": "^5.13.1",
     "@react-google-maps/api": "^2.19.3",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.1.1",
-    "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.7.2",
+    "axios": "^1.7.4",
     "chart.js": "^4.4.3",
     "crypto-browserify": "^3.12.0",
     "date-fns": "^3.6.0",
@@ -36,20 +33,20 @@
     "react-scripts": "^5.0.1",
     "react-slick": "^0.30.2",
     "recharts": "^2.12.7",
+    "selenium-webdriver": "^4.23.0",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.11",
-    "sweetalert": "^2.1.2",
     "sweetalert2": "^11.6.13",
     "sweetalert2-react-content": "^5.0.7",
-    "web-vitals": "^2.1.4",
-    "xlsx": "^0.18.5",
-    "xlsx-style": "^0.8.13"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "clean": "rimraf ./node_modules && npm cache clean --force",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "eslintConfig": {
     "extends": [
@@ -70,6 +67,9 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.1.1",
+    "@testing-library/user-event": "^13.5.0"
   }
 }

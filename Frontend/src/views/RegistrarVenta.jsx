@@ -3,7 +3,6 @@ import { Box, Grid, Button } from '@mui/material';
 import { AttachMoney } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ReporteVenta } from '../Reports/ReporteVenta';
 import CustomTypography from '../components/CustomTypography';
 import CustomSwal from '../components/CustomSwal';
 import CustomRegisterUser from '../components/CustomRegisterUser';
@@ -103,7 +102,6 @@ export const RegistrarVenta = () => {
       };
       axios.post(`${UrlReact}/venta/crear`, miventa, configInicial)
         .then(response => {
-          ReporteVenta(response, usuario_); 
           CustomSwal({ icono: 'success', titulo: 'Venta Creado', mensaje: response.mensaje});
           limpiarFormulario();
           setReloadProductos(prev => !prev);

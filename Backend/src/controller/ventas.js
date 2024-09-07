@@ -9,7 +9,8 @@ const Almacen = require('../models/Almacen');
 router.post('/crear', verificacion, async (req, res) => {
   const { cliente, productos, precio_total, usuario } = req.body;
   try {
-    const cliente_ = await Cliente.findById(cliente);
+    if (!cliente) return res.status(400).json({ mensaje: 'Seleccione a un cliente' });
+    const cliente_ = await Cliente.findById(cliente._id);
     if (!productos || productos.length === 0) { return res.status(400).json({ mensaje: 'La lista de productos está vacía, añada productos' });}
     if (!cliente_) return res.status(400).json({ mensaje: 'El cliente no existe' });
 
@@ -50,7 +51,7 @@ router.post('/crear', verificacion, async (req, res) => {
       }
     }
     const venta = new Venta({
-      cliente: cliente,
+      cliente: cliente._id,
       productos: productosConPrecio,
       precio_total,
       fecha_registro: new Date(),
@@ -62,8 +63,8 @@ router.post('/crear', verificacion, async (req, res) => {
     await venta.save();
     res.json({ mensaje: 'Venta creada exitosamente', venta });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al crear la venta', error: error.message });
+    console.log(error);
+    res.status(500).json({ mensaje: 'Error al crear la venta', error: error.mensaje });
   }
 });
 
@@ -83,6 +84,7 @@ router.get('/mostrar',verificacion, async (req, res) => {
     .sort({ fecha_registro: -1 });
     res.json(ventas);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ mensaje: 'Error al obtener Ventas' });
   }
 });

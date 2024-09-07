@@ -3,16 +3,8 @@ const Venta = require('../models/Venta');
 const Almacen = require('../models/Almacen');
 
 async function obtenerVentasDiarias() {
-  const fechaLimite = new Date();
-  fechaLimite.setMonth(fechaLimite.getMonth() - 6); // Establece la fecha a seis meses atrás
-
   try {
     const ventas = await Venta.aggregate([
-      {
-        $match: {
-          fecha_registro: { $gte: fechaLimite } // Solo considera ventas desde hace seis meses
-        }
-      },
       { $unwind: '$productos' },
       {
         $group: {
@@ -35,7 +27,6 @@ async function obtenerVentasDiarias() {
         ventasPorProducto[productoId] = [];
       }
 
-      // Añadir la información de ventas a la lista correspondiente al producto
       ventasPorProducto[productoId].push({ fecha: fechaVenta, totalVentas: venta.totalVentas });
     });
 
@@ -53,7 +44,7 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
   }
 
   const y = datosHistoricos.map(venta => venta.totalVentas);
-  const arima = new ARIMA({ p: 1, d: 2, q: 1, verbose: false });
+  const arima = new ARIMA({ p: 3, d: 2, q: 1, verbose: false });
   arima.train(y);
   const predicciones = arima.predict(diasAPredecir);
 
@@ -85,7 +76,7 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
     prediccion: { ventas: primeraPrediccion, stockRestante: Math.max(capacidadTotal, 0) }, 
     diaAgotamiento,
     datosHistoricos: datosHistoricos.length,
-    porcentajeError: parseFloat(erroresAbsolutosMedios), // Añadir el porcentaje de error al resultado
+    porcentajeError: parseFloat(erroresAbsolutosMedios),
   };
 }
 

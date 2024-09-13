@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const verificacion = require('../middlewares/verificacion');
 const Notificacion = require('../models/Notificacion');
+const Venta = require('../models/Venta');
 const Prediccion = require('../models/Prediccion');
 const { Expo } = require('expo-server-sdk');
 let expo = new Expo();
@@ -185,6 +186,47 @@ async function enviarNotificaciones() {
         console.error('Error al obtener notificaciones:', error);
     }
 }
+
+async function obtenerVentasUltimaHora() {
+  try {
+    // Calcular la hora actual y la hora de hace una hora
+    const ahora = new Date();
+    const haceUnaHora = new Date(ahora.getTime() - 60 * 60 * 1000);
+
+    // Consulta para obtener las ventas de la última hora
+    const ventas = await Venta.aggregate([
+      { 
+        $match: { 
+          fecha_registro: { $gte: haceUnaHora, $lte: ahora } // Filtrar por la última hora
+        }
+      },
+      {
+        $unwind: '$productos' // Desagregar el array de productos
+      },
+      {
+        $group: {
+          _id: '$productos.producto', // Agrupar por el ObjectId del producto en Almacen
+          totalVentas: { $sum: '$productos.cantidad_producto' }, // Sumar la cantidad vendida
+          nombreProducto: { $first: '$productos.nombre' } // Tomar el primer nombre del producto
+        }
+      }
+    ]);
+
+    // Si hay ventas, extraemos los IDs de los productos vendidos
+    if (ventas.length > 0) {
+      const productosVendidosIds = ventas.map(venta => venta._id.toString()); // Convertir ObjectIds a strings si es necesario
+      console.log('Productos vendidos en la última hora (IDs):', productosVendidosIds);
+      return productosVendidosIds;
+    } else {
+      console.log('No hay ventas en la última hora.');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error al obtener ventas de la última hora:', error);
+    throw error;
+  }
+}
+
 
 cron.schedule('* 1 * * *', () => {
   enviarNotificaciones();

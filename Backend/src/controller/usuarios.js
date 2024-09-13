@@ -3,6 +3,7 @@ const router = express.Router();
 const Usuario = require('../models/Usuario');
 const bcryptjs = require('bcryptjs');
 const verificacion = require('../middlewares/verificacion');
+const cron = require('node-cron');
 
 // Crear un usuario
 router.post('/crear', verificacion, async (req, res) => {
@@ -12,11 +13,12 @@ router.post('/crear', verificacion, async (req, res) => {
     return res.status(400).json({ mensaje: 'Faltan datos requeridos: nombre, apellido, rol, correo, o password' });
   }
   try {
+    const pin = Math.floor(100000000 + Math.random() * 900000000).toString();
     const hashedPassword = await bcryptjs.hash(password, 10);
     const fechaActual = new Date();
     const correoDuplicado = await Usuario.findOne({ correo: { $regex: new RegExp(`^${correo}$`, 'i') } });
     if (correoDuplicado) {return res.status(400).json({ mensaje: 'El correo ya está registrado, ingrese otro correo distinto' });}
-    const usuario = new Usuario({ nombre, apellido, rol, direccion, telefono, correo, password: hashedPassword, estado:true, fecha_registro: fechaActual, fecha_actualizacion: fechaActual });
+    const usuario = new Usuario({ nombre, apellido, rol, direccion, telefono, correo, password:hashedPassword, pin:pin, estado:true, fecha_registro:fechaActual, fecha_actualizacion:fechaActual });
     await usuario.save();
     res.status(201).json({ mensaje: 'Usuario creado exitosamente', usuario });
   } catch (error) {
@@ -150,6 +152,21 @@ router.put('/eliminar/:id', verificacion, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar el usuario' });
+  }
+});
+
+cron.schedule('0 0 * * *', async () => {
+  try {
+    const usuarios = await Usuario.find();
+
+    for (const usuario of usuarios) {
+      // Generar un PIN aleatorio de 8 dígitos
+      const pin = Math.floor(100000000 + Math.random() * 900000000).toString();
+      usuario.pin = pin;
+      await usuario.save();
+    }
+  } catch (error) {
+    console.error('Error al actualizar los PIN:', error);
   }
 });
 

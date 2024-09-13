@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  pin: {
+    type: Number,
+    required: false
+  },
   estado: {
     type: Boolean,
     required: true

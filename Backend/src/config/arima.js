@@ -73,7 +73,7 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
     producto: producto._id,
     nombreCategoria: producto.categoria.nombre, 
     nombreProducto: producto.producto.nombre, 
-    prediccion: { ventas: primeraPrediccion, stockRestante: Math.max(capacidadTotal, 0) }, 
+    prediccion: { ventas: primeraPrediccion, stockRestante: producto.cantidad_stock }, 
     diaAgotamiento,
     datosHistoricos: datosHistoricos.length,
     porcentajeError: parseFloat(erroresAbsolutosMedios),

@@ -48,6 +48,29 @@ router.get('/info', verificacion, (req, res) => {
   res.json('INFORMACION TRANSFERIDA');
 });
 
+router.post('/restablecer-password', async (req, res) => {
+  const { IdUsuario, pin, nuevaContraseña } = req.body;
+  try {
+    const usuarioExistente = await Usuario.findById(IdUsuario);
+
+    if (!usuarioExistente) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+    if (usuarioExistente.pin !== parseInt(pin)) {
+      return res.status(404).json({ mensaje: 'PIN incorrecto' });
+    }
+    const hashedPassword = await bcryptjs.hash(nuevaContraseña, 10);
+
+    usuarioExistente.password = hashedPassword;
+
+    await usuarioExistente.save();
+
+    res.json({ mensaje: 'Cambio de contraseña exitoso' });
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al cambiar la contraseña' });
+  }
+});
+
 router.post('/enviarpin', async (req, res) => {
   const { correo } = req.body;
   try {
@@ -55,13 +78,8 @@ router.post('/enviarpin', async (req, res) => {
     if (!usuarioEncontrado) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
-    // Generar un PIN aleatorio de 5 dígitos
-    const pin = Math.floor(10000 + Math.random() * 90000).toString();
-    const password = await bcryptjs.hash(pin, 10);
-    // Actualizar el PIN en la base de datos para el usuario
-    usuarioEncontrado.password = password;
-    await usuarioEncontrado.save();
-
+    const pin = usuarioEncontrado.pin;
+    const formaPin = pin.toString().replace(/(\d{3})(?=\d)/g, '$1 ');
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com', // Servidor SMTP del proveedor de correo electrónico
       port: 587, // Puerto del servidor SMTP (generalmente 587 para TLS o 465 para SSL)
@@ -75,7 +93,7 @@ router.post('/enviarpin', async (req, res) => {
     
     // Configuración del correo a enviarx
     const mailOptions = {
-      from: `${process.env.GMAIL_ALIAS} <${process.env.GMAIL_USUARIO}>`, // Coloca aquí tus propias credenciales de correo electrónico
+      from: `${process.env.GMAIL_ALIAS} <${process.env.GMAIL_USUARIO}>`,
       to: correo,
       subject: 'Cambio de contraseña',
       html: `
@@ -84,11 +102,17 @@ router.post('/enviarpin', async (req, res) => {
         <div style="text-align: center;">
           <img src="cid:logofar" alt="Imagen de Cambio de Contraseña" style="max-width: 100%; height: auto; margin: 10px 0;">
         </div>
-        <p>Hola, Hemos recibido una solicitud para restablecer su contraseña. Su nueva contraseña temporal es:</p>
-        <div style="font-size: 18px; font-weight: bold; text-align: center; background-color: #f9f9f9; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin: 20px 0;">
-          ${pin}
+        <p>Hola, Hemos recibido una solicitud para restablecer su contraseña. Este es tu código de recuperación de contraseña:</p>
+        <div style="font-size: 32px; font-weight: bold; letter-spacing: 15px; text-align: center; background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-radius: 5px; margin: 20px 0;">
+          ${formaPin}
         </div>
         <p>Se recomienda cambiar la contraseña después de ingresar.</p>
+        <p>Puede hacer clic en el botón de abajo para ir a la página de restablecimiento de contraseña:</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <a href="http://localhost:3000/restablecer-contraseña/${usuarioEncontrado._id}" style="text-decoration: none;">
+            <button style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer;">Restablecer Contraseña</button>
+          </a>
+        </div>
         <p>Si usted no solicitó este cambio, por favor contacte a nuestro soporte.</p>
         <p>Gracias,</p>
         <p>El equipo de soporte</p>
@@ -102,7 +126,6 @@ router.post('/enviarpin', async (req, res) => {
         cid: 'logofar'
       }]
     };
-    
 
     // Enviar el correo
     transporter.sendMail(mailOptions, (error, info) => {
@@ -110,7 +133,7 @@ router.post('/enviarpin', async (req, res) => {
         console.error(error);
         return res.status(500).json({ mensaje: 'Error al enviar la nueva contraseña por correo' });
       }
-      res.json({ mensaje: 'La nueva constraseña se ha enviado correctamente' });
+      res.json({ mensaje: 'Se ha enviado un pin de restablecimiento de contraseña' });
     });
   } catch (error) {
     console.error(error);

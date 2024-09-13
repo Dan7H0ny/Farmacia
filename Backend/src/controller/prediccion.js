@@ -2,7 +2,6 @@ const express = require('express');
 const cron = require('node-cron');
 const { predecirVentasParaTodosLosProductosARIMA } = require('../config/arima');
 const Prediccion = require('../models/Prediccion');
-const Notificacion = require('../models/Notificacion');
 const Venta = require('../models/Venta');
 const verificacion = require('../middlewares/verificacion');
 
@@ -11,7 +10,7 @@ const router = express.Router();
 // Ruta para mostrar las primeras predicciones filtradas por diaAgotamiento
 router.post('/mostrar/predicciones',  verificacion, async (req, res) => {
   try {
-    const productosConDiaAgotamiento = await predecirVentasParaTodosLosProductosARIMA(7);
+    const productosConDiaAgotamiento = await predecirVentasParaTodosLosProductosARIMA(30);
     await actualizarPrediccionesEnBD(productosConDiaAgotamiento);
     // Buscar todas las predicciones
     const predicciones = await Prediccion.find({});
@@ -158,11 +157,10 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
   }
 }
 
-
 // Cron job para ejecutar la predicción todos los días a la medianoche
-cron.schedule('0 8,20 * * *', async () => {
+cron.schedule('0 * * * *', async () => {
   try {
-    const productosConDiaAgotamiento = await predecirVentasParaTodosLosProductosARIMA(7);
+    const productosConDiaAgotamiento = await predecirVentasParaTodosLosProductosARIMA(30);
     await actualizarPrediccionesEnBD(productosConDiaAgotamiento);
   } catch (error) {
     console.error('Error al actualizar predicciones:', error);

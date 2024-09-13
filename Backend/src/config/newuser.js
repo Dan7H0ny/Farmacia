@@ -7,6 +7,7 @@ const primerUsuario = async function(callback) {
     const usuarios = await Usuario.find({})
     const fechaActual = new Date();
     const hashedPassword = await bcryptjs.hash( process.env.PRIMER_PASSWORD, 10);
+    const pin = Math.floor(100000000 + Math.random() * 900000000).toString();
     if (usuarios.length == 0) {
       await Usuario.create({
         nombre: 'Super',
@@ -16,6 +17,7 @@ const primerUsuario = async function(callback) {
         telefono: 75966914,
         correo: 'amamanih_cb@est.emi.edu.bo',
         password: hashedPassword,
+        pin: pin,
         estado: true,
         fecha_registro: fechaActual,
         fecha_actualizacion: fechaActual
@@ -28,6 +30,7 @@ const primerUsuario = async function(callback) {
         telefono: 75975967,
         correo: 'loqendoa759@gmail.com',
         password: hashedPassword,
+        pin: pin,
         estado: true,
         fecha_registro: fechaActual,
         fecha_actualizacion: fechaActual

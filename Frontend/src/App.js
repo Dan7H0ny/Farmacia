@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAutenticarContexto } from './contextos/autenticar';
 import { RegistrarComplementos } from './views/RegistrarComplementos';
 import { Login } from './views/Login';
+import { RPassword } from './views/RPassword';
 import { MenuAdministrador } from './views/MenuAdministrador';
 import { MenuCajero } from './views/MenuCajero';
 import { RegistrarUsuario } from './views/RegistrarUsuario';
@@ -28,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/restablecer-contraseña/:IdUsuario" element={<RPassword />} />
           {rol === 'Administrador' && (
             <Route path="/Menu/Administrador" element={<MenuAdministrador />}>
               <Route path="Usuario/Registrar" element={<RegistrarUsuario />} />

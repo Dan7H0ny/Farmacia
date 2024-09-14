@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const verificacion = require('../middlewares/verificacion');
 const Producto = require('../models/Producto');
+const Prediccion = require('../models/Prediccion');
+const Almacen = require('../models/Almacen');
 
 router.post('/crear',verificacion, async (req, res) => {
   
@@ -37,17 +39,22 @@ router.get('/mostrar', verificacion, async (req, res) => {
 router.get('/buscar/:id',verificacion, async (req, res) => {
   const { id } = req.params;
   try {
-    
+    const productoEncontrado = await Almacen.findOne({ producto: id });
+    const prediccion = await Prediccion.findOne({productos: productoEncontrado._id});
+    const totalVentas = prediccion ? prediccion.prediccion.ventas.reduce((acc, venta) => acc + venta, 0) : 0;
     const producto = await Producto.findById(id)
       .populate('proveedor', 'nombre_marca correo telefono sitioweb')
       .populate('tipo', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
       .sort({ fecha_caducidad: 1 });
+    const capacidadPresentacion = producto.capacidad_presentacion;
+    const cantidadEstimada = capacidadPresentacion ? Math.ceil(totalVentas / capacidadPresentacion) : 0;
+    const precioEstimado =(cantidadEstimada * producto.precioCompra).toFixed(2);
     if (!producto) {
       return res.status(404).json({ mensaje: 'Producto no encontrado' });
     }
-    res.json(producto);
+    res.json({producto, cantidadEstimada, precioEstimado});
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al obtener el Producto' });

@@ -19,9 +19,10 @@ import ReporteExcelProducto from '../Reports/ReporteExcelProducto';
 export const ListarProducto = () => {
   const [productos, setProductos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
-  const [ complementos, setComplementos ] = useState([]);
+  const [complementos, setComplementos] = useState([]);
   const [usuario, setUsuario] = useState('');
 
+  const [user, setUser] = useState('');
   const [buscar, setBuscar] = useState('');
   const usuario_ = localStorage.getItem('id');
   const navigate = useNavigate();
@@ -34,6 +35,18 @@ export const ListarProducto = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setUser(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate, token, configInicial, UrlReact, usuario_]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
@@ -92,7 +105,8 @@ export const ListarProducto = () => {
     } else {
       axios.get(`${UrlReact}/producto/buscar/${producto._id}`, configInicial)
         .then(response => {
-          const { _id, nombre, tipo, descripcion, proveedor, precioCompra, capacidad_presentacion } = response;
+          const { producto } = response;
+          const { _id, nombre, tipo, descripcion, proveedor, precioCompra, capacidad_presentacion } = producto;
           const container = document.createElement('div');
           const root = createRoot(container);
           root.render(
@@ -183,7 +197,8 @@ export const ListarProducto = () => {
     } else {
       axios.get(`${UrlReact}/producto/buscar/${producto._id}`, configInicial)
         .then(response => {
-          const { nombre, tipo, descripcion, proveedor, precioCompra, capacidad_presentacion, usuario_registro, usuario_actualizacion, fecha_registro, fecha_actualizacion } = response;
+          const { producto } = response;
+          const { nombre, tipo, descripcion, proveedor, precioCompra, capacidad_presentacion, usuario_registro, usuario_actualizacion, fecha_registro, fecha_actualizacion } = producto;
           const fechaRegistro = fecha_registro ? formatDateTime(new Date(fecha_registro)) : '';
           const fechaActualizacion = fecha_actualizacion ? formatDateTime(new Date(fecha_actualizacion)) : '';
 
@@ -241,7 +256,8 @@ export const ListarProducto = () => {
     } else {
       axios.get(`${UrlReact}/producto/buscar/${producto._id}`, configInicial)
         .then(response => {
-          const { _id, proveedor, nombre, precioCompra, tipo, capacidad_presentacion } = response;
+          const { producto, cantidadEstimada } = response;
+          const { _id, proveedor, nombre, precioCompra, tipo, capacidad_presentacion } = producto;
           const container = document.createElement('div');
           const root = createRoot(container);
           root.render(
@@ -251,7 +267,7 @@ export const ListarProducto = () => {
               <CustomActualizarUser number={6} label="Precio" defaultValue={precioCompra} readOnly={true} icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />          
               <CustomActualizarUser number={6} label="Capacidad de presentacion" defaultValue={capacidad_presentacion} readOnly={true} icon={<Inventory />} />
               <CustomActualizarUser number={6} label="Tipo de presentacion" defaultValue={tipo.nombre} readOnly = {true} icon={<AllInbox/>} />
-              <CustomsPedidos proveedor={proveedor} ProductoId={_id} tipoNombre={tipo.nombre} capacidad_presentacion={capacidad_presentacion}/>
+              <CustomsPedidos proveedor={proveedor} ProductoId={_id} tipoNombre={tipo.nombre} capacidad_presentacion={capacidad_presentacion} cantidadEstimada={cantidadEstimada} precioCompra={precioCompra} datos={producto} usuario_={user} />
             </Grid>
           );
           Swal.fire({

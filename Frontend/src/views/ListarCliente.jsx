@@ -14,6 +14,7 @@ import CustomSelectC from '../components/CustomSelectC';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import { ReporteCliente } from '../Reports/ReporteCliente';
 import ReporteExcelCliente from '../Reports/ReporteExcelCliente';
+import CustomSelectUser from '../components/CustomSelectUser';
 
 export const ListarCliente = () => {
   const [clientes, setClientes] = useState([]);
@@ -22,6 +23,7 @@ export const ListarCliente = () => {
   const [ complementos, setComplementos ] = useState([]);
   const usuario_ = localStorage.getItem('id');
   const proveedorRef = useRef();
+  const Departamentos = [{ nombre: 'CB' }, { nombre: 'OR' }, { nombre: 'LP' }, { nombre: 'SZ' }, { nombre: 'POT' }, { nombre: 'CH' }, { nombre: 'TJ' }, { nombre: 'BN' }, { nombre: 'PN' }, ];
 
   const navigate = useNavigate();
 
@@ -86,7 +88,7 @@ export const ListarCliente = () => {
               <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<Phone />} />
               <CustomActualizarUser number={6} id="numberIdentity" label="Numero de Identidad" type="number" defaultValue={numberIdentity} required={true} icon={<Badge />} />
               <CustomActualizarUser number={3} id="plus" label="Plus" type="number" defaultValue={plus} required={true} icon={<Numbers />} />
-              <CustomActualizarUser number={3} id="extension" label="Extension" type="text" defaultValue={extension} required={false} icon={<Extension />} />
+              <CustomSelectUser number={3} id="extension" label="Extension:" value={extension} roles={Departamentos} />
               <CustomSelectC number={12} id="identidad-select" label="Seleccione la identidad del cliente" value={stringIdentity._id} roles={complementos} ref={proveedorRef} icon={<Badge />}/>
             </Grid>
           );
@@ -103,7 +105,7 @@ export const ListarCliente = () => {
               const numberIdentity_ = parseInt(document.getElementById('numberIdentity').value);
               const plus_ = parseInt(document.getElementById('plus').value);
               const stringIdentity_ = proveedorRef.current.getSelectedRole();
-              const extension_ = document.getElementById('extension').value;
+              const extension_ = document.getElementById('extension').textContent;
 
               const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Grid, Button } from '@mui/material';
-import { AttachMoney } from '@mui/icons-material';
+import { Box, Grid, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import CustomTypography from '../components/CustomTypography';
@@ -191,7 +190,7 @@ export const ActualizarVenta = () => {
             onChange={(e) => {setPrecioTotal(e.target.value)}}
             required={true}
             readOnly={true}
-            icon={<AttachMoney />}
+            icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>}
           />
           <Grid item xs={12} sm={6} sx={{padding: 'auto',}}>
             <Button

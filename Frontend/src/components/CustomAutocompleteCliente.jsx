@@ -2,8 +2,9 @@ import React,{useMemo, useEffect, useState, useRef} from 'react';
 import axios from 'axios';
 import { Autocomplete, TextField, Grid, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import {Person, Badge, Email, Numbers, PhoneAndroid, Extension } from '@mui/icons-material';
+import {Person, Badge, Email, Numbers, PhoneAndroid } from '@mui/icons-material';
 import CustomSelectC from '../components/CustomSelectC';
+import CustomSelectUser from '../components/CustomSelectUser';
 import { createRoot } from 'react-dom/client';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import CustomSwal from '../components/CustomSwal';
@@ -12,7 +13,7 @@ import Swal from 'sweetalert2';
 const CustomAutocompleteCliente = ({ clientes, setClientes, idcliente, setIdCliente,inputCliente,setInputCliente, usuario_ }) => {
   const [ complementos, setComplementos ] = useState([]);
   const identidadSelect = useRef();
-
+  const Departamentos = [{ nombre: 'CB' }, { nombre: 'OR' }, { nombre: 'LP' }, { nombre: 'SZ' }, { nombre: 'POT' }, { nombre: 'CH' }, { nombre: 'TJ' }, { nombre: 'BN' }, { nombre: 'PN' }, ];
   const navigate = useNavigate();
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
   const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
@@ -44,7 +45,7 @@ const CustomAutocompleteCliente = ({ clientes, setClientes, idcliente, setIdClie
         <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" required={false} icon={<PhoneAndroid />} />
         <CustomActualizarUser number={6} id="numberIdentity" label="Numero de Identidad" type="number" icon={<Badge />} />
         <CustomActualizarUser number={3} id="plus" label="Plus" type="number" required={true} icon={<Numbers />} />
-        <CustomActualizarUser number={3} id="extension" label="Extension" type="text" required={false} icon={<Extension />} />
+        <CustomSelectUser number={3} id="extension" label="Extension:" roles={Departamentos} />
         <CustomSelectC number={12} id="identidad-select" label="Seleccione la identidad del cliente" value={''} roles={complementos} ref={identidadSelect} icon={<Badge />}/>
       </Grid>
     );
@@ -67,16 +68,9 @@ const CustomAutocompleteCliente = ({ clientes, setClientes, idcliente, setIdClie
           const telefonoInput = document.getElementById('telefono');
           const identidadInput = document.getElementById('numberIdentity');
           const plusInput = document.getElementById('plus');
-          const extensionInput = document.getElementById('extension');
 
           if (nombreInput) {
             nombreInput.addEventListener('input', function () {
-              this.value = this.value.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
-            });
-          }
-
-          if (extensionInput) {
-            extensionInput.addEventListener('input', function () {
               this.value = this.value.replace(/[^A-Za-záéíóúüñÁÉÍÓÚÑ\s]/g, '');
             });
           }
@@ -115,7 +109,7 @@ const CustomAutocompleteCliente = ({ clientes, setClientes, idcliente, setIdClie
         const telefono = parseInt(document.getElementById('telefono').value);
         const numberIdentity = parseInt(document.getElementById('numberIdentity').value);
         const plus = parseInt(document.getElementById('plus').value);
-        const extension = document.getElementById('extension').value;
+        const extension = document.getElementById('extension').textContent;
         const stringIdentity = identidadSelect.current.getSelectedRole();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         
@@ -223,7 +217,7 @@ const CustomAutocompleteCliente = ({ clientes, setClientes, idcliente, setIdClie
                     {option.nombreCompleto}
               </Typography>
               <Typography variant="body2" color="textSecondary" component="span">
-                {` - ${option.numberIdentity} - ${option.stringIdentity.nombre}`}
+                {` - ${option.numberIdentity} ${option.extension} - ${option.stringIdentity.nombre}`}
               </Typography>
             </Grid>
           </Grid>

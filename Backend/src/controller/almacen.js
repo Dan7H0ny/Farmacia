@@ -39,7 +39,7 @@ router.get('/mostrar', verificacion, async (req, res) => {
     const productosEncontrados = await Almacen.find({})
       .populate({
       path: 'producto',
-      select: 'nombre capacidad_presentacion precioCompra categoria',
+      select: 'nombre capacidad_presentacion precioCompra categoria descripcion',
       populate: [
         { path: 'tipo', select: 'nombre' },
         { path: 'proveedor', select: 'nombre_marca' }
@@ -61,7 +61,7 @@ router.get('/mostrar/pedidos', verificacion, async (req, res) => {
     const productosEncontrados = await Almacen.find({})
       .populate({
         path: 'producto',
-        select: 'nombre capacidad_presentacion precioCompra categoria',
+        select: 'nombre capacidad_presentacion precioCompra categoria descripcion',
         populate: [
           { path: 'tipo', select: 'nombre' },
           { path: 'proveedor', select: 'nombre_marca correo telefono sitioweb' },
@@ -85,7 +85,7 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
     const producto = await Almacen.findById(id)
     .populate({
       path: 'producto',
-      select: 'nombre capacidad_presentacion precioCompra categoria',
+      select: 'nombre capacidad_presentacion precioCompra categoria descripcion',
       populate: [
         { path: 'tipo', select: 'nombre' },
         { path: 'proveedor', select: 'nombre_marca' }
@@ -111,7 +111,7 @@ router.get('/buscarproducto/:producto', verificacion, async (req, res) => {
     const almacen = await Almacen.findOne({ producto })
       .populate({
         path: 'producto',
-        select: 'nombre capacidad_presentacion precioCompra categoria',
+        select: 'nombre capacidad_presentacion precioCompra categoria descripcion',
         populate: [
           { path: 'tipo', select: 'nombre' },
           { path: 'proveedor', select: 'nombre_marca' }
@@ -217,7 +217,7 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
     const almacenesEncontrados = await Almacen.find({})
       .populate({
       path: 'producto',
-      select: 'nombre capacidad_presentacion precioCompra categoria',
+      select: 'nombre capacidad_presentacion precioCompra categoria descripcion',
       populate: [
         { path: 'tipo', select: 'nombre' },
         { path: 'proveedor', select: 'nombre_marca' }

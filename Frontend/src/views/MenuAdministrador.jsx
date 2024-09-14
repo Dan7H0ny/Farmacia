@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Drawer, IconButton, Box, Typography, Grid, Avatar } from '@mui/material';
-import { MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, InventoryOutlined, AttachMoney, SupervisedUserCircle, BuildOutlined, Person } from '@mui/icons-material';
+import { MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, InventoryOutlined, ShoppingCart, SupervisedUserCircle, BuildOutlined, Person } from '@mui/icons-material';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
@@ -205,7 +205,7 @@ export const MenuAdministrador = () => {
           <CustomMenuVentas itemName={"Gestion de ventas"} itemOpen={Venta} BtnMostrar={cambioVenta} 
           BtnRegistrar1={RegistrarVenta} BtnListar1={ListarVenta} nombreBtn1={"Ventas"} 
           BtnListar2={ListarCliente} nombreBtn2={"Clientes"}
-          drawerOpen={drawerOpen} icon={<AttachMoney />} />
+          drawerOpen={drawerOpen} icon={<ShoppingCart />} />
         </div>
         <Box className='border' sx={{ border: '1px solid #e2e2e2', padding: '3px', display: 'flex', alignItems: 'flex-start', justifyContent: drawerOpen ? 'space-between':'center' }}>
           {drawerOpen && (

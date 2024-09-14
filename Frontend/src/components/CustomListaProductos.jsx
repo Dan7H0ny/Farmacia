@@ -108,7 +108,7 @@ const CustomListaProductos = ({ productosAñadidos, setCantidad, cantidad, setPr
                       <TableCell>{producto.producto.nombre}</TableCell>
                       <TableCell>{producto.categoria.nombre}</TableCell>
                       <TableCell>{new Date(producto.fecha_caducidad).toISOString().split('T')[0]}</TableCell>
-                      <TableCell>{producto.precioVenta.toFixed(2)}</TableCell>
+                      <TableCell>{producto.precioVenta.toFixed(2) + ' Bs'}</TableCell>
                       <TableCell sx={{ width: '155px' }}>
                         <CustomSelectTipo 
                           tipo={estadoActual} 
@@ -131,7 +131,7 @@ const CustomListaProductos = ({ productosAñadidos, setCantidad, cantidad, setPr
                           icon={<TagSharp />}
                         />
                       </TableCell>
-                      <TableCell>{subtotal.toFixed(2)}</TableCell>
+                      <TableCell>{subtotal.toFixed(2) + ' Bs'}</TableCell>
                     </TableRow>
                   );
                 })}

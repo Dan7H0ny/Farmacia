@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Grid, Box } from '@mui/material';
-import { Search, AttachMoney, Person, DateRange } from '@mui/icons-material';
+import { Grid, Box, Typography } from '@mui/material';
+import { Search, Person, DateRange } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import CustomTypography from '../components/CustomTypography';
@@ -76,7 +76,7 @@ export const ListarVenta = () => {
           root.render(
             <Grid container spacing={2}>
               <Grid item xs={12}><CustomUpdate cliente={cliente} productos={productos}/></Grid>
-              <CustomActualizarUser number={12} label="Precio Total" defaultValue={precio_total} readOnly={true} icon={<AttachMoney/>} />
+              <CustomActualizarUser number={12} label="Precio Total" defaultValue={precio_total} readOnly={true} icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />
               <CustomActualizarUser number={6} label="Fecha de Registro" defaultValue={fechaRegistro} readOnly={true} icon={<DateRange />} />
               <CustomActualizarUser number={6} label="Fecha de Edicion" defaultValue={fechaActualizacion} readOnly={true} icon={<DateRange />} />
               <CustomActualizarUser number={6} label="Usuario de Registro" defaultValue={usuario_registra.nombre + ' - ' + usuario_registra.apellido + ' - ' + usuario_registra.rol} readOnly={true} icon={<Person />} />

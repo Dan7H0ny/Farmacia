@@ -47,7 +47,7 @@ const CustomTablaClient = ({ usuarios, buscar, botonMostrar, botonActualizar }) 
             {paginaDatos.map((x, index) => (
               <TableRow key={index}>
                 <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
-                <TableCell>{x.nombreCompleto}</TableCell>
+                <TableCell>{x.nombreCompleto + ' ' + x.extension}</TableCell>
                 <TableCell>{x.combinedIdentity}</TableCell>
                 <TableCell>{x.stringIdentity?.nombre}</TableCell>
                 <TableCell>{x.usuario_registro?.nombre + ' ' + x.usuario_registro?.apellido}</TableCell>

@@ -84,11 +84,12 @@ export const ReporteVenta = (venta, usuario) => {
       addHeader();
     }
 
-    const tablaEncabezado = [['Cantidad', 'Detalle', 'Precio Parcial']];
+    const tablaEncabezado = [['Cantidad', 'Precio Unitario', 'Detalle', 'Subtotal']];
     const tablaDatos = productos.map(producto => [
       producto.cantidad_producto,
+      `${(producto.precio_venta).toFixed(2)} Bs`,
       `Producto: ${producto.nombre}\nCategoria: ${producto.categoria}\nProveedor: ${producto.proveedor}`,
-      producto.precio_venta
+      `${(producto.precio_venta * producto.cantidad_producto).toFixed(2)} Bs`
     ]);
     const startY = index === 0 ? 70 : 35;    
 
@@ -115,9 +116,10 @@ export const ReporteVenta = (venta, usuario) => {
         halign: 'center'
       },
       columnStyles: {
-        0: { cellWidth: 30, halign: 'center' }, // Alineación centrada para la columna de cantidad
-        1: { cellWidth: 'auto', halign: 'left' }, // Alineación izquierda para la columna de detalle
-        2: { cellWidth: 30, halign: 'center' }  // Alineación centrada para la columna de precio
+        0: { cellWidth: 25, halign: 'center' }, // Alineación centrada para la columna de cantidad
+        1: { cellWidth: 25, halign: 'center' },
+        2: { cellWidth: 'auto', halign: 'left' }, // Alineación izquierda para la columna de detalle
+        3: { cellWidth: 30, halign: 'center' }  // Alineación centrada para la columna de precio
       }
     };
     
@@ -129,7 +131,7 @@ export const ReporteVenta = (venta, usuario) => {
   // Añadir el precio total
   const finalY = doc.lastAutoTable.finalY || 25;
   doc.setFontSize(14);
-  doc.text(`Total: ${venta.precio_total.toFixed(2)}`, pageWidth - margin, finalY + 20, { align: 'right' });
+  doc.text(`Total: ${venta.precio_total.toFixed(2)} Bs`, pageWidth - margin, finalY + 20, { align: 'right' });
 
   // Añadir la firma
   const firmaX = pageWidth / 2;

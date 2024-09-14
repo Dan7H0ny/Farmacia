@@ -60,7 +60,7 @@ const CustomUpdate = ({ cliente, productos }) => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="body2" align="center">
-                      {producto.precio_venta} {/* Valor predeterminado */}
+                      {producto.precio_venta + ' Bs'} {/* Valor predeterminado */}
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>

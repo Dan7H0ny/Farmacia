@@ -51,7 +51,7 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
   const producto = await Almacen.findById(productoId).populate('producto', 'nombre').populate('categoria', 'nombre');
   const capacidadTotalInicial = calcularCapacidadTotalInicial(producto);
 
-  const primeraPrediccion = predicciones[0].map(valor => Math.ceil(valor));
+  const primeraPrediccion = predicciones[0].map(valor => Math.max(Math.ceil(valor), 0));
 
   let capacidadTotal = capacidadTotalInicial;
   let agotado = false;

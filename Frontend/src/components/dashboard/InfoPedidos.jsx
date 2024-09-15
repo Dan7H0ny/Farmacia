@@ -37,7 +37,7 @@ const ActionsContainer = styled(Box)(props => ({
   gap: '10px',
 }));
 
-const InfoPedidos = () => {
+const InfoPedidos = ({ setAlmacen}) => {
   const [pedidos, setPedidos] = useState([]);
   const [searchTerm, setSearchTerm] = useState(''); 
   
@@ -92,6 +92,8 @@ const InfoPedidos = () => {
         try {
           const response = await axios.put(`${UrlReact}/pedidos/actualizar/${id}`, { producto, cantidad, estado: 'Aceptado' }, configInicial);
           setPedidos(prevPedidos =>prevPedidos.map(pedido =>pedido._id === id ? { ...pedido, estado: 'Aceptado' } : pedido));
+          const nuevaCantidad = cantidad;
+          setAlmacen(prevAlmacen => prevAlmacen.map(item => item.producto._id === producto ? { ...item, cantidad_stock: item.cantidad_stock + nuevaCantidad } : item));
           CustomSwal({ icono: 'success', titulo: 'Actualizado', mensaje: response.mensaje });
         } catch (error) {
           CustomSwal({ icono: 'error', titulo: 'Error en el proceso', mensaje: error.mensaje });
@@ -122,6 +124,8 @@ const InfoPedidos = () => {
         try {
           const response = await axios.put(`${UrlReact}/pedidos/actualizar/${id}`, { producto, cantidad, estado: 'Rechazado' }, configInicial);
           setPedidos(prevPedidos =>prevPedidos.map(pedido =>pedido._id === id ? { ...pedido, estado: 'Rechazado' } : pedido));
+          const nuevaCantidad = cantidad;
+          setAlmacen(prevAlmacen => prevAlmacen.map(item => item.producto._id === producto ? { ...item, cantidad_stock: item.cantidad_stock - nuevaCantidad } : item));
           CustomSwal({ icono: 'success', titulo: 'Actualizado', mensaje: response.mensaje });
         } catch (error) {
           CustomSwal({ icono: 'error', titulo: 'Error en el proceso', mensaje: error.mensaje });

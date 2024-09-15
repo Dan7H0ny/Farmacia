@@ -48,14 +48,16 @@ const CustomActualizarUser = ({
           inputProps={{
             min: 0,
             step: "any",
-            pattern: type === 'Number' ? "[0-9]*" : undefined,
-            inputMode: type === 'Number' ? "numeric" : undefined,
+            pattern: type === 'number' ? "[0-9]*" : undefined,
+            inputMode: type === 'number' ? "decimal" : undefined,
             ...props.inputProps
           }}
           onInput={(e) => {
-            // Apply restriction only if type is 'number'
-            if (type === 'Number') {
-              e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+            if (type === 'number') {
+              const cleanedValue = e.target.value
+                .replace(/[^0-9.]/g, '')        // Elimina caracteres no numéricos
+                .replace(/(\..*)\./g, '$1');   // Permite solo un punto decimal
+              e.target.value = cleanedValue;
             }
           }}
         />

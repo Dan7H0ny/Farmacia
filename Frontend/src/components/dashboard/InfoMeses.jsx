@@ -78,6 +78,7 @@ const InfoMeses = () => {
             </Button>
           </Grid>
         </Grid>
+        <div style={{ height: '300px'}}>
         {resultados.length > 0 && (
           <div style={{ marginTop: '20px' }}>
             <Typography variant="h6" component="div" align="center" gutterBottom>
@@ -105,6 +106,7 @@ const InfoMeses = () => {
             </Table>
           </div>
         )}
+        </div>
       </CardContent>
     </Card>
   );

@@ -248,7 +248,7 @@ export const ListarAlmacen = () => {
       <Box mt={3}>
         <CustomTypography text={'Pedidos pendientes'} />        
         <Grid item xs={12} sm={12}>
-          <InfoPedidos/>
+          <InfoPedidos setAlmacen={setAlmacen}/>
         </Grid>
         <CustomTypography text={'Control de Almacen'} />
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>

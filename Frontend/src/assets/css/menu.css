@@ -76,6 +76,16 @@
   margin: 0 auto;
   background-color: #0f1b35;
 }
+.custom-form2 {
+  border: 2px solid #e2e2e2;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 10px;
+  padding: 2.5%;
+  margin-top: 1%;
+  margin-bottom: 1%;
+  background-color: #0f1b35;
+}
 .custom-validation-message {
   color: #ff0000; /* Color de texto rojo */
   background-color: #ffe5e5; /* Fondo ligeramente rojo */

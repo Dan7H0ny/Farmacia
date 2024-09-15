@@ -73,7 +73,7 @@ const InfoExtraerDatos = ({setPredicciones}) => {
           </Grid>
         </Grid>
       </form>
-      <form id="Form-2" onSubmit={btnObtenerCategoria} className="custom-form" sx={{margin:'auto'}}>
+      <form id="Form-2" onSubmit={btnObtenerCategoria} className="custom-form2">
         <Grid container spacing={2}>
           <CustomRegisterUser
             number={8}

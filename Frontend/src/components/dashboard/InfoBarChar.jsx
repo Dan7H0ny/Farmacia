@@ -1,12 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
-import { Card, CardContent, Typography, Box,IconButton } from '@mui/material';
+import { Card, CardContent, Typography, Box, IconButton, CircularProgress } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
-
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const InfoBarChar = ({predicciones}) => {
+const InfoBarChar = ({ predicciones }) => {
+  const [loading, setLoading] = useState(true);
+  const [noData, setNoData] = useState(false);
+
+  useEffect(() => {
+    // Simulate loading
+    const timer = setTimeout(() => {
+      setLoading(false);
+      if (!predicciones || predicciones.length === 0) {
+        setNoData(true);
+      } else {
+        setNoData(false);
+      }
+    }, 1000); // Ajusta el tiempo según sea necesario
+
+    return () => clearTimeout(timer);
+  }, [predicciones]);
 
   // Obtener los días de la semana a partir de hoy
   const obtenerDiasSemana = () => {
@@ -23,14 +39,13 @@ const InfoBarChar = ({predicciones}) => {
     }))
     .sort((a, b) => b.totalVentas - a.totalVentas);
 
-    const coloresClaros = [
-      '#add8e6CC', // LightBlue
-      '#90ee90CC', // LightGreen
-      '#ffb6c1CC', // LightPink
-      '#f0e68cCC', // Khaki
-      '#dda0ddCC'  // Plum
-    ];
-    
+  const coloresClaros = [
+    '#add8e6CC', // LightBlue
+    '#90ee90CC', // LightGreen
+    '#ffb6c1CC', // LightPink
+    '#f0e68cCC', // Khaki
+    '#dda0ddCC'  // Plum
+  ];
 
   const demandaFigureData = {
     labels: obtenerDiasSemana(),
@@ -102,17 +117,29 @@ const InfoBarChar = ({predicciones}) => {
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" component="div">
-            PRODUCTOS PREVISTOS PARA VENDER EN LOS SIGUIENTES DIAS
+            PRODUCTOS PREVISTOS PARA VENDER EN LOS SIGUIENTES DÍAS
           </Typography>
           <IconButton onClick={RefrescarPagina} style={{ color: '#e2e2e2' }}>
             <RefreshIcon />
           </IconButton>
         </Box>
-        <div style={{ height: '400px'}}>
-          <Line
-            data={demandaFigureData}
-            options={options}
-          />
+        <div style={{ height: '400px', position: 'relative' }}>
+          {loading ? (
+            <Box display="flex" justifyContent="center" alignItems="center" style={{ height: '100%' }}>
+              <CircularProgress style={{ color: '#e2e2e2' }} />
+            </Box>
+          ) : noData ? (
+            <Box display="flex" justifyContent="center" alignItems="center" style={{ height: '100%' }}>
+              <Typography variant="h6" style={{ color: '#e2e2e2' }}>
+                El Producto no se encuentra dentro de la terminacion de los primeros 7 dias
+              </Typography>
+            </Box>
+          ) : (
+            <Line
+              data={demandaFigureData}
+              options={options}
+            />
+          )}
         </div>
       </CardContent>
     </Card>

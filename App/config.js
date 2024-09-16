@@ -1,3 +1,3 @@
 // config.js
-const URL_BASE = 'http://192.168.1.133/api';
+const URL_BASE = 'http://34.44.71.5/api';
 export default URL_BASE;

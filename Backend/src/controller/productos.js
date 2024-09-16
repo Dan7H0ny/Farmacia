@@ -42,6 +42,7 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
     const productoEncontrado = await Almacen.findOne({ producto: id });
     const prediccion = await Prediccion.findOne({productos: productoEncontrado._id});
     const totalVentas = prediccion ? prediccion.prediccion.ventas.reduce((acc, venta) => acc + venta, 0) : 0;
+    const total = Math.max(totalVentas - productoEncontrado.cantidad_stock, 0);
     const producto = await Producto.findById(id)
       .populate('proveedor', 'nombre_marca correo telefono sitioweb')
       .populate('tipo', 'nombre')
@@ -49,7 +50,7 @@ router.get('/buscar/:id',verificacion, async (req, res) => {
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
       .sort({ fecha_caducidad: 1 });
     const capacidadPresentacion = producto.capacidad_presentacion;
-    const cantidadEstimada = capacidadPresentacion ? Math.ceil(totalVentas / capacidadPresentacion) : 0;
+    const cantidadEstimada = capacidadPresentacion ? Math.ceil(total / capacidadPresentacion) : 0;
     const precioEstimado =(cantidadEstimada * producto.precioCompra).toFixed(2);
     if (!producto) {
       return res.status(404).json({ mensaje: 'Producto no encontrado' });

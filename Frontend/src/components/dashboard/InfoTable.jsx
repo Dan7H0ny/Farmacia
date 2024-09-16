@@ -1,17 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Grid, Box } from '@mui/material';
+import { Search } from '@mui/icons-material';
 import ReporteExcelPrediccion from '../../Reports/ReporteExcelPrediccion';
+import CustomRegisterUser from '../CustomRegisterUser';
 
 const InfoTable = ({ predicciones }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filtra las predicciones basadas en el término de búsqueda
+  const filteredPredicciones = predicciones.filter(prediccion =>
+    prediccion.nombreProducto.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    prediccion.nombreCategoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (prediccion.diaAgotamiento !== undefined && prediccion.diaAgotamiento !== null && prediccion.diaAgotamiento.toString().includes(searchTerm))
+  );
+   
+
   return (
     <Paper style={{ padding: '20px', borderRadius: '15px', backgroundColor: '#0f1b35', border: '2px solid #e2e2e2', boxSizing: 'border-box' }}>
       <Typography variant="h6" component="div" align="center" gutterBottom style={{ color: '#e2e2e2' }}>
         DATOS DE PREDICCIÓN
       </Typography>
-      <TableContainer
-        component={Paper}
-        style={{ maxHeight: 400, overflowY: 'auto' }} // Enable scroll on y-axis if needed
-      >
+      
+      {/* Campo de búsqueda */}
+      <Box mb={2} display="flex" justifyContent="space-between" alignItems="center">
+        <Grid container spacing={2} >
+          <CustomRegisterUser
+            number={8}
+            label="Buscar"  
+            placeholder= 'Buscar por producto, categoria y fecha de caducidad'
+            type= 'text'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            required={false}
+            icon={<Search/>}
+          />
+          <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
+            <ReporteExcelPrediccion
+              data={filteredPredicciones}
+              fileName="Reporte de las predicciones"
+              sheetName="Predicciones"
+              sx={{
+                backgroundColor: '#e2e2e2',
+                color: '#0f1b35',
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#1a7b13',
+                  color: '#e2e2e2',
+                },
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <TableContainer component={Paper} style={{ maxHeight: 400, overflowY: 'auto' }}>
         <Table stickyHeader>
           <TableHead style={{ backgroundColor: '#0f1b35' }}>
             <TableRow>
@@ -25,38 +67,28 @@ const InfoTable = ({ predicciones }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {predicciones.map((prediccion, index) => (
-              <TableRow key={index}>
-                <TableCell style={bodyCellStyle}>{index + 1}</TableCell>
-                <TableCell style={bodyCellStyle}>{prediccion.nombreProducto}</TableCell>
-                <TableCell style={bodyCellStyle}>{prediccion.nombreCategoria}</TableCell>
-                <TableCell style={bodyCellStyle}>{prediccion.prediccion.ventas.join(', ')}</TableCell>
-                <TableCell style={bodyCellStyle}>{prediccion.datosHistoricos}</TableCell>
-                <TableCell style={bodyCellStyle}>{prediccion.diaAgotamiento ?? 'N/A'}</TableCell>
-                <TableCell style={bodyCellStyle}>{prediccion.porcentajeError.toFixed(2)}%</TableCell>
+            {filteredPredicciones.length > 0 ? (
+              filteredPredicciones.map((prediccion, index) => (
+                <TableRow key={index}>
+                  <TableCell style={bodyCellStyle}>{index + 1}</TableCell>
+                  <TableCell style={bodyCellStyle}>{prediccion.nombreProducto}</TableCell>
+                  <TableCell style={bodyCellStyle}>{prediccion.nombreCategoria}</TableCell>
+                  <TableCell style={bodyCellStyle}>{prediccion.prediccion.ventas.join(', ')}</TableCell>
+                  <TableCell style={bodyCellStyle}>{prediccion.datosHistoricos}</TableCell>
+                  <TableCell style={bodyCellStyle}>{prediccion.diaAgotamiento ?? 'N/A'}</TableCell>
+                  <TableCell style={bodyCellStyle}>{prediccion.porcentajeError.toFixed(2)}%</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} style={bodyCellStyle} align="center">
+                  No existen datos
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
-      <Box mt={2} display="flex" justifyContent="flex-end">
-        <Grid item xs={12} sm={4}>
-          <ReporteExcelPrediccion
-            data={predicciones}
-            fileName="Reporte de las predicciones"
-            sheetName="Predicciones"
-            sx={{
-              backgroundColor: '#e2e2e2',
-              color: '#0f1b35',
-              fontWeight: 'bold',
-              '&:hover': {
-                backgroundColor: '#1a7b13',
-                color: '#e2e2e2',
-              },
-            }}
-          />
-        </Grid>
-      </Box>
     </Paper>
   );
 };

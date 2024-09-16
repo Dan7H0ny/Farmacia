@@ -71,19 +71,14 @@ const Pedidos = () => {
           break;
         case 'whatsapp':
           if (proveedor.telefono) {
-            const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${productoDetails?.cantidadEstimada || '1'} unidades de ${productoNombre}.`;
+            const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${cantidadPedida * item.producto.capacidad_presentacion} unidades de ${productoNombre}.`;
             const url = `whatsapp://send?phone=+591${proveedor.telefono}&text=${encodeURIComponent(mensaje)}`;
-            const supported = await Linking.canOpenURL(url);
-            if (supported) {
-              await Linking.openURL(url);
-            } else {
-              Alert.alert('WhatsApp no está instalado', 'Por favor, instala WhatsApp para enviar el mensaje.');
-            }
+            Linking.openURL(url).catch((err) =>  Alert.alert('Error al ir al whatsapp', err));
           }
           break;
         case 'email':
           if (proveedor.correo) {
-            const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${productoDetails?.cantidadEstimada || '1'} unidades de ${productoNombre}.`;
+            const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${productoDetails?.cantidadEstimada?.toString() || '1'} unidades de ${productoNombre}.`;
             const url = `mailto:${proveedor.correo}?subject=Consulta sobre ${productoNombre}&body=${encodeURIComponent(mensaje)}`;
             Linking.openURL(url).catch((err) => console.error('Error al enviar el correo:', err));
           }

@@ -8,8 +8,8 @@ const { Expo } = require('expo-server-sdk');
 let expo = new Expo();
 const cron = require('node-cron');
 
-router.put('/actualizar', verificacion, async (req, res) => {
-  const { token } = req.query;
+router.get('/actualizar/:id',verificacion, async (req, res) => {
+  const { token } = req.params;
   const { id, estado } = req.body;  // Asegúrate de recibir el ID de la predicción a actualizar y el nuevo estado
   try {
     // Verificar si el nuevo estado es true y contar notificaciones activas
@@ -44,9 +44,9 @@ router.put('/actualizar', verificacion, async (req, res) => {
   }
 });
 
-router.get('/mostrar', verificacion, async (req, res) => {
-  const { id } = req.query;  // Usar req.query para obtener el parámetro id
-
+router.get('/mostrar/:id',verificacion, async (req, res) => {
+  const { id } = req.params;  // Usar req.query para obtener el parámetro id
+  console.log(id)
   try {
     if (!id) {
       return res.status(400).json({ mensaje: 'Token no proporcionado' });

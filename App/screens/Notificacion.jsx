@@ -20,8 +20,7 @@ const Notificacion = () => {
         const token = await AsyncStorage.getItem('token');
         const expoPushToken = await AsyncStorage.getItem('expoPushToken');
         if (token) {
-          const response = await axios.get(`${URL_BASE}/notificacion/mostrar`, {
-            params: { id: expoPushToken },
+          const response = await axios.get(`${URL_BASE}/notificacion/mostrar/${expoPushToken}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           setNotificaciones(response.data);
@@ -39,13 +38,12 @@ const Notificacion = () => {
       const updatedEstado = !producto.estado; // Alterna el estado
       const expoPushToken = await AsyncStorage.getItem('expoPushToken');
       
-      await axios.put(`${URL_BASE}/notificacion/actualizar`, 
+      await axios.put(`${URL_BASE}/notificacion/actualizar/${expoPushToken}`, 
         { 
           id: producto.prediccion._id,
           estado: updatedEstado 
         }, 
         {
-          params: { token: expoPushToken },
           headers: { Authorization: `Bearer ${token}` }
         }
       );

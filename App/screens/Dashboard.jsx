@@ -4,7 +4,6 @@ import { PieChart } from 'react-native-chart-kit';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
-import URL_BASE from '../config';
 import styles from '../styles/DashboardStyles';
 
 const Dashboard = () => {
@@ -26,7 +25,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (token) {
-      axios.get(`${URL_BASE}/almacen/mostrar`, {
+      axios.get(`http://34.44.71.5/api/almacen/mostrar`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => {
@@ -35,11 +34,11 @@ const Dashboard = () => {
       })
       .catch(error => console.error('Error fetching data:', error));
     }
-  }, [token, URL_BASE, mostrarCaducidad]);
+  }, [token, mostrarCaducidad]);
 
   useEffect(() => {
     if (token) {
-      axios.post(`${URL_BASE}/prediccion/mostrar/predicciones`, {
+      axios.post(`http://34.44.71.5/api/prediccion/mostrar/predicciones`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => {
@@ -51,7 +50,7 @@ const Dashboard = () => {
       })
       .catch(error => console.error('Error fetching data:', error));
     }
-  }, [token, URL_BASE]);
+  }, [token]);
 
   const MostrarDatos = (data, filtroPorCaducidad) => {
     const sortedProductos = data.sort((a, b) => filtroPorCaducidad

@@ -11,30 +11,41 @@
       "resizeMode": "contain",
       "backgroundColor": "#0f1b35"
     },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/LogoFar.png",
-        "backgroundColor": "#0f1b35"
-      },
-      "package": "com.danthony.farmacia"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
     "extra": {
       "eas": {
         "projectId": "4ef9143c-aa49-48d5-aaab-99c7ec7cde69"
       }
     },
     "owner": "danthony",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
-      "url": "https://u.expo.dev/4ef9143c-aa49-48d5-aaab-99c7ec7cde69"
+      "url": "https://u.expo.dev/4ef9143c-aa49-48d5-aaab-99c7ec7cde69",
+      "fallbackToCacheTimeout": 0
+    },
+    "android": {
+      "permissions": [
+        "INTERNET",
+        "NOTIFICATIONS",
+        "ACCESS_NETWORK_STATE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "package": "com.danthony.farmacia",
+      "versionCode": 1 
+    },
+    "web": {
+      "config": {
+        "firebase": {
+          "apiKey": "YOUR_FIREBASE_API_KEY",
+          "authDomain": "YOUR_FIREBASE_AUTH_DOMAIN",
+          "projectId": "YOUR_FIREBASE_PROJECT_ID",
+          "storageBucket": "YOUR_FIREBASE_STORAGE_BUCKET",
+          "messagingSenderId": "YOUR_FIREBASE_MESSAGING_SENDER_ID",
+          "appId": "YOUR_FIREBASE_APP_ID",
+          "measurementId": "YOUR_FIREBASE_MEASUREMENT_ID"
+        }
+      }
     }
   }
 }
+

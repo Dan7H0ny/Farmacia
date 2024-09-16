@@ -9,11 +9,10 @@ import Notificacion from './screens/Notificacion';
 import Pedidos from './screens/Pedidos';
 import FlashMessage from 'react-native-flash-message';
 import * as Notifications from 'expo-notifications';
-import URL_BASE from './config';
 import axios from 'axios';
 import { Alert, Linking  } from 'react-native';
 import * as Device from 'expo-device';
-
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -69,11 +68,11 @@ const registrarNotificacionesActivadas = async () => {
   }
 
   const expoPushToken  = await Notifications.getExpoPushTokenAsync();
-  
   const token = expoPushToken.data;
+  await AsyncStorage.setItem('expoPushToken', token);
   // Enviar el token y el deviceId al servidor
   try {
-    await axios.post(`${URL_BASE}/notificacion/registrarToken`, { token });
+    await axios.post(`http://34.44.71.5/api/notificacion/registrarToken`, { token });
   } catch (error) {
     console.error('Error al registrar el token:', error);
   }

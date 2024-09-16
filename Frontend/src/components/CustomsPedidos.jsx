@@ -69,7 +69,6 @@ const CustomsPedidos = ({ proveedor, ProductoId, tipoNombre, capacidad_presentac
   const handleRedirect = (url) => {
     window.open(url, '_blank');
   };
-  console.log(proveedor)
   const mensajeCorreo = `  Estimada empresa (${proveedor.nombre_marca})
 
   Estoy interesado en obtener más información sobre el siguiente PRODUCTO, a continuación los datos del producto:

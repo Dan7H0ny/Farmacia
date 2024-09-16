@@ -288,7 +288,7 @@ export const ListarProducto = () => {
         .catch(error => {
           CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: error});
         });
-    }
+      }
   }; 
  
   return (

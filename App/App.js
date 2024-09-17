@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AutenticarContextoProveedor, useAutenticarContexto } from './context/AutenticacionContexto';
@@ -10,10 +10,11 @@ import Pedidos from './screens/Pedidos';
 import FlashMessage from 'react-native-flash-message';
 import * as Notifications from 'expo-notifications';
 import axios from 'axios';
-import { Alert, Linking } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Configuración del manejador de notificaciones
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -51,45 +52,73 @@ const registrarNotificacionesActivadas = async () => {
     return;
   }
 
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-
-  if (finalStatus !== 'granted') {
-    Alert.alert(
-      'Permisos Requeridos',
-      'Por favor, habilita los permisos de notificaciones.',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Abrir Ajustes', onPress: () => Linking.openSettings() }
-      ],
-      { cancelable: false }
-    );
-    return;
-  }
-
   try {
-    const { data: token } = await Notifications.getExpoPushTokenAsync();
+    // Comprobar y solicitar permisos de notificaciones
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
+      Alert.alert(
+        'Permisos Requeridos',
+        'Por favor, habilita los permisos de notificaciones.',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Abrir Ajustes', onPress: () => Linking.openSettings() }
+        ],
+        { cancelable: false }
+      );
+      return;
+    }
+
+    const tokenData = await Notifications.getExpoPushTokenAsync({
+      projectId: 'farmacia-74f41' // Reemplaza con tu projectId
+    });
+    const token = tokenData; // `tokenData` ya contiene el token directamente
+    console.log('Token de notificaciones obtenido:', token);
+
+    // Guarda el token en almacenamiento local y envíalo al backend
     await AsyncStorage.setItem('expoPushToken', token);
-    await axios.post(`https://antony.ajayuhost.com/api/notificacion/registrarToken`, { token });
+    await axios.post('https://antony.ajayuhost.com/api/notificacion/registrarToken', { token });
+
   } catch (error) {
     console.error('Error al obtener el token de notificaciones:', error);
+  }
+
+  // Configurar el canal de notificaciones para Android
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      sound: 'default',
+    });
   }
 };
 
 const App = () => {
-  const navigationRef = React.useRef();
-  
+  const navigationRef = useRef();
+
   useEffect(() => {
     registrarNotificacionesActivadas();
-    
-    const foregroundSubscription = Notifications.addNotificationReceivedListener(notification => {});
 
+    // Listener para manejar notificaciones en primer plano
+    const foregroundSubscription = Notifications.addNotificationReceivedListener(notification => {
+      console.log('Notificación recibida en primer plano:', notification);
+    });
+
+    // Listener para manejar cuando el usuario interactúa con una notificación
     const responseSubscription = Notifications.addNotificationResponseReceivedListener(response => {
-      navigationRef.current?.navigate('Pedidos');
+      const { data } = response.notification.request.content;
+      console.log('Usuario interactuó con la notificación:', data);
+
+      if (data && data.nombreProducto) {
+        navigationRef.current?.navigate('Pedidos', { producto: data.nombreProducto });
+      } else {
+        navigationRef.current?.navigate('Pedidos');
+      }
     });
 
     return () => {

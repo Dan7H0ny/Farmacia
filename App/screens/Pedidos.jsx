@@ -50,17 +50,14 @@ const Pedidos = () => {
   const handleButtonClick = async (item, tipo) => {
     const proveedor = item.producto.proveedor || {}; 
     const productoNombre = item.producto.nombre;
-  
+    await fetchProductDetails(item.producto._id);
     try {
-      // Recuperar detalles del producto al presionar un botón
-      await fetchProductDetails(item.producto._id);
   
       if (tipo === 'pedir') {
         setSelectedItem(item);
         setShowInput(true);
         return;
       }
-      console.log(productoDetails.cantidadEstimada)
       // Manejar redirección según el tipo
       switch (tipo) {
         case 'web':
@@ -71,8 +68,17 @@ const Pedidos = () => {
           break;
         case 'whatsapp':
           if (proveedor.telefono) {
-            const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${productoDetails?.cantidadEstimada?.toString() || '1'} unidades de ${productoNombre}.`;
-            const url = `whatsapp://send?phone=+591${proveedor.telefono}&text=${encodeURIComponent(mensaje)}`;
+            const mensajeWhatsApp = `Estimada empresa (${proveedor.nombre_marca})
+
+Estoy interesado en obtener más información sobre el siguiente PRODUCTO, a continuación los datos del producto:
+
+Nombre del producto: ${productoNombre}
+Cantidad estimada: ${productoDetails?.cantidadEstimada?.toString() || '1'}
+
+Agradezco su pronta respuesta, me despido.
+
+Saludos!`
+            const url = `https://wa.me/+591${proveedor.telefono}?text=${encodeURIComponent(mensajeWhatsApp)}`;
         
             // Verificar si se puede abrir WhatsApp
             Linking.canOpenURL(url)
@@ -90,8 +96,17 @@ const Pedidos = () => {
           break;
         case 'email':
           if (proveedor.correo) {
-            const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${productoDetails?.cantidadEstimada?.toString() || '1'} unidades de ${productoNombre}.`;
-            const url = `mailto:${proveedor.correo}?subject=Consulta sobre ${productoNombre}&body=${encodeURIComponent(mensaje)}`;
+            const mensajeCorreo = `Estimada empresa (${proveedor.nombre_marca})
+
+Estoy interesado en obtener más información sobre el siguiente PRODUCTO, a continuación los datos del producto:
+          
+Nombre del producto: ${productoNombre}
+Cantidad estimada: ${productoDetails?.cantidadEstimada?.toString() || '1'}
+          
+Agradezco su pronta respuesta, me despido.
+          
+Saludos!`;
+            const url = `mailto:${proveedor.correo}?subject=Consulta sobre ${productoNombre}&body=${encodeURIComponent(mensajeCorreo)}`;
             Linking.openURL(url).catch((err) => console.error('Error al enviar el correo:', err));
           }
           break;

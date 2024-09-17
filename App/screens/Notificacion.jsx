@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Switch, KeyboardAvoidingView, Platform, TextInput, Alert } from 'react-native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomSwal from '../components/CustomSwal';
 import { LinearGradient } from 'expo-linear-gradient';
 import styles from '../styles/NotificacionStyles';
+import * as Notifications from 'expo-notifications';
 
 const URL_BASE = 'https://antony.ajayuhost.com/api'; // Asegúrate de definir esta constante correctamente
 
@@ -17,7 +17,9 @@ const Notificacion = () => {
     const fetchNotificaciones = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const expoPushToken = await AsyncStorage.getItem('expoPushToken');
+        const expoPushToken = await Notifications.getExpoPushTokenAsync({
+          projectId: 'farmacia-74f41' // Reemplaza con tu projectId
+        });
         if (token) {
           const response = await axios.get(`${URL_BASE}/notificacion/mostrar/${expoPushToken}`, {
             headers: { Authorization: `Bearer ${token}` }
@@ -35,7 +37,9 @@ const Notificacion = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const updatedEstado = !producto.estado; // Alterna el estado
-      const expoPushToken = await AsyncStorage.getItem('expoPushToken');
+      const expoPushToken = await Notifications.getExpoPushTokenAsync({
+        projectId: 'farmacia-74f41' // Reemplaza con tu projectId
+      });
       console.log(expoPushToken, producto.prediccion._id, updatedEstado)
       
       await axios.put(`${URL_BASE}/notificacion/actualizar/${expoPushToken}`, 

@@ -78,18 +78,25 @@ Cantidad estimada: ${productoDetails?.cantidadEstimada?.toString() || '1'}
 Agradezco su pronta respuesta, me despido.
 
 Saludos!`
-            const url = `https://wa.me/+591${proveedor.telefono}?text=${encodeURIComponent(mensajeWhatsApp)}`;
-        
-            // Verificar si se puede abrir WhatsApp
-            Linking.canOpenURL(url)
-              .then((supported) => {
-                if (!supported) {
-                  Alert.alert('Error', 'WhatsApp no está instalado o el esquema no es soportado.');
-                } else {
-                  return Linking.openURL(url);
-                }
-              })
-              .catch((err) => Alert.alert('Error al intentar abrir WhatsApp', err.message));
+          // Construir la URL
+          const url = `https://wa.me/+591${proveedor.telefono}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+          console.log("URL de WhatsApp:", url);
+
+          // Verificar si se puede abrir WhatsApp
+          Linking.canOpenURL(url)
+            .then((supported) => {
+              console.log("¿Se puede abrir la URL?:", supported);
+              if (!supported) {
+                Alert.alert('Error', 'WhatsApp no está instalado o el esquema no es soportado.');
+              } else {
+                console.log("Intentando abrir la URL...");
+                return Linking.openURL(url);
+              }
+            })
+            .catch((err) => {
+              console.log("Error al intentar abrir WhatsApp:", err);
+              Alert.alert('Error al intentar abrir WhatsApp', err.message);
+            });
           } else {
             Alert.alert('Error', 'El proveedor no tiene un número de teléfono.');
           }

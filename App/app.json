@@ -11,16 +11,24 @@
       "resizeMode": "contain",
       "backgroundColor": "#0f1b35"
     },
-    "extra": {
-      "eas": {
-        "projectId": "4ef9143c-aa49-48d5-aaab-99c7ec7cde69"
+    "notification": {
+      "android": {
+        "icon": "./assets/notification-icon.png",
+        "color": "#ffffff",
+        "androidMode": "default",
+        "androidCollapsedTitle": "#{unread_notifications} new notifications"
       }
     },
-    "owner": "danthony",
+    "extra": {
+      "eas": {
+        "projectId": "94f2f36a-c0e4-4828-906b-d0470b6753af"
+      }
+    },
+    "owner": "danthonymh",
     "runtimeVersion": "1.0.0",
     "updates": {
-      "url": "https://u.expo.dev/4ef9143c-aa49-48d5-aaab-99c7ec7cde69",
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/94f2f36a-c0e4-4828-906b-d0470b6753af"
     },
     "android": {
       "permissions": [
@@ -37,10 +45,24 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0f1b35"
-      }
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "whatsapp",
+              "host": "*",
+              "path": "*"
+            }
+          ],
+          "category": ["DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "ios": {}
   }
 }

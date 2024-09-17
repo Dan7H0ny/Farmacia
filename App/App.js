@@ -73,11 +73,9 @@ const registrarNotificacionesActivadas = async () => {
       );
       return;
     }
-
-    const tokenData = await Notifications.getExpoPushTokenAsync({
-      projectId: 'farmacia-74f41' // Reemplaza con tu projectId
-    });
-    const token = tokenData; // `tokenData` ya contiene el token directamente
+    const tokenData = await Notifications.getExpoPushTokenAsync();
+    const token = tokenData.data;
+    // `tokenData` ya contiene el token directamente
     console.log('Token de notificaciones obtenido:', token);
 
     // Guarda el token en almacenamiento local y envíalo al backend

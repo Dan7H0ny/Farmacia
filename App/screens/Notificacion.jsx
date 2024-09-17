@@ -5,7 +5,7 @@ import CustomSwal from '../components/CustomSwal';
 import { LinearGradient } from 'expo-linear-gradient';
 import styles from '../styles/NotificacionStyles';
 import * as Notifications from 'expo-notifications';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const URL_BASE = 'https://antony.ajayuhost.com/api'; // Asegúrate de definir esta constante correctamente
 
 const Notificacion = () => {
@@ -17,9 +17,8 @@ const Notificacion = () => {
     const fetchNotificaciones = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const expoPushToken = await Notifications.getExpoPushTokenAsync({
-          projectId: 'farmacia-74f41' // Reemplaza con tu projectId
-        });
+        const tokenData = await Notifications.getExpoPushTokenAsync();
+        const expoPushToken = tokenData.data;
         if (token) {
           const response = await axios.get(`${URL_BASE}/notificacion/mostrar/${expoPushToken}`, {
             headers: { Authorization: `Bearer ${token}` }
@@ -37,9 +36,8 @@ const Notificacion = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const updatedEstado = !producto.estado; // Alterna el estado
-      const expoPushToken = await Notifications.getExpoPushTokenAsync({
-        projectId: 'farmacia-74f41' // Reemplaza con tu projectId
-      });
+      const tokenData = await Notifications.getExpoPushTokenAsync();
+      const expoPushToken = tokenData.data;
       console.log(expoPushToken, producto.prediccion._id, updatedEstado)
       
       await axios.put(`${URL_BASE}/notificacion/actualizar/${expoPushToken}`, 

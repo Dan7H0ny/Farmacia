@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "111769325164",
+    "project_id": "farmacia-74f41",
+    "storage_bucket": "farmacia-74f41.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:111769325164:android:0b4d2779dee8b53d12d249",
+        "android_client_info": {
+          "package_name": "com.danthony.farmacia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcPxtsCxVlvwlXztpqCpuxcGffRDBTWbg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

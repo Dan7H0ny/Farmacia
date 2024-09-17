@@ -8,7 +8,7 @@ const { Expo } = require('expo-server-sdk');
 let expo = new Expo();
 const cron = require('node-cron');
 
-router.get('/actualizar/:id',verificacion, async (req, res) => {
+router.put('/actualizar/:token',verificacion, async (req, res) => {
   const { token } = req.params;
   const { id, estado } = req.body;  // Asegúrate de recibir el ID de la predicción a actualizar y el nuevo estado
   try {
@@ -73,7 +73,6 @@ router.get('/mostrar/:id',verificacion, async (req, res) => {
 
 router.post('/registrarToken', async (req, res) => {
   const { token } = req.body;
-
   // Validar que el token sea válido
   if (!token.startsWith('ExponentPushToken[')) {
       return res.status(400).send(`El token proporcionado: ${token} no es válido`);

@@ -31,6 +31,7 @@
         "ACCESS_COARSE_LOCATION"
       ],
       "package": "com.danthony.farmacia",
+      "googleServicesFile": "./google-services.json",
       "versionCode": 1 
     },
     "web": {

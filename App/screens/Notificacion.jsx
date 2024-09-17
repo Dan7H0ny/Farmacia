@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomSwal from '../components/CustomSwal';
 import { LinearGradient } from 'expo-linear-gradient';
 import styles from '../styles/NotificacionStyles';
-import * as Notifications from 'expo-notifications';
 
 const URL_BASE = 'http://34.44.71.5/api'; // Asegúrate de definir esta constante correctamente
 
@@ -37,6 +36,7 @@ const Notificacion = () => {
       const token = await AsyncStorage.getItem('token');
       const updatedEstado = !producto.estado; // Alterna el estado
       const expoPushToken = await AsyncStorage.getItem('expoPushToken');
+      console.log(expoPushToken, producto.prediccion._id, updatedEstado)
       
       await axios.put(`${URL_BASE}/notificacion/actualizar/${expoPushToken}`, 
         { 

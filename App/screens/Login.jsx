@@ -37,7 +37,7 @@ export const Login = () => {
       CustomSwal({ icono: 'error', titulo: 'Correo inválido', mensaje: 'Por favor, ingresa un correo electrónico válido.' });
       return;
     }
-    axios.post(`http://34.44.71.5/api/login`, { correo, password })
+    axios.post(`https://antony.ajayuhost.com/api/login`, { correo, password })
       .then(response => {
         const { _id, nombre, rol, token, mensaje } = response.data;
         CustomSwal({ icono: 'success', titulo: 'Acceso correcto', mensaje: mensaje });
@@ -73,7 +73,7 @@ export const Login = () => {
         loading: true
       });
   
-      const response = await axios.post(`http://34.44.71.5/api/enviarpin`, { correo });
+      const response = await axios.post(`https://antony.ajayuhost.com/api/enviarpin`, { correo });
       // Mostrar el mensaje de éxito
       CustomSwal({
         icono: 'success',

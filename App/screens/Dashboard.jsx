@@ -25,7 +25,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (token) {
-      axios.get(`http://34.44.71.5/api/almacen/mostrar`, {
+      axios.get(`https://antony.ajayuhost.com/api/almacen/mostrar`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => {
@@ -38,7 +38,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (token) {
-      axios.post(`http://34.44.71.5/api/prediccion/mostrar/predicciones`, {
+      axios.post(`https://antony.ajayuhost.com/api/prediccion/mostrar/predicciones`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => {

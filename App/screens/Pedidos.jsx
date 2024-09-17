@@ -23,7 +23,7 @@ const Pedidos = () => {
       const token = await AsyncStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get(`http://34.44.71.5/api/almacen/mostrar/pedidos`, {
+          const response = await axios.get(`https://antony.ajayuhost.com/api/almacen/mostrar/pedidos`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           setProductos(response.data);
@@ -38,7 +38,7 @@ const Pedidos = () => {
   const fetchProductDetails = async (productoId) => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const response = await axios.get(`http://34.44.71.5/api/producto/buscar/${productoId}`, {
+      const response = await axios.get(`https://antony.ajayuhost.com/api/producto/buscar/${productoId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProductoDetails(response.data);
@@ -60,7 +60,7 @@ const Pedidos = () => {
         setShowInput(true);
         return;
       }
-  
+      console.log(productoDetails.cantidadEstimada)
       // Manejar redirección según el tipo
       switch (tipo) {
         case 'web':
@@ -71,9 +71,21 @@ const Pedidos = () => {
           break;
         case 'whatsapp':
           if (proveedor.telefono) {
-            const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${cantidadPedida * item.producto.capacidad_presentacion} unidades de ${productoNombre}.`;
+            const mensaje = `Hola marca/empresa ${proveedor.nombre_marca},\n\nEstoy interesado en comprar ${productoDetails?.cantidadEstimada?.toString() || '1'} unidades de ${productoNombre}.`;
             const url = `whatsapp://send?phone=+591${proveedor.telefono}&text=${encodeURIComponent(mensaje)}`;
-            Linking.openURL(url).catch((err) =>  Alert.alert('Error al ir al whatsapp', err));
+        
+            // Verificar si se puede abrir WhatsApp
+            Linking.canOpenURL(url)
+              .then((supported) => {
+                if (!supported) {
+                  Alert.alert('Error', 'WhatsApp no está instalado o el esquema no es soportado.');
+                } else {
+                  return Linking.openURL(url);
+                }
+              })
+              .catch((err) => Alert.alert('Error al intentar abrir WhatsApp', err.message));
+          } else {
+            Alert.alert('Error', 'El proveedor no tiene un número de teléfono.');
           }
           break;
         case 'email':

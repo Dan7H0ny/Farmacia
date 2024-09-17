@@ -6,7 +6,7 @@ import CustomSwal from '../components/CustomSwal';
 import { LinearGradient } from 'expo-linear-gradient';
 import styles from '../styles/NotificacionStyles';
 
-const URL_BASE = 'http://34.44.71.5/api'; // Asegúrate de definir esta constante correctamente
+const URL_BASE = 'https://antony.ajayuhost.com/api'; // Asegúrate de definir esta constante correctamente
 
 const Notificacion = () => {
   const [notificaciones, setNotificaciones] = useState([]);

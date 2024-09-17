@@ -227,7 +227,7 @@ async function obtenerVentasUltimaHora() {
 }
 
 //* * * * *  0 */8 * * *
-cron.schedule('* * * * *', () => {
+cron.schedule('0 */8 * * *', () => {
   enviarNotificaciones();
 });
 

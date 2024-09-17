@@ -74,7 +74,7 @@ const registrarNotificacionesActivadas = async () => {
   try {
     const { data: token } = await Notifications.getExpoPushTokenAsync();
     await AsyncStorage.setItem('expoPushToken', token);
-    await axios.post(`http://34.44.71.5/api/notificacion/registrarToken`, { token });
+    await axios.post(`https://antony.ajayuhost.com/api/notificacion/registrarToken`, { token });
   } catch (error) {
     console.error('Error al obtener el token de notificaciones:', error);
   }

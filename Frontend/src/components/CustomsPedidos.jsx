@@ -60,7 +60,7 @@ const CustomsPedidos = ({ proveedor, ProductoId, tipoNombre, capacidad_presentac
         CustomSwal({
           icono: 'error',
           titulo: 'Error',
-          mensaje: error.message
+          mensaje: error.mensaje
         });
       }
     }

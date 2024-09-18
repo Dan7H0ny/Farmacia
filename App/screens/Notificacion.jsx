@@ -17,7 +17,9 @@ const Notificacion = () => {
     const fetchNotificaciones = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const tokenData = await Notifications.getExpoPushTokenAsync();
+        const tokenData = await Notifications.getExpoPushTokenAsync({
+          projectId: '94f2f36a-c0e4-4828-906b-d0470b6753af' // Reemplaza con tu projectId correcto
+        });
         const expoPushToken = tokenData.data;
         if (token) {
           const response = await axios.get(`${URL_BASE}/notificacion/mostrar/${expoPushToken}`, {
@@ -36,7 +38,9 @@ const Notificacion = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       const updatedEstado = !producto.estado; // Alterna el estado
-      const tokenData = await Notifications.getExpoPushTokenAsync();
+      const tokenData = await Notifications.getExpoPushTokenAsync({
+        projectId: '94f2f36a-c0e4-4828-906b-d0470b6753af' // Reemplaza con tu projectId correcto
+      });
       const expoPushToken = tokenData.data;
       console.log(expoPushToken, producto.prediccion._id, updatedEstado)
       

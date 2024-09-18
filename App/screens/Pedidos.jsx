@@ -79,7 +79,7 @@ Agradezco su pronta respuesta, me despido.
 
 Saludos!`
           // Construir la URL
-          const url = `https://wa.me/+591${proveedor.telefono}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+          const url = `whatsapp://send?phone=+591${proveedor.telefono}&text=${encodeURIComponent(mensajeWhatsApp)}`;
           console.log("URL de WhatsApp:", url);
 
           // Verificar si se puede abrir WhatsApp

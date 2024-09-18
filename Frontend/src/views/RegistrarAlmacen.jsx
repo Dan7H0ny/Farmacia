@@ -13,7 +13,6 @@ import CustomSubtitulo from '../components/CustomSubtitulo';
 
 export const RegistrarAlmacen = () => {
   const [producto, setProducto] = useState([]);
-  const [idproducto, setIdProducto] = useState('');
   const [complementos, setComplementos] = useState([]);
   const [categoria, setCategoria] = useState('');
   const [precioVenta, setPrecioVenta] = useState('');
@@ -65,7 +64,7 @@ export const RegistrarAlmacen = () => {
     } 
     else 
     {
-      if(idproducto){
+      if(selectedProduct){
         const mialmacen = { producto:selectedProduct._id, categoria, precioVenta, cantidad_stock: cantidad_stock*selectedProduct.capacidad_presentacion, fecha_caducidad, usuario: usuario_};
           axios.post(`${UrlReact}/almacen/crear`, mialmacen, configInicial)
           .then(response => {
@@ -87,7 +86,6 @@ export const RegistrarAlmacen = () => {
     setPrecioVenta("");
     setCantidad_stock("");
     setFechaCaducidad("");
-    setIdProducto("");
   }
   return (
     <div id="caja_contenido">

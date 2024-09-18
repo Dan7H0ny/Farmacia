@@ -73,7 +73,9 @@ const registrarNotificacionesActivadas = async () => {
       );
       return;
     }
-    const tokenData = await Notifications.getExpoPushTokenAsync();
+    const tokenData = await Notifications.getExpoPushTokenAsync({
+      projectId: '94f2f36a-c0e4-4828-906b-d0470b6753af' // Reemplaza con tu projectId correcto
+    });
     const token = tokenData.data;
     // `tokenData` ya contiene el token directamente
     console.log('Token de notificaciones obtenido:', token);

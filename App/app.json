@@ -51,12 +51,14 @@
           "action": "VIEW",
           "data": [
             {
-              "scheme": "whatsapp",
-              "host": "*",
-              "path": "*"
+              "scheme": "https",
+              "host": "wa.me"
+            },
+            {
+              "scheme": "whatsapp"
             }
           ],
-          "category": ["DEFAULT"]
+          "category": ["DEFAULT", "BROWSABLE"]
         }
       ]
     },

@@ -66,11 +66,11 @@ export const ListarProveedor = () => {
             <Grid container spacing={2}>
               <CustomActualizarUser number={12} id="marca" label="Marca" type="text" defaultValue={nombre_marca} required={true} icon={<AddBusiness />} />
               <CustomActualizarUser number={6} id="correo" label="Correo" type="email" defaultValue={correo} required={false} icon={<Email />} />
-              <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<LocalPhone />} />
+              <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<LocalPhone />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
               <CustomActualizarUser number={12} id="sitioWeb" label="Sitio Web" type="text" defaultValue={sitioweb} required={false} icon={<Language />} />
               <CustomActualizarUser number={12} id="nombre" label="Nombre del Vendedor" type="text" defaultValue={nombre_vendedor} required={true} icon={<SupervisedUserCircle />} />
               <CustomActualizarUser number={6} id="correoV" label="Correo del Vendedor" type="email" defaultValue={correo_vendedor} required={false} icon={<Email />} />
-              <CustomActualizarUser number={6} id="celular" label="Celular del Vendedor" type="number" defaultValue={celular} required={false} icon={<PhoneAndroid />} />
+              <CustomActualizarUser number={6} id="celular" label="Celular del Vendedor" type="number" defaultValue={celular} required={false} icon={<PhoneAndroid />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
             </Grid>
           );
           Swal.fire({

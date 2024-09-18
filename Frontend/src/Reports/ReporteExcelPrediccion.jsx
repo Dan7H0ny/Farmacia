@@ -17,11 +17,24 @@ const ReporteExcelPrediccion = ({ data, fileName, sheetName }) => {
       <Grid container spacing={2}>
         <CustomActualizarUser number={12} id="nombreProducto" label="Nombre del Producto" type="text" icon={<ProductionQuantityLimits />} />
         <CustomActualizarUser number={8} id="nombreCategoria" label="Categoría del Producto" type="text" icon={<Category />} />
-        <CustomActualizarUser number={4} id="porcentajeError" label="Porcentaje minimo de error" type="number" icon={<WarningAmber />} />
-        <CustomActualizarUser number={6} id="ventasMin" label="Ventas Mínimas" type="number" icon={<Numbers />} />
-        <CustomActualizarUser number={6} id="ventasMax" label="Ventas Máximas" type="number" icon={<Numbers />} />
-        <CustomActualizarUser number={6} id="stockRestante" label="Stock Restante en el Almacen" type="number" icon={<Inventory />} />
-        <CustomActualizarUser number={6} id="diaAgotamiento" label="Dia de agotamiento" type="number" icon={<CalendarToday />} />
+        <CustomActualizarUser number={4} id="porcentajeError" label="Porcentaje minimo de error" type="Number" icon={<WarningAmber />} 
+          onKeyPress={(e) => {
+            // Permitir solo números y un punto decimal
+            const isNumberOrPoint = /[0-9.]$/.test(e.key);
+            if (!isNumberOrPoint) {
+              e.preventDefault();
+            }
+            
+            // Validar que solo haya un punto decimal
+            const currentValue = e.target.value;
+            if (e.key === '.' && currentValue.includes('.')) {
+              e.preventDefault();
+            }
+          }}/>
+        <CustomActualizarUser number={6} id="ventasMin" label="Ventas Mínimas" type="Number" icon={<Numbers />} onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
+        <CustomActualizarUser number={6} id="ventasMax" label="Ventas Máximas" type="Number" icon={<Numbers />} onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
+        <CustomActualizarUser number={6} id="stockRestante" label="Stock Restante en el Almacen" type="Number" icon={<Inventory />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
+        <CustomActualizarUser number={6} id="diaAgotamiento" label="Dia de agotamiento" type="Number" icon={<CalendarToday />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
       </Grid>
     );    
 
@@ -45,13 +58,14 @@ const ReporteExcelPrediccion = ({ data, fileName, sheetName }) => {
         const diaAgotamiento = document.getElementById('diaAgotamiento').value;
         if (porcentajeError !== '') {
           const porcentajeErrorFloat = parseFloat(porcentajeError);
-  
-          // Validar el formato del porcentajeError (máximo 2 enteros y 2 decimales)
-          if (!/^(\d{1,2})(\.\d{0,2})?$/.test(porcentajeError) || porcentajeErrorFloat > 100 || porcentajeErrorFloat < 0) {
-            Swal.showValidationMessage('<div class="custom-validation-message">El porcentaje de error no debe ser menor a 0 ni mayor a 100.</div>');
+        
+          // Validar que sea un número decimal con exactamente un punto decimal y máximo 2 decimales
+          if (!/^\d{1,2}\.\d{1,2}$/.test(porcentajeError) || porcentajeErrorFloat > 100 || porcentajeErrorFloat < 0) {
+            Swal.showValidationMessage('<div class="custom-validation-message">El porcentaje debe ser un número decimal con máximo 2 decimales, y debe estar entre 0 y 100.</div>');
             return false;
           }
         }
+        
         if (ventasMin !== '') {
           const ventasMin_ = parseInt(ventasMin);
           // Validar el formato para que solo acepte números enteros

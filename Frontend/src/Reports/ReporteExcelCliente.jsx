@@ -47,7 +47,7 @@ const ReporteExcelCliente = ({ data, fileName, sheetName }) => {
     root.render(
       <Grid container spacing={2}>
         <CustomActualizarUser number={12} id="nombreCompleto" label="Nombre Completo" type="text" required={true} icon={<Person />} />
-        <CustomActualizarUser number={8} id="combinatedIdentity" label="Numero de Identidad" type="number" icon={<Numbers />} />
+        <CustomActualizarUser number={8} id="combinatedIdentity" label="Numero de Identidad" type="number" icon={<Numbers />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
         <CustomActualizarUser number={4} id="extension" label="Extension" type="text" required={false} icon={<Extension />} />
         <CustomSelectC number={12} id="identidad-select" label="Seleccione la identidad del cliente" value={''} roles={complementos} ref={identidadSelect} icon={<Badge />}/>
         <CustomActualizarUser number={6} id="fechaInicio" label="Fecha de Inicio" type="date" icon={<DateRange />} />

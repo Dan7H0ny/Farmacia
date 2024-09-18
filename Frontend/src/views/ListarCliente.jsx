@@ -85,9 +85,9 @@ export const ListarCliente = () => {
             <Grid container spacing={2}>
               <CustomActualizarUser number={12} id="nombreCompleto" label="Nombre Completo" type="text" defaultValue={nombreCompleto} required={true} icon={<Person />} />
               <CustomActualizarUser number={6} id="correo" label="Correo" type="email" defaultValue={correo} required={false} icon={<Email />} />
-              <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<Phone />} />
+              <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<Phone />} onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
               <CustomActualizarUser number={6} id="numberIdentity" label="Numero de Identidad" type="number" defaultValue={numberIdentity} required={true} icon={<Badge />} />
-              <CustomActualizarUser number={3} id="plus" label="Plus" type="number" defaultValue={plus} required={true} icon={<Numbers />} />
+              <CustomActualizarUser number={3} id="plus" label="Plus" type="number" defaultValue={plus} required={true} icon={<Numbers />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
               <CustomSelectUser number={3} id="extension" label="Extension:" value={extension} roles={Departamentos} />
               <CustomSelectC number={12} id="identidad-select" label="Seleccione la identidad del cliente" value={stringIdentity._id} roles={complementos} ref={proveedorRef} icon={<Badge />}/>
             </Grid>

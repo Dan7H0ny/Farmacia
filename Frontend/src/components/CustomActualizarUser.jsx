@@ -14,7 +14,7 @@ const CustomActualizarUser = ({
   readOnly,
   showIconOnly,
   icon,
-  operacion,
+  onKeyPress,
   ...props
 }) => {
   return (
@@ -37,6 +37,7 @@ const CustomActualizarUser = ({
           margin="normal"
           InputProps={{
             readOnly: readOnly,
+            onKeyPress: onKeyPress,
             sx: { color: '#0f1b35' },
             startAdornment: (
               <InputAdornment position="start" sx={{ color: '#0f1b35' }}>
@@ -44,21 +45,6 @@ const CustomActualizarUser = ({
               </InputAdornment>
             ),
             ...props.InputProps
-          }}
-          inputProps={{
-            min: 0,
-            step: "any",
-            pattern: type === 'number' ? "[0-9]*" : undefined,
-            inputMode: type === 'number' ? "decimal" : undefined,
-            ...props.inputProps
-          }}
-          onInput={(e) => {
-            if (type === 'number') {
-              const cleanedValue = e.target.value
-                .replace(/[^0-9.]/g, '')        // Elimina caracteres no numéricos
-                .replace(/(\..*)\./g, '$1');   // Permite solo un punto decimal
-              e.target.value = cleanedValue;
-            }
           }}
         />
       )}

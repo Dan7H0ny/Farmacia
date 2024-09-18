@@ -112,8 +112,20 @@ export const ListarProducto = () => {
           root.render(
             <Grid container spacing={2}>
               <CustomActualizarUser number={12} id="nombre" label="Nombre del Producto" type="text" defaultValue={nombre} required={true} icon={<ProductionQuantityLimits />} />
-              <CustomActualizarUser number={6} id="capacidad" label="Capacidad de presentacion" type="Number" defaultValue={capacidad_presentacion} required={true} icon={<Inventory />} />
-              <CustomActualizarUser number={6} id="precio" label="Precio" type="Number" defaultValue={precioCompra} required={true} icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />
+              <CustomActualizarUser number={6} id="capacidad" label="Capacidad de presentacion" type="Number" defaultValue={capacidad_presentacion} required={true} icon={<Inventory />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
+              <CustomActualizarUser number={6} id="precio" label="Precio" type="Number" defaultValue={precioCompra} required={true} icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} onKeyPress={(e) => {
+            // Permitir solo números y un punto decimal
+            const isNumberOrPoint = /[0-9.]$/.test(e.key);
+            if (!isNumberOrPoint) {
+              e.preventDefault();
+            }
+            
+            // Validar que solo haya un punto decimal
+            const currentValue = e.target.value;
+            if (e.key === '.' && currentValue.includes('.')) {
+              e.preventDefault();
+            }
+          }}/>
               <CustomActualizarUser number={12} id="descripcion" label="Descripcion" type="text" defaultValue={descripcion} required={true} icon={<Description />} />
               <CustomSelectC number={6} id="identidad-select" label="Seleccione el tipo de presentacion" value={tipo._id} roles={complementos} ref={tipoRef} icon={<AllInbox />}/>
               <CustomSelectProvee number={6} id="proveedor-select" label="Seleccione el proveedor del producto" value={proveedor._id} roles={proveedores} ref={proveedorRef}/>

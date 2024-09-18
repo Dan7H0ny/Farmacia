@@ -129,6 +129,7 @@ const CustomListaProductos = ({ productosAñadidos, setCantidad, cantidad, setPr
                           maxValue={valorMostrar} // Usa el valor de stock actualizado
                           minValue={1}
                           icon={<TagSharp />}
+                          onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}
                         />
                       </TableCell>
                       <TableCell>{subtotal.toFixed(2) + ' Bs'}</TableCell>

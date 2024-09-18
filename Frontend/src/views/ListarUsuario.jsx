@@ -73,7 +73,7 @@ export const ListarUsuario = () => {
               <CustomActualizarUser number={6} id="apellido" label="Apellido" type="text" defaultValue={apellido} required={true} icon={<SupervisedUserCircle />} />
               <CustomActualizarUser number={6} id="correo" label="Correo" type="email" defaultValue={correo} required={true} icon={<Email />} />
               <CustomSelectUser number={6} id="rol-select" label="Seleccione el rol del usuario:" value={rol} roles={roles} />
-              <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<PhoneAndroid />} />
+              <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<PhoneAndroid />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
               <CustomActualizarUser number={6} id="password" label="Password" type="password" defaultValue={""} required={false} icon={<Password />} />
               <CustomActualizarUser number={12} id="direccion" label="Direccion" type="text" defaultValue={direccion} required={false} icon={<Room />} />
             </Grid>

@@ -43,6 +43,7 @@ export const ReporteUsuario = (usuario, user) => {
   if (opciones.incluirNombre) tablaDatos.push(['Nombre del Usuario:', usuario.nombre]);
   if (opciones.incluirApellido) tablaDatos.push(['Apellido del Usuario:', usuario.apellido]);
   if (opciones.incluirCorreo) tablaDatos.push(['Correo del Usuario:', usuario.correo]);
+  if (opciones.incluirCorreo) tablaDatos.push(['Carnet de Identidad:', usuario.carnetIdentidad]);
   if (opciones.incluirDireccion) tablaDatos.push(['Dirección del Usuario:', usuario.direccion ? usuario.direccion : 's/n']);
   if (opciones.incluirRol) tablaDatos.push(['Rol del Usuario:', usuario.rol]);
   if (opciones.incluirTelefono) tablaDatos.push(['Teléfono del Usuario:', usuario.telefono ? usuario.telefono : 's/n']);

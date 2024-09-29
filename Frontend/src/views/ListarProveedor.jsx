@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { Grid, Box } from '@mui/material';
-import { Search, PhoneAndroid, Email, AddBusiness,Language, LocalPhone, SupervisedUserCircle, CalendarMonth } from '@mui/icons-material';
+import { Grid, Box, Typography,  } from '@mui/material';
+import { Search, PhoneAndroid, Email, AddBusiness,Language, LocalPhone, SupervisedUserCircle, CalendarMonth, ProductionQuantityLimits, AllInbox, Person } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import CustomSwal from '../components/CustomSwal';
 import CustomActualizarUser from '../components/CustomActualizarUser';
@@ -11,14 +11,18 @@ import CustomTablaPro from '../components/CustomTablaPro';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomTypography from '../components/CustomTypography';
 import { ReporteProveedor } from '../Reports/ReporteProveedor';
+import CustomsPedidos from '../components/CustomsPedidos';
 import ReporteExcelProveedor from '../Reports/ReporteExcelProveedor';
+import CustomAutocompletePedidos from '../components/CustomAutocompletePedidos';
 
 export const ListarProveedor = () => {
   const [proveedores, setproveedores] = useState([]);
   const [buscar, setBuscar] = useState('');
   const [usuario, setUsuario] = useState('');
   const usuario_ = localStorage.getItem('id');
-
+  const [user, setUser] = useState('');
+  const [productosAñadidos, setProductosAñadidos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
   const navigate = useNavigate();
 
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
@@ -27,6 +31,18 @@ export const ListarProveedor = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setUser(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate, token, configInicial, UrlReact, usuario_]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
@@ -47,7 +63,7 @@ export const ListarProveedor = () => {
           CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
           navigate('/Menu/Administrador')
         }
-        else {setproveedores(response);}
+        else {setproveedores(response); console.log(response)}
       })
       .catch(error => { console.log(error);});
   }, [navigate, token, configInicial, UrlReact] );
@@ -261,7 +277,56 @@ export const ListarProveedor = () => {
             CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: error});
           });
       }
-    };  
+    };
+    const btnPedir = (proveedor) => {
+      console.log('pro: ', proveedor)
+      if (!token) {
+        CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso' });
+        navigate('/Menu/Administrador');
+      } else {
+        axios.get(`${UrlReact}/proveedor/buscar/${proveedor._id}`, configInicial)
+          .then(response => {
+            const { nombre_marca, nombre_vendedor } = response;
+            console.log(proveedor)
+            // Nueva solicitud para buscar productos del proveedor
+            axios.get(`${UrlReact}/producto/buscar/por-proveedor/${proveedor._id}`, configInicial)
+              .then(res => {
+                console.log(res)
+                const productosProveedor = res; // Array de productos
+                const container = document.createElement('div');
+                const root = createRoot(container);
+                root.render(
+                  <Grid container spacing={2}>
+                    <CustomActualizarUser number={12} label="Nombre de la marca" defaultValue={nombre_marca} readOnly={true} icon={<ProductionQuantityLimits />} />
+                    <CustomActualizarUser number={12} label="Nombre del vendedor" defaultValue={nombre_vendedor} readOnly={true} icon={<Person />} />
+                    <CustomAutocompletePedidos productos={productosProveedor} productosAñadidos={productosAñadidos} setProductosAñadidos={setProductosAñadidos} inputValue={inputValue} setInputValue={setInputValue}/>
+                  </Grid>
+                );
+                Swal.fire({
+                  title: 'HACER PEDIDO',
+                  html: container,
+                  showCancelButton: false,
+                  showConfirmButton: false,
+                  confirmButtonText: 'Hacer Pedido',
+                  cancelButtonText: 'Cancelar pedido',
+                  customClass: {
+                    popup: 'customs-swal-popup',
+                    title: 'customs-swal-title',
+                    confirmButton: 'swal2-confirm custom-swal2-confirm',
+                    cancelButton: 'swal2-cancel custom-swal2-cancel',
+                  },
+                });
+              })
+              .catch(error => {
+                CustomSwal({ icono: 'error', titulo: 'Error al obtener productos del proveedor', mensaje: error.mensaje });
+              });
+          })
+          .catch(error => {
+            CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: error.mensaje });
+          });
+      }
+    };
+     
 
   return (
     <div id="caja_contenido"> 
@@ -289,7 +354,7 @@ export const ListarProveedor = () => {
             </Grid>
           </Grid>
         </form>
-        <CustomTablaPro usuarios={proveedores} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar}/>
+        <CustomTablaPro usuarios={proveedores} buscar={buscar} botonMostrar={btnMostrar} botonActualizar={btnActualizar} botonPedir={btnPedir}/>
       </Box>
   </div>
   )

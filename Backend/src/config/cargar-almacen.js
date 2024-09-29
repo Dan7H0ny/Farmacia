@@ -43,7 +43,7 @@ const generarPrecioVenta = function(precioCompra) {
   return Math.round(precio * 10) / 10;
 };
 
-const cargarAlmacen = async function(callback) {
+const cargarAlmacen = async () => {
   try {
     const usuarios = await Usuario.find();
     const productos = await Producto.find();
@@ -54,8 +54,7 @@ const cargarAlmacen = async function(callback) {
     // Convertimos el array de productos en un array de objetos
     const productosDisponibles = productos.map(producto => producto._id);
 
-    for (let i = 0; i < productosDisponibles.length; i++) {
-      const producto = productosDisponibles[i];
+    for (const producto of productosDisponibles) {
       const productoObj = productos.find(p => p._id.equals(producto));
       const precioCompra = productoObj.precioCompra;
       const precioVenta = generarPrecioVenta(precioCompra);
@@ -84,8 +83,6 @@ const cargarAlmacen = async function(callback) {
     console.log('Datos insertados correctamente');
   } catch (error) {
     console.error('Error al insertar los datos:', error);
-  } finally {
-    if (callback) callback();
   }
 };
 

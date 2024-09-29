@@ -50,7 +50,7 @@ const generarFechaAleatoria = function() {
   return new Date(fechaInicio.getTime() + Math.random() * (fechaActual.getTime() - fechaInicio.getTime()));
 };
 
-const crearDatos = async function() {
+const cargarClientes = async function() {
   try {
     const clientes = [];
 
@@ -92,4 +92,4 @@ const crearDatos = async function() {
   }
 };
 
-module.exports = crearDatos;
+module.exports = cargarClientes;

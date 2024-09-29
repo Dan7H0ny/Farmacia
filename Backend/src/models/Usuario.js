@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     required: false,
     min: 0,
   },
+  carnetIdentidad: {
+    type: Number,
+    required: true,
+  },
   correo: {
     type: String,
     required: true

@@ -7,7 +7,7 @@ const cron = require('node-cron');
 
 // Crear un usuario
 router.post('/crear', verificacion, async (req, res) => {
-  const { nombre, apellido, rol, direccion, telefono, correo, password } = req.body;
+  const { nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo, password } = req.body;
 
   if (!nombre || !apellido || !rol || !correo || !password) {
     return res.status(400).json({ mensaje: 'Faltan datos requeridos: nombre, apellido, rol, correo, o password' });
@@ -18,7 +18,7 @@ router.post('/crear', verificacion, async (req, res) => {
     const fechaActual = new Date();
     const correoDuplicado = await Usuario.findOne({ correo: { $regex: new RegExp(`^${correo}$`, 'i') } });
     if (correoDuplicado) {return res.status(400).json({ mensaje: 'El correo ya está registrado, ingrese otro correo distinto' });}
-    const usuario = new Usuario({ nombre, apellido, rol, direccion, telefono, correo, password:hashedPassword, pin:pin, estado:true, fecha_registro:fechaActual, fecha_actualizacion:fechaActual });
+    const usuario = new Usuario({ nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo, password:hashedPassword, pin:pin, estado:true, fecha_registro:fechaActual, fecha_actualizacion:fechaActual });
     await usuario.save();
     res.status(201).json({ mensaje: 'Usuario creado exitosamente', usuario });
   } catch (error) {
@@ -66,7 +66,7 @@ router.get('/buscar/:id', verificacion, async (req, res) => {
 // Actualizar un usuario
 router.put('/actualizar/:id', verificacion, async (req, res) => {
   const { id } = req.params;
-  const { nombre, apellido, rol, direccion, telefono, correo, password } = req.body;
+  const { nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo, password } = req.body;
   const fechaActual = new Date();
   
   try {
@@ -87,10 +87,10 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
     // Actualizar los datos del usuario
     let usuarioActualizado;
     if (password.trim() === '') {
-      usuarioActualizado = await Usuario.findByIdAndUpdate(id, { nombre, apellido, rol, direccion, telefono, correo, fecha_actualizacion: fechaActual }, { new: true });
+      usuarioActualizado = await Usuario.findByIdAndUpdate(id, { nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo, fecha_actualizacion: fechaActual }, { new: true });
     } else {
       const hashedPassword = await bcryptjs.hash(password, 10);
-      usuarioActualizado = await Usuario.findByIdAndUpdate(id, { nombre, apellido, rol, direccion, telefono, correo, password: hashedPassword, fecha_actualizacion: fechaActual }, { new: true });
+      usuarioActualizado = await Usuario.findByIdAndUpdate(id, { nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo, password: hashedPassword, fecha_actualizacion: fechaActual }, { new: true });
     }
 
     res.json({ mensaje: 'Usuario actualizado exitosamente', usuarioActualizado });

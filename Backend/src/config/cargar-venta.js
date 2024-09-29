@@ -25,19 +25,19 @@ const generarFechaAleatoria = function() {
   return fechaRegistro;
 };
 
-const cargarVentas = async function(callback) {
+const cargarVentas = async () => {
   try {
     const clientes = await Cliente.find();
     const productos = await Almacen.find()
-    .populate({
-      path: 'producto',
-      select: 'nombre capacidad_presentacion precioCompra',
-      populate: [
-        { path: 'tipo', select: 'nombre' },
-        { path: 'proveedor', select: 'nombre_marca' }
-      ]
-    })
-    .populate('categoria', 'nombre');
+      .populate({
+        path: 'producto',
+        select: 'nombre capacidad_presentacion precioCompra',
+        populate: [
+          { path: 'tipo', select: 'nombre' },
+          { path: 'proveedor', select: 'nombre_marca' }
+        ]
+      })
+      .populate('categoria', 'nombre');
     const usuarios = await Usuario.find();
 
     const ventas = [];
@@ -88,8 +88,6 @@ const cargarVentas = async function(callback) {
     console.log('Datos de ventas insertados correctamente');
   } catch (error) {
     console.error('Error al insertar los datos de ventas:', error);
-  } finally {
-    if (callback) callback();
   }
 };
 

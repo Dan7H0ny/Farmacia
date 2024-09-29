@@ -180,6 +180,7 @@ export const ListarAlmacen = () => {
       axios.get(`${UrlReact}/almacen/buscar/${almacen._id}`, configInicial)
         .then(response => {
           const { producto, categoria, precioVenta, cantidad_stock, estado, fecha_caducidad, usuario_registro, usuario_actualizacion, fecha_registro, fecha_actualizacion } = response;
+          console.log(response)
           const fechaRegistro = fecha_registro ? formatDateTime(new Date(fecha_registro)) : '';
           const fechaActualizacion = fecha_actualizacion ? formatDateTime(new Date(fecha_actualizacion)) : '';
 

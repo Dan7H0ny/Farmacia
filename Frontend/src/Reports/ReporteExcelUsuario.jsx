@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import { DateRange } from '@mui/icons-material';
 
-const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
+const ReporteExcelUsuario = ({ data, firma_Usuario, fileName, sheetName }) => {
 
   const btnImprimir = () => {
 
@@ -138,6 +138,7 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
           'Nombre del Usuario': item.nombre,
           'Apellido del Usuario': item.apellido,
           'Correo del Usuario': item.correo,
+          'Carnet de identidad del Usuario': item.carnetIdentidad,
           'Direccion del Usuario': item.direccion ? item.direccion : 's/n',
           'Rol del Usuario': item.rol,
           'Telefono del Usuario': item.telefono ? item.telefono : 's/n',
@@ -150,7 +151,7 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
         const worksheet = workbook.addWorksheet(sheetName || 'Sheet1');
 
         // Agregar encabezados
-        const headers = ["N°", "Nombre del Usuario", "Apellido del Usuario", "Correo del Usuario", "Direccion del Usuario", "Rol del Usuario", "Telefono del Usuario", "Estado del Usuario", "Fecha de Registro", "Fecha de Actualización"];
+        const headers = ["N°", "Nombre del Usuario", "Apellido del Usuario", "Correo del Usuario", "Carnet de identidad del Usuario", "Direccion del Usuario", "Rol del Usuario", "Telefono del Usuario", "Estado del Usuario", "Fecha de Registro", "Fecha de Actualización"];
         worksheet.addRow(headers).eachCell({ includeEmpty: true }, (cell, colNumber) => {
           cell.font = { bold: true, color: { argb: 'e2e2e2' } };
           cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
@@ -188,6 +189,34 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
             if (cellLength > maxLength) maxLength = cellLength;
           });
           column.width = maxLength < 10 ? 10 : maxLength; // Ajustar el ancho mínimo si es necesario
+        });
+
+        // Agregar una fila en blanco
+        worksheet.addRow([]);
+
+        // Agregar una fila con "Fecha de impresión" y "Firma del usuario"
+        const fechaImpresion = `Fecha de impresión: ${formatDateTime(new Date())}`;
+        const firmaUsuario = `Firma del ${firma_Usuario.nombre} ${firma_Usuario.apellido}:________________________`;
+
+        // Agregar la fila con los valores, asegurando que las celdas intermedias estén vacías
+        const filaImpresion = worksheet.addRow([fechaImpresion, "", "", "", "", "", firmaUsuario]);
+
+        // Combinar las celdas A-F para "Fecha de impresión"
+        worksheet.mergeCells(`A${filaImpresion.number}:F${filaImpresion.number}`);
+
+        // Combinar las celdas G-K para "Firma del usuario"
+        worksheet.mergeCells(`G${filaImpresion.number}:K${filaImpresion.number}`);
+
+        // Estilos para la fila de impresión y firma
+        filaImpresion.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          cell.font = { bold: true }; // Texto en negrita
+          cell.alignment = { horizontal: 'left', vertical: 'middle' }; // Alinear el texto a la izquierda y centrado verticalmente
+          cell.border = {
+            top: { style: 'thin', color: { argb: '000000' } },
+            left: { style: 'thin', color: { argb: '000000' } },
+            bottom: { style: 'thin', color: { argb: '000000' } },
+            right: { style: 'thin', color: { argb: '000000' } }
+          };
         });
 
         // Ajustar la altura de las filas basado en el número de líneas de texto

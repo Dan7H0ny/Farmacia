@@ -27,53 +27,33 @@ const nombresProducto = [
   'Clopidogrel', 'Dexamethasone', 'Doxycycline', 'Escitalopram', 'Fluconazole'
 ];
 
-
-const generarUsuario = async function() {
-  const usuarios = await Usuario.find();
-  return usuarios[Math.floor(Math.random() * usuarios.length)]._id;
-};
-const generarProveedor = async function() {
-  const proveedores = await Proveedor.find();
-  return proveedores[Math.floor(Math.random() * proveedores.length)]._id;
-};
-
-const generarTipoPresentacion = async function() {
-  const complementos = await Complemento.find({ nombreComplemento: 'Tipo' });
-  if (complementos.length === 0) {
-    return null;
-  }
-  return complementos[Math.floor(Math.random() * complementos.length)]._id;
- };
-
-const generarFechaAleatoria = function() {
+// Función para generar una fecha aleatoria entre el último mes y la fecha actual
+const generarFechaAleatoria = () => {
   const fechaActual = new Date();
   const fechaInicio = new Date();
   fechaInicio.setMonth(fechaInicio.getMonth() - 1);
 
-  const fechaAleatoria = new Date(fechaInicio.getTime() + Math.random() * (fechaActual.getTime() - fechaInicio.getTime()));
-  return fechaAleatoria;
+  return new Date(fechaInicio.getTime() + Math.random() * (fechaActual.getTime() - fechaInicio.getTime()));
 };
 
-const generarCantidadPresentacion = function() {
-  const min = 10;
-  const max = 250;
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+// Función para generar una cantidad aleatoria de presentación
+const generarCantidadPresentacion = () => Math.floor(Math.random() * (250 - 10 + 1)) + 10;
 
-const generarPrecioCompra = function() {
-  const min = 2;
-  const max = 100;
-  const precio = Math.random() * (max - min) + min;
-  return Math.round(precio * 10) / 10;
-};
+// Función para generar un precio de compra aleatorio con 1 decimal
+const generarPrecioCompra = () => Math.round((Math.random() * (100 - 2) + 2) * 10) / 10;
 
-const crearDatos = async function(callback) {
+const crearProductos = async () => {
   try {
     const usuarios = await Usuario.find();
     const proveedores = await Proveedor.find();
     const tipos = await Complemento.find({ nombreComplemento: 'Tipo' });
 
-    const productos = await Promise.all(nombresProducto.map(async nombreProducto => {
+    // Validaciones para asegurarse de que haya datos disponibles
+    if (!usuarios.length || !proveedores.length) {
+      throw new Error('No hay usuarios o proveedores disponibles para asignar a los productos.');
+    }
+
+    const productos = nombresProducto.map(nombreProducto => {
       const usuarioIndex = Math.floor(Math.random() * usuarios.length);
       const proveedorIndex = Math.floor(Math.random() * proveedores.length);
       const tipoIndex = tipos.length ? Math.floor(Math.random() * tipos.length) : null;
@@ -88,29 +68,34 @@ const crearDatos = async function(callback) {
       const fechaActualizacion = new Date(fechaRegistro);
       fechaActualizacion.setDate(fechaActualizacion.getDate() + Math.floor(Math.random() * 30));
 
-      return new Producto({
-        nombre: nombreProducto,
-        tipo: tipo_,
-        descripcion: '',
-        proveedor: proveedor_,
-        precioCompra: precioCompra_,
-        capacidad_presentacion: cantidad,
-        usuario_registro: usuario_,
-        usuario_actualizacion: usuario_,
-        fecha_registro: fechaRegistro,
-        fecha_actualizacion: fechaActualizacion
-      });
-    }));
+      return {
+        insertOne: {
+          document: new Producto({
+            nombre: nombreProducto,
+            tipo: tipo_,
+            descripcion: '',
+            proveedor: proveedor_,
+            precioCompra: precioCompra_,
+            capacidad_presentacion: cantidad,
+            usuario_registro: usuario_,
+            usuario_actualizacion: usuario_,
+            fecha_registro: fechaRegistro,
+            fecha_actualizacion: fechaActualizacion
+          })
+        }
+      };
+    });
 
-    await Producto.insertMany(productos);
-    console.log('Datos insertados correctamente');
+    if (productos.length) {
+      // Uso de bulkWrite para manejar las inserciones masivas y optimizar el proceso
+      await Producto.bulkWrite(productos);
+      console.log('Datos insertados correctamente');
+    } else {
+      console.log('No hay productos para insertar.');
+    }
   } catch (error) {
     console.error('Error al insertar los datos:', error);
-  } finally {
-    if (callback) callback();
   }
 };
 
-
-module.exports = crearDatos;
-
+module.exports = crearProductos;

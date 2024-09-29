@@ -25,7 +25,7 @@ router.post('/crear',verificacion, async (req, res) => {
 // Obtener todos los Proveedors
 router.get('/mostrar',verificacion, async (req, res) => {
   try {
-    const Proveedores = await Proveedor.find({}).sort({ fecha_registro: -1 });
+    const Proveedores = await Proveedor.find().sort({ fecha_registro: -1 });
     res.json(Proveedores);
   } catch (error) {
     console.error(error);

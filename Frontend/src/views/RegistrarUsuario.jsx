@@ -2,7 +2,7 @@ import React, {useState, useMemo} from 'react';
 import { Button, Box , Grid, Alert } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Password, Email, PhoneAndroid, Person, SupervisedUserCircle, Room, People } from '@mui/icons-material';
+import { Password, Email, PhoneAndroid, Person, SupervisedUserCircle, Room, People, Badge } from '@mui/icons-material';
 import CustomTypography from '../components/CustomTypography.jsx';
 import '../assets/css/menu.css';
 import CustomRegisterUser from '../components/CustomRegisterUser.jsx';
@@ -16,6 +16,7 @@ export const RegistrarUsuario = () => {
   const [rol, setRol] = useState('');
   const [direccion, setDireccion] = useState('');
   const [telefono, setTelefono] = useState('');
+  const [carnetIdentidad, setCarnetIdentidad] = useState('');
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
   const [envioIntentado, setEnvioIntentado] = useState(false);
@@ -55,7 +56,7 @@ export const RegistrarUsuario = () => {
         }
         else {
           setEnvioIntentado(false);
-          const NuevoUsuario = { nombre, apellido, rol, direccion, telefono, correo, password };
+          const NuevoUsuario = { nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo, password };
           axios.post(`${UrlReact}/usuario/crear`, NuevoUsuario, configInicial)
             .then(response => {
               CustomSwal({ icono: 'success', titulo: 'Usuario Creado', mensaje: response.mensaje});
@@ -68,7 +69,7 @@ export const RegistrarUsuario = () => {
         return;
       }
       else{
-        const NuevoUsuario = { nombre, apellido, rol, direccion, telefono, correo, password };
+        const NuevoUsuario = { nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo, password };
         axios.post(`${UrlReact}/usuario/crear`, NuevoUsuario, configInicial)
           .then(response => {
             CustomSwal({ icono: 'success', titulo: 'Usuario Creado', mensaje: response.mensaje});
@@ -90,6 +91,7 @@ export const RegistrarUsuario = () => {
     setTelefono("");
     setCorreo("");
     setPassword("");
+    setCarnetIdentidad("");
     setEnvioIntentado(false);
     document.getElementById("Form-1").reset();
   }
@@ -156,6 +158,25 @@ export const RegistrarUsuario = () => {
               icon={<PhoneAndroid/>}
               onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}
             />
+            <CustomRegisterUser
+              number={6}
+              label="Carnet de identidad"  
+              placeholder= 'Ingrese el carnet de Identidad'
+              type= 'Number'
+              value={carnetIdentidad}
+              onChange={(e) => { 
+                const inputValue = e.target.value;
+                if ( inputValue.length > 12) {
+                  setCarnetIdentidad(inputValue.slice(0, 12));
+                } 
+                else { 
+                  setCarnetIdentidad(inputValue);
+                }
+              }}
+              required={true}
+              icon={<Badge/>}
+              onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}
+            />
             <CustomSelect
               number ={6}
               id="select-rol"
@@ -176,7 +197,7 @@ export const RegistrarUsuario = () => {
               icon={<Email/>}
             />
             <CustomRegisterUser
-              number={6}
+              number={12}
               label="Password"  
               placeholder= 'Ingrese el password del Usuario'
               type= 'password'

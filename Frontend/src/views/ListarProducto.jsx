@@ -105,8 +105,7 @@ export const ListarProducto = () => {
     } else {
       axios.get(`${UrlReact}/producto/buscar/${producto._id}`, configInicial)
         .then(response => {
-          const { producto } = response;
-          const { _id, nombre, tipo, descripcion, proveedor, precioCompra, capacidad_presentacion } = producto;
+          const { _id, nombre, tipo, descripcion, proveedor, precioCompra, capacidad_presentacion } = response;
           const container = document.createElement('div');
           const root = createRoot(container);
           root.render(
@@ -209,8 +208,8 @@ export const ListarProducto = () => {
     } else {
       axios.get(`${UrlReact}/producto/buscar/${producto._id}`, configInicial)
         .then(response => {
-          const { producto } = response;
-          const { nombre, tipo, descripcion, proveedor, precioCompra, capacidad_presentacion, usuario_registro, usuario_actualizacion, fecha_registro, fecha_actualizacion } = producto;
+          console.log(response)
+          const { nombre, tipo, descripcion, proveedor, precioCompra, capacidad_presentacion, usuario_registro, usuario_actualizacion, fecha_registro, fecha_actualizacion } = response;
           const fechaRegistro = fecha_registro ? formatDateTime(new Date(fecha_registro)) : '';
           const fechaActualizacion = fecha_actualizacion ? formatDateTime(new Date(fecha_actualizacion)) : '';
 

@@ -60,7 +60,7 @@ const InfoTable = ({ predicciones }) => {
               <TableCell style={headerCellStyle}>#</TableCell>
               <TableCell style={headerCellStyle}>Producto</TableCell>
               <TableCell style={headerCellStyle}>Categoría</TableCell>
-              <TableCell style={headerCellStyle}>Ventas</TableCell>
+              <TableCell style={headerCellStyle}>Ventas en el periodo de 30 dias</TableCell>
               <TableCell style={headerCellStyle}>Datos Historicos</TableCell>
               <TableCell style={headerCellStyle}>Día Agotamiento</TableCell>
               <TableCell style={headerCellStyle}>Porcentaje de Error</TableCell>

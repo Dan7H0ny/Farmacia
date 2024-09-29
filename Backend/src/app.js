@@ -3,7 +3,12 @@ const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-// const crearDatos = require('./config/cargar-Datos');
+//const cargarDatos = require('./config/cargar-complementos');
+//const cargarProveedores = require('./config/cargar-proveedores');
+//const crearProductos = require('./config/cargar-productos');
+//const cargarAlmacen = require('./config/cargar-almacen');
+//const cargarClientes = require('./config/cargar-clientes');
+//const cargarVentas = require('./config/cargar-venta');
 const utiles = require('./config/newuser');
 require('dotenv').config();
 app.set('key', process.env.TOKEN_LLAVE);
@@ -31,8 +36,14 @@ mongoose.connect(process.env.BD_CONEXION, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => {
+.then(async () => {
   console.log('Conectado a la base de datos');
+  //await cargarDatos();
+  //await cargarProveedores();
+  //await crearProductos();
+  //await cargarAlmacen();
+  //await cargarClientes();
+  //await cargarVentas();
   utiles.primerUsuario(() => {
     app.listen(process.env.PUERTO_HTTP, '0.0.0.0',() => {
       console.log(`Servidor iniciado en el puerto ${process.env.PUERTO_HTTP}`);

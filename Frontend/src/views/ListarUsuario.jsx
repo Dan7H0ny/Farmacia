@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {  Grid, Box, } from '@mui/material';
-import { Search, Person, Email, PhoneAndroid, Room, Password, SupervisedUserCircle, Group, CalendarMonth, Cancel, CheckCircle} from '@mui/icons-material';
+import { Search, Person, Email, PhoneAndroid, Room, Password, SupervisedUserCircle, Group, CalendarMonth, Cancel, CheckCircle, Badge} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import CustomRegisterUser from '../components/CustomRegisterUser';
@@ -33,6 +33,7 @@ export const ListarUsuario = () => {
   const configInicial = useMemo(() => ({
     headers: { Authorization: `Bearer ${token}` }
   }), [token]);
+
   useEffect(() => {
     axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
       .then(response => {
@@ -64,7 +65,7 @@ export const ListarUsuario = () => {
     } else {
       axios.get(`${UrlReact}/usuario/buscar/${usuario._id}`, configInicial)
         .then(response => {
-          const { _id, nombre, apellido, rol, direccion, telefono, correo } = response;
+          const { _id, nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo } = response;
           const container = document.createElement('div');
           const root = createRoot(container);
           root.render(
@@ -74,7 +75,8 @@ export const ListarUsuario = () => {
               <CustomActualizarUser number={6} id="correo" label="Correo" type="email" defaultValue={correo} required={true} icon={<Email />} />
               <CustomSelectUser number={6} id="rol-select" label="Seleccione el rol del usuario:" value={rol} roles={roles} />
               <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<PhoneAndroid />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
-              <CustomActualizarUser number={6} id="password" label="Password" type="password" defaultValue={""} required={false} icon={<Password />} />
+              <CustomActualizarUser number={6} id="carnetIdentidad" label="Carnet de Identidad" type="number" defaultValue={carnetIdentidad} required={false} icon={<Badge />}  onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault();}}}/>
+              <CustomActualizarUser number={12} id="password" label="Password" type="password" defaultValue={""} required={false} icon={<Password />} />
               <CustomActualizarUser number={12} id="direccion" label="Direccion" type="text" defaultValue={direccion} required={false} icon={<Room />} />
             </Grid>
           );
@@ -91,6 +93,7 @@ export const ListarUsuario = () => {
               const rol_ = document.getElementById('rol-select').textContent;
               const direccion_ = document.getElementById('direccion').value;
               const telefono_ = parseInt(document.getElementById('telefono').value);
+              const carnet_ = parseInt(document.getElementById('carnetIdentidad').value);
               let password_ = document.getElementById('password').value;
               
               const nameRegex = /^[A-Za-záéíóúüñÁÉÍÓÚÑ\s]+$/;
@@ -118,7 +121,7 @@ export const ListarUsuario = () => {
                 Swal.showValidationMessage('<div class="custom-validation-message">Por favor ingrese un número de teléfono válido, si es necesario</div>');
                 return false;
               }
-              return { nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_ };
+              return { nombre_, apellido_, direccion_, telefono_, carnet_, correo_, rol_, password_ };
             },
             customClass: {
               popup: 'customs-swal-popup',
@@ -131,6 +134,7 @@ export const ListarUsuario = () => {
                 const nombreInput = document.getElementById('nombre');
                 const apellidoInput = document.getElementById('apellido');
                 const telefonoInput = document.getElementById('telefono');
+                const carnetInput = document.getElementById('carnetIdentidad');
 
                 if (nombreInput) {
                   nombreInput.addEventListener('input', function () {
@@ -152,16 +156,25 @@ export const ListarUsuario = () => {
                     }
                   });
                 }
+                if (carnetInput) {
+                  carnetInput.addEventListener('input', function () {
+                    this.value = this.value.replace(/[^\d]/g, '');
+                    if (this.value.length > 9) {
+                      this.value = this.value.slice(0, 9);
+                    }
+                  });
+                }
               }, 0);
             },
           }).then((result) => {
             if (result.isConfirmed) {
-              const { nombre_, apellido_, direccion_, telefono_, correo_, rol_, password_ } = result.value;   
+              const { nombre_, apellido_, direccion_, telefono_, carnet_, correo_, rol_, password_ } = result.value;   
               axios.put(`${UrlReact}/usuario/actualizar/${_id}`, {
                 nombre: nombre_,
                 apellido: apellido_,
                 direccion: direccion_,
                 telefono: telefono_,
+                carnetIdentidad: carnet_,
                 correo: correo_,
                 password: password_,
                 rol: rol_,
@@ -175,6 +188,7 @@ export const ListarUsuario = () => {
                     apellido: apellido_,
                     direccion: direccion_,
                     telefono: telefono_,
+                    carnetIdentidad: carnet_,
                     correo: correo_,
                     password: password_,
                     rol: rol_,
@@ -205,7 +219,7 @@ export const ListarUsuario = () => {
     } else {
       axios.get(`${UrlReact}/usuario/buscar/${cliente._id}`, configInicial)
         .then(response => {
-          const { nombre, apellido, rol, direccion, telefono, correo, estado, fecha_registro, fecha_actualizacion } = response;
+          const { nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo, estado, fecha_registro, fecha_actualizacion } = response;
           const fechaRegistro = fecha_registro ? formatDateTime(new Date(fecha_registro)) : '';
           const fechaActualizacion = fecha_actualizacion ? formatDateTime(new Date(fecha_actualizacion)) : '';
 
@@ -232,7 +246,8 @@ export const ListarUsuario = () => {
             <Grid container spacing={2}>
               <CustomActualizarUser number={6} label="Nombre del Usuario" defaultValue={nombre} readOnly = {true} icon={<Person />} />
               <CustomActualizarUser number={6} label="Apellido del Usuario" defaultValue={apellido} readOnly = {true} icon={<SupervisedUserCircle />} />
-              <CustomActualizarUser number={12} label="Correo del Usuario" defaultValue={correo} readOnly = {true} icon={<Email/>} />
+              <CustomActualizarUser number={6} label="Correo del Usuario" defaultValue={correo} readOnly = {true} icon={<Email/>} />
+              <CustomActualizarUser number={6} label="Carnet de Identidad" defaultValue={carnetIdentidad} readOnly={true} icon={<Badge />} />
               <CustomActualizarUser number={12}label="Direccion del Usuario" defaultValue={direccion} readOnly={true} icon={<Room />} />
               <CustomActualizarUser number={6} label="Rol del Usuario" defaultValue={rol} readOnly = {true} icon={<Group />} />
               <CustomActualizarUser number={6} label="Telefono del Usuario" defaultValue={telefono} readOnly={true} icon={<PhoneAndroid />} />
@@ -304,6 +319,7 @@ export const ListarUsuario = () => {
           <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
             <ReporteExcelUsuario
               data={usuarios}
+              firma_Usuario={user}
               fileName="Reporte de Usuarios"
               sheetName="Usuarios"
               sx={{ mt: 2 }}

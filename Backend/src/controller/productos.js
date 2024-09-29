@@ -39,23 +39,16 @@ router.get('/mostrar', verificacion, async (req, res) => {
 router.get('/buscar/:id',verificacion, async (req, res) => {
   const { id } = req.params;
   try {
-    const productoEncontrado = await Almacen.findOne({ producto: id });
-    const prediccion = await Prediccion.findOne({productos: productoEncontrado._id});
-    const totalVentas = prediccion ? prediccion.prediccion.ventas.reduce((acc, venta) => acc + venta, 0) : 0;
-    const total = Math.max(totalVentas - productoEncontrado.cantidad_stock, 0);
     const producto = await Producto.findById(id)
       .populate('proveedor', 'nombre_marca correo telefono sitioweb')
       .populate('tipo', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
       .sort({ fecha_caducidad: 1 });
-    const capacidadPresentacion = producto.capacidad_presentacion;
-    const cantidadEstimada = capacidadPresentacion ? Math.ceil(total / capacidadPresentacion) : 0;
-    const precioEstimado =(cantidadEstimada * producto.precioCompra).toFixed(2);
     if (!producto) {
       return res.status(404).json({ mensaje: 'Producto no encontrado' });
     }
-    res.json({producto, cantidadEstimada, precioEstimado});
+    res.json(producto);
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al obtener el Producto' });
@@ -84,5 +77,39 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
     res.status(500).json({ mensaje: 'Error al actualizar el Producto' });
   }
 });
+
+router.get('/buscar/por-proveedor/:id', verificacion, async (req, res) => {
+  const { id } = req.params; // ID del proveedor
+
+  try {
+    // Buscar productos que correspondan al proveedor
+    const productos = await Producto.find({ proveedor: id })
+      .populate('proveedor', 'nombre_marca correo telefono sitioweb')
+      .populate('tipo', 'nombre');
+    // Verificar si se encontraron productos
+    if (productos.length === 0) {
+      return res.status(404).json({ mensaje: 'No se encontraron productos para este proveedor' });
+    }
+
+    res.json(productos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al obtener los productos' });
+  }
+});
+
+// const productoEncontrado = await Almacen.findOne({ producto: id });
+// const prediccion = await Prediccion.findOne({productos: productoEncontrado._id});
+// const totalVentas = prediccion ? prediccion.prediccion.ventas.reduce((acc, venta) => acc + venta, 0) : 0;
+// const total = Math.max(totalVentas - productoEncontrado.cantidad_stock, 0);
+// const producto = await Producto.findById(id)
+//   .populate('proveedor', 'nombre_marca correo telefono sitioweb')
+//   .populate('tipo', 'nombre')
+//   .populate('usuario_registro', 'nombre apellido rol correo')
+//   .populate('usuario_actualizacion', 'nombre apellido rol correo')
+//   .sort({ fecha_caducidad: 1 });
+// const capacidadPresentacion = producto.capacidad_presentacion;
+// const cantidadEstimada = capacidadPresentacion ? Math.ceil(total / capacidadPresentacion) : 0;
+// const precioEstimado =(cantidadEstimada * producto.precioCompra).toFixed(2);
 
 module.exports= router

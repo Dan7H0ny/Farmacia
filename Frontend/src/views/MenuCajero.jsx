@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Drawer, IconButton, Grid, Box, Typography, Avatar } from '@mui/material';
-import { ShoppingCart, MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, SupervisedUserCircle, Person } from '@mui/icons-material';
+import { ShoppingCart, MeetingRoom, HomeOutlined, PhoneAndroid, Password, MenuOutlined, Email, Room, BusinessCenter, SupervisedUserCircle, Person, Badge } from '@mui/icons-material';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { useAutenticarContexto } from '../contextos/autenticar';
@@ -52,7 +52,7 @@ export const MenuCajero = () => {
     axios.get(`${UrlReact}/usuario/buscar/${_id}`, config)
     .then(response => {
       // Acciones a realizar con los datos del usuario encontrado
-      const { _id, nombre, apellido, rol, direccion, telefono, correo } = response;
+      const { _id, nombre, apellido, rol, direccion, telefono, carnetIdentidad, correo } = response;
       const container = document.createElement('div');
       const root = createRoot(container);
       root.render(
@@ -62,7 +62,8 @@ export const MenuCajero = () => {
           <CustomActualizarUser number={6} label="Correo" defaultValue={correo} readOnly = {true} icon={<Email />} />
           <CustomActualizarUser number={6} label="Rol" defaultValue={rol} readOnly = {true} icon={<BusinessCenter />} />
           <CustomActualizarUser number={6} id="telefono" label="Telefono" type="number" defaultValue={telefono} required={false} icon={<PhoneAndroid />} />
-          <CustomActualizarUser number={6} id="password" label="Password" type="password" defaultValue={""} required={false} icon={<Password />} />
+          <CustomActualizarUser number={6} id="carnet" label="Carnet de Identidad" type="number" defaultValue={carnetIdentidad} readOnly={true} icon={<Badge />}/>
+          <CustomActualizarUser number={12} id="password" label="Password" type="password" defaultValue={""} required={false} icon={<Password />} />
           <CustomActualizarUser number={12}id="direccion" label="Direccion" type="text" defaultValue={direccion} required={false} icon={<Room />} />
         </Grid>
       );

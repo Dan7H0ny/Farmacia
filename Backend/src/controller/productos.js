@@ -78,25 +78,23 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
   }
 });
 
-router.get('/buscar/por-proveedor/:id', verificacion, async (req, res) => {
-  const { id } = req.params; // ID del proveedor
-
+router.get('/mostrar/por-proveedor/:id', verificacion, async (req, res) => {
+  const { id } = req.params;
   try {
-    // Buscar productos que correspondan al proveedor
-    const productos = await Producto.find({ proveedor: id })
-      .populate('proveedor', 'nombre_marca correo telefono sitioweb')
-      .populate('tipo', 'nombre');
-    // Verificar si se encontraron productos
-    if (productos.length === 0) {
-      return res.status(404).json({ mensaje: 'No se encontraron productos para este proveedor' });
-    }
-
-    res.json(productos);
+    const productosEncontrados = await Producto.find({proveedor: id})
+      .populate('proveedor', 'nombre_marca')
+      .populate('tipo', 'nombre')
+      .populate('usuario_registro', 'nombre apellido rol correo')
+      .populate('usuario_actualizacion', 'nombre apellido rol correo')
+      .sort({ fecha_registro: -1 });
+      
+    res.json(productosEncontrados);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al obtener los productos' });
+    res.status(500).json({ mensaje: 'Error al obtener los Productos' });
   }
 });
+
 
 // const productoEncontrado = await Almacen.findOne({ producto: id });
 // const prediccion = await Prediccion.findOne({productos: productoEncontrado._id});

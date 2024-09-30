@@ -140,6 +140,7 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
       prediccionExistente.diaAgotamiento = diaAgotamiento;
       prediccionExistente.datosHistoricos = datosHistoricos;
       prediccionExistente.porcentajeError = porcentajeError;
+      prediccionExistente.fecha = new Date();
       await prediccionExistente.save();
     } else {
       // Si no existe, crear una nueva predicción
@@ -150,7 +151,8 @@ async function actualizarPrediccionesEnBD(productosConDiaAgotamiento) {
         prediccion,
         diaAgotamiento,
         datosHistoricos,
-        porcentajeError
+        porcentajeError,
+        fecha: new Date(),
       });
       await nuevaPrediccion.save();
     }    

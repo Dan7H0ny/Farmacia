@@ -34,6 +34,10 @@ const prediccionSchema = new mongoose.Schema({
   porcentajeError: { 
     type: Number,
     required: true
+  },
+  fecha: { 
+    type: Date,
+    required: true
   }
 });
 

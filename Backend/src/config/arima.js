@@ -51,7 +51,7 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
   const producto = await Almacen.findById(productoId).populate('producto', 'nombre').populate('categoria', 'nombre');
   const capacidadTotalInicial = calcularCapacidadTotalInicial(producto);
 
-  const primeraPrediccion = predicciones[0].map(valor => Math.max(Math.ceil(valor), 0));
+  const primeraPrediccion = predicciones[0].map(valor => Math.max(Math.round(valor), 0));
 
   let capacidadTotal = capacidadTotalInicial;
   let agotado = false;
@@ -89,8 +89,10 @@ function calcularErrorAbsolutoMedio(predicciones, datosHistoricos) {
     sumaErrores += error;
   }
 
-  return (sumaErrores / count).toFixed(2);
+  // Convertimos el error medio en porcentaje
+  return ((sumaErrores / count)).toFixed(2);
 }
+
 
 function calcularCapacidadTotalInicial(producto) {
   // Verifica si el producto está definido

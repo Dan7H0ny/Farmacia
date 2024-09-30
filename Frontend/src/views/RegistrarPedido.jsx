@@ -16,6 +16,7 @@ export const RegistrarPedido = () => {
   const [proveedor, setProveedor] = useState('');
   const [productos, setProductos] = useState([]);
   const [productosAñadidos, setProductosAñadidos] = useState([]);
+  const [predicciones, setPredicciones] = useState([]);
   const [productosElegidos, setProductosElegidos] = useState([]);
   const usuario_ = localStorage.getItem('id');
   const [inputValue, setInputValue] = useState('');
@@ -43,6 +44,12 @@ export const RegistrarPedido = () => {
   }, [navigate, token, configInicial, UrlReact, usuario_]);
 
   useEffect(() => {
+    axios.post(`${UrlReact}/producto/buscar/predicciones`, { productos: productosAñadidos }, configInicial)
+      .then(response => {setPredicciones(response);})
+      .catch();
+  }, [navigate, token, configInicial, UrlReact, productosAñadidos]);
+
+  useEffect(() => {
     axios.get(`${UrlReact}/proveedor/buscar/${pedidoId}`, configInicial)
       .then(response => {
         if (!token) {
@@ -67,9 +74,7 @@ export const RegistrarPedido = () => {
   },[navigate, token, configInicial, UrlReact, pedidoId]);
 
   useEffect(() => {
-    // Actualizar productosElegidos basándonos en la cantidad actualizada
     const updatedProductosElegidos = productosAñadidos.map(producto => {
-      console.log(producto)
       // Verificación para asegurar que todas las propiedades necesarias existen
       const nombreProducto = producto?.nombre || 'Nombre no disponible';
       const tipoProducto = producto.tipo.nombre;
@@ -96,7 +101,6 @@ export const RegistrarPedido = () => {
 
   const btnRegistrarPedido = (e) => {
     e.preventDefault();
-  
     // Validación de productos
     if (!productosAñadidos.length) {
       return CustomSwal({ icono: 'error', titulo: 'No se puede Crear el pedido', mensaje: 'Seleccione los productos que va a pedir al proveedor' });
@@ -170,7 +174,7 @@ export const RegistrarPedido = () => {
           <CustomAutocompletePedido productos={productos} productosAñadidos={productosAñadidos} setProductosAñadidos={setProductosAñadidos} inputValue={inputValue} setInputValue={setInputValue}/>
           <CustomListaProductosPedir productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad} setPrecioTotal={setPrecioTotal}/>
           {productosAñadidos.length && (
-            <CustomMensajePedido proveedor={proveedor} user={user} precioTotal={precioTotal} setPrecioTotal={setPrecioTotal}/>
+            <CustomMensajePedido proveedor={proveedor} user={user} predicciones={predicciones}/>
           )}
           {productosAñadidos.length && (
             <>

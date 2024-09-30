@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, Button } from '@mui/material';
 import { Web, Phone, MailOutline } from '@mui/icons-material';
 
-const CustomMensajePedido = ({ proveedor, user, precioTotal, setPrecioTotal }) => {
+const CustomMensajePedido = ({ proveedor, user, predicciones}) => {
   const BtnMensaje = (url) => {
     window.open(url, '_blank');
   };

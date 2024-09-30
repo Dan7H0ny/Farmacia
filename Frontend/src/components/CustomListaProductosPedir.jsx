@@ -32,7 +32,7 @@ const CustomListaProductosPedir = ({ productosAñadidos, setCantidad, cantidad, 
     const total = productosAñadidos.reduce((acc, producto) => {
       const cantidadProducto = cantidad[producto._id] || 1;
       
-      const subtotal = producto.precioCompra * (cantidadProducto * producto.capacidad_presentacion);
+      const subtotal = producto.precioCompra * cantidadProducto;
 
       return acc + subtotal;
     }, 0);
@@ -55,14 +55,14 @@ const CustomListaProductosPedir = ({ productosAñadidos, setCantidad, cantidad, 
                   <TableCell>Capacidad Presentacion</TableCell>
                   <TableCell>Precio de compra</TableCell>
                   <TableCell>Cantidad a pedir</TableCell>
-                  <TableCell>Unidades</TableCell>
+                  <TableCell>Unidades a pedir</TableCell>
                   <TableCell>Subtotal</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', border: '2px solid #e2e2e2' } }}>
                 {productosAñadidos.map((producto, index) => {
                   const cantidadProducto = cantidad[producto._id] || 1;
-                  const subtotal = producto.precioCompra * (cantidadProducto * producto.capacidad_presentacion);
+                  const subtotal = producto.precioCompra * cantidadProducto;
 
                   return (
                     <TableRow key={producto._id}>

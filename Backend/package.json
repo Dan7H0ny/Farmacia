@@ -12,6 +12,7 @@
     "express-validator": "^6.15.0",
     "jsonwebtoken": "^9.0.0",
     "mathjs": "^13.1.1",
+    "mime": "^4.0.4",
     "ml-modules": "^0.1.0",
     "ml-regression": "^5.0.0",
     "mongodb": "^6.8.0",

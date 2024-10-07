@@ -13,6 +13,7 @@ import { ListarCliente } from './views/ListarCliente';
 import { RegistrarProveedor } from './views/RegistrarProveedor';
 import { ListarProveedor } from './views/ListarProveedor';
 import { RegistrarPedido } from './views/RegistrarPedido';
+import { ListarPedidos } from './views/ListarPedidos';
 import { RegistrarProducto } from './views/RegistrarProducto';
 import { ListarProducto } from './views/ListarProducto';
 import { RegistrarAlmacen } from './views/RegistrarAlmacen';
@@ -39,6 +40,7 @@ function App() {
               <Route path="Proveedor/Registrar" element={<RegistrarProveedor />} />
               <Route path="Proveedor/Listar" element={<ListarProveedor />} />
               <Route path="Pedido/Registrar/:pedidoId" element={<RegistrarPedido />} />
+              <Route path="Pedido/Listar" element={<ListarPedidos />} />
               <Route path="Complemento/Registrar" element={<RegistrarComplementos />} />
               <Route path="Producto/Registrar" element={<RegistrarProducto />} />
               <Route path="Producto/Listar" element={<ListarProducto />} />

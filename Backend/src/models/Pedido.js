@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const pedidoSchema = new mongoose.Schema({
+  proveedor:{
+    type: String,
+    required: true
+  },
   productos: [{
     producto: {
       type: mongoose.Schema.Types.ObjectId,
@@ -11,10 +15,6 @@ const pedidoSchema = new mongoose.Schema({
       required: true
     },
     tipo: {
-      type: String,
-      required: true
-    },
-    proveedor: {
       type: String,
       required: true
     },

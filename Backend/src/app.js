@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 //const cargarDatos = require('./config/cargar-complementos');
 //const cargarProveedores = require('./config/cargar-proveedores');
 //const crearProductos = require('./config/cargar-productos');
@@ -17,6 +18,7 @@ app.options('*', cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
+app.use('/api/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Configuración de rutas existentes
 app.use('/api', require('./controller/autentificacion'));

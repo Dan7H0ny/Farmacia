@@ -54,6 +54,7 @@ const CustomListaProductosPedir = ({ productosAñadidos, setCantidad, cantidad, 
                   <TableCell>Tipo de Presentacion</TableCell>
                   <TableCell>Capacidad Presentacion</TableCell>
                   <TableCell>Precio de compra</TableCell>
+                  <TableCell>Cantidad estimada</TableCell>
                   <TableCell>Cantidad a pedir</TableCell>
                   <TableCell>Unidades a pedir</TableCell>
                   <TableCell>Subtotal</TableCell>
@@ -71,6 +72,7 @@ const CustomListaProductosPedir = ({ productosAñadidos, setCantidad, cantidad, 
                       <TableCell>{producto.tipo.nombre}</TableCell>
                       <TableCell>{producto.capacidad_presentacion}</TableCell>
                       <TableCell>{producto.precioCompra.toFixed(2) + ' Bs'}</TableCell>
+                      <TableCell>{producto.cantidadEstimada}</TableCell>
                       <TableCell sx={{ width: '155px' }}>
                         <CustomRegisterUser
                           number={12}

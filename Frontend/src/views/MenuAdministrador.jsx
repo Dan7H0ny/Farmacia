@@ -154,6 +154,7 @@ export const MenuAdministrador = () => {
   function ListarProveedor() {navigate(`/Menu/Administrador/Proveedor/Listar`);}
 
   function RegistrarComplemento() {navigate(`/Menu/Administrador/Complemento/Registrar`);}
+  function ListarPedido() {navigate(`/Menu/Administrador/Pedido/Listar`);}
 
   function RegistrarAlmacen() {navigate(`/Menu/Administrador/Almacen/Registrar`);}
   function ListarAlmacen() {navigate(`/Menu/Administrador/Almacen/Listar`);}
@@ -201,7 +202,7 @@ export const MenuAdministrador = () => {
           <CustomMenuAlmacen itemName={"Gestion del almacen"} itemOpen={Almacen} BtnMostrar={cambioAlmacen} 
           BtnRegistrar1={RegistrarProveedor} BtnListar1={ListarProveedor} nombreBtn1={"Proveedores"} 
           BtnRegistrar2={RegistrarProducto} BtnListar2={ListarProducto} nombreBtn2={"Productos"}
-          BtnRegistrar3={RegistrarAlmacen} BtnListar3={ListarAlmacen} nombreBtn3={"Almacen"}  
+          BtnRegistrar3={RegistrarAlmacen} BtnListar3={ListarAlmacen} nombreBtn3={"Almacen"} btnListar4={ListarPedido} nombreBtn4={"Pedidos"}  
           drawerOpen={drawerOpen} icon={<InventoryOutlined />} />
           <CustomMenuVentas itemName={"Gestion de ventas"} itemOpen={Venta} BtnMostrar={cambioVenta} 
           BtnRegistrar1={RegistrarVenta} BtnListar1={ListarVenta} nombreBtn1={"Ventas"} 

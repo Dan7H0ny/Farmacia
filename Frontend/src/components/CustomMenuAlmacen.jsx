@@ -7,7 +7,7 @@ import {
   ListAltOutlined
 } from '@mui/icons-material';
 
-const CustomMenuAlmacen = ({ itemName, itemOpen, BtnMostrar, BtnRegistrar1, nombreBtn1, BtnListar1, BtnRegistrar2, nombreBtn2, BtnListar2, BtnRegistrar3, nombreBtn3, BtnListar3, drawerOpen, icon }) => {
+const CustomMenuAlmacen = ({ itemName, itemOpen, BtnMostrar, BtnRegistrar1, nombreBtn1, BtnListar1, BtnRegistrar2, nombreBtn2, BtnListar2, BtnRegistrar3, nombreBtn3, BtnListar3, btnListar4, nombreBtn4, drawerOpen, icon }) => {
 
   return (
     <>
@@ -54,6 +54,12 @@ const CustomMenuAlmacen = ({ itemName, itemOpen, BtnMostrar, BtnRegistrar1, nomb
             <ListAltOutlined sx={{ color: '#0f1b35' }}/>
           </ListItemIcon>
           {drawerOpen && <ListItemText primary={`Lista de ${nombreBtn3}`} sx={{ marginLeft: 1, color: '#0f1b35', fontWeight: 'bold' }}/>}
+        </ListItem>
+        <ListItem button onClick={btnListar4} sx={{ display: 'flex', justifyContent: drawerOpen ? 'space-between' : 'center', border: '1px solid #0f1b35', color: '#0f1b35', transition: 'width 0.3s' }}>
+          <ListItemIcon sx={{ display: 'flex', minWidth: drawerOpen ? 'auto' : 'unset' }}>
+            <ListAltOutlined sx={{ color: '#0f1b35' }}/>
+          </ListItemIcon>
+          {drawerOpen && <ListItemText primary={`Lista de ${nombreBtn4}`} sx={{ marginLeft: 1, color: '#0f1b35', fontWeight: 'bold' }}/>}
         </ListItem>
       </Collapse>
     </>

@@ -80,100 +80,64 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
 
 router.get('/mostrar/por-proveedor/:id', verificacion, async (req, res) => {
   const { id } = req.params;
+  
   try {
-    const productosEncontrados = await Producto.find({proveedor: id})
+    // Encuentra los productos del proveedor
+    const productosEncontrados = await Producto.find({ proveedor: id })
       .populate('proveedor', 'nombre_marca')
       .populate('tipo', 'nombre')
       .populate('usuario_registro', 'nombre apellido rol correo')
       .populate('usuario_actualizacion', 'nombre apellido rol correo')
       .sort({ fecha_registro: -1 });
-      
-    res.json(productosEncontrados);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al obtener los Productos' });
-  }
-});
 
-router.post('/buscar/predicciones', verificacion, async (req, res) => {
-  const { productos } = req.body;
-  const idsProductos = productos.map(producto => producto._id);
+    // Verifica si se encontraron productos
+    if (!productosEncontrados.length) {
+      return res.status(404).json({ mensaje: 'No se encontraron productos para este proveedor' });
+    }
 
-  try {
+    // Encuentra almacenes relacionados con los productos encontrados
+    const idsProductos = productosEncontrados.map(prod => prod._id);
     const almacenes = await Almacen.find({ producto: { $in: idsProductos } });
     const idsAlmacen = almacenes.map(almacen => almacen._id);
 
+    // Encuentra las predicciones relacionadas
     const predicciones = await Prediccion.find({ productos: { $in: idsAlmacen } })
       .populate({
-        path: 'productos', 
+        path: 'productos',
         populate: {
-          path: 'producto', 
+          path: 'producto',
           model: 'Producto',
-        }
+        },
       });
 
-    const productosEncontrados = await Producto.find({ _id: { $in: idsProductos } });
-    
-    const prediccionesConDetalles = predicciones.map(p => {
-      const totalVentas = p.prediccion.ventas ? p.prediccion.ventas.reduce((sum, venta) => sum + venta, 0) : 0;
+    // Crear una lista de productos con la cantidad estimada
+    const productosConCantidadEstimada = productosEncontrados.map(producto => {
+      // Buscar la predicción correspondiente para este producto
+      const prediccion = predicciones.find(p => p.productos && p.productos.producto._id.toString() === producto._id.toString());
 
-      // Verificar si p.productos es válido
-      if (!p.productos) {
-        console.log('No hay productos para esta predicción:', p);
-        return { ...p._doc, totalVentas, productosDetalles: [] }; // Devolver sin detalles de productos si no hay productos
+      // Si hay predicción, calcular totalVentas, capacidadPresentacion y cantidadEstimada
+      let totalVentas = 0;
+      let cantidadEstimada = 1;
+
+      if (prediccion) {
+        totalVentas = prediccion.prediccion.ventas ? prediccion.prediccion.ventas.reduce((sum, venta) => sum + venta, 0) : 0;
+        const capacidadPresentacion = producto.capacidad_presentacion;
+        const total = Math.max(totalVentas - capacidadPresentacion, 0);
+        cantidadEstimada = capacidadPresentacion ? Math.max(Math.ceil(total / capacidadPresentacion), 1) : 1;
       }
 
-      // Acceder al producto relacionado a través de Almacen
-      const productoCorrespondiente = p.productos.producto; // Cambiar a singular
-
-      if (!productoCorrespondiente) {
-        console.log('Producto correspondiente es null o indefinido');
-        return { producto: null, total: 0, capacidadPresentacion: 0, cantidadEstimada: 0 };
-      }
-
-      // Buscar el producto en la lista de productos encontrados por ID
-      const productoEncontrado = productosEncontrados.find(prod => prod._id.toString() === productoCorrespondiente._id.toString());
-
-      // Calcular el total menos la capacidad de presentación del producto
-      const capacidadPresentacion = productoEncontrado ? productoEncontrado.capacidad_presentacion : 0;
-      const total = productoEncontrado ? Math.max(totalVentas - productoEncontrado.capacidad_presentacion, 0) : 0;
-      const cantidadEstimada = capacidadPresentacion ? Math.ceil(total / capacidadPresentacion) : 0;
-
-      // Devolver los detalles del producto
-      const productosDetalles = {
-        producto: productoCorrespondiente,
-        total, // Total calculado
-        capacidadPresentacion, // Capacidad de presentación
-        cantidadEstimada // Cantidad estimada calculada
-      };
-
-      // Devolver la predicción con el detalle del producto
+      // Devolver el producto con el nuevo campo cantidadEstimada
       return {
-        ...p._doc,
-        totalVentas,
-        productosDetalles // Agregar detalles del producto
+        ...producto._doc,
+        cantidadEstimada,
       };
     });
-    res.json(prediccionesConDetalles);
-
+    // Enviar respuesta con productos con cantidad estimada
+    res.json(productosConCantidadEstimada);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al obtener las predicciones de los productos', error });
+    res.status(500).json({ mensaje: 'Error al obtener los productos y calcular cantidad estimada', error });
   }
 });
 
-// const productoEncontrado = await Almacen.findOne({ producto: id });
-// const prediccion = await Prediccion.findOne({productos: productoEncontrado._id});
-// const totalVentas = prediccion ? prediccion.prediccion.ventas.reduce((acc, venta) => acc + venta, 0) : 0;
-// const total = Math.max(totalVentas - productoEncontrado.cantidad_stock, 0);
-// const producto = await Producto.findById(id)
-//   .populate('proveedor', 'nombre_marca correo telefono sitioweb')
-//   .populate('tipo', 'nombre')
-//   .populate('usuario_registro', 'nombre apellido rol correo')
-//   .populate('usuario_actualizacion', 'nombre apellido rol correo')
-//   .sort({ fecha_caducidad: 1 });
-// const capacidadPresentacion = producto.capacidad_presentacion;
-// const cantidadEstimada = capacidadPresentacion ? Math.ceil(total / capacidadPresentacion) : 0;
-// const precioEstimado =(cantidadEstimada * producto.precioCompra).toFixed(2);
-
-module.exports= router
+module.exports= router;

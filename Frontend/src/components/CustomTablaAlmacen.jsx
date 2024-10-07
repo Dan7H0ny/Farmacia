@@ -6,7 +6,7 @@ import '../assets/css/tabla.css';
 const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  
   useEffect(() => {
     setCurrentPage(0);
   }, [buscar]);

@@ -16,7 +16,6 @@ export const RegistrarPedido = () => {
   const [proveedor, setProveedor] = useState('');
   const [productos, setProductos] = useState([]);
   const [productosAñadidos, setProductosAñadidos] = useState([]);
-  const [predicciones, setPredicciones] = useState([]);
   const [productosElegidos, setProductosElegidos] = useState([]);
   const usuario_ = localStorage.getItem('id');
   const [inputValue, setInputValue] = useState('');
@@ -42,12 +41,6 @@ export const RegistrarPedido = () => {
       })
       .catch(error => { console.log(error);});
   }, [navigate, token, configInicial, UrlReact, usuario_]);
-
-  useEffect(() => {
-    axios.post(`${UrlReact}/producto/buscar/predicciones`, { productos: productosAñadidos }, configInicial)
-      .then(response => {setPredicciones(response);})
-      .catch();
-  }, [navigate, token, configInicial, UrlReact, productosAñadidos]);
 
   useEffect(() => {
     axios.get(`${UrlReact}/proveedor/buscar/${pedidoId}`, configInicial)
@@ -78,14 +71,12 @@ export const RegistrarPedido = () => {
       // Verificación para asegurar que todas las propiedades necesarias existen
       const nombreProducto = producto?.nombre || 'Nombre no disponible';
       const tipoProducto = producto.tipo.nombre;
-      const proveedorProducto = producto.proveedor.nombre_marca ;
       const cantidadProducto = cantidad[producto._id] || 1;
       const precioVentaProducto = producto?.precioCompra || 0;
       return {
         producto: producto._id,
         nombre: nombreProducto,
         tipo: tipoProducto,
-        proveedor: proveedorProducto,
         cantidad_producto: cantidadProducto,
         precioCompra: precioVentaProducto,
       };
@@ -121,18 +112,12 @@ export const RegistrarPedido = () => {
 
     // Serializar solo los arrays/objetos
     formData.append('productos', JSON.stringify(productosElegidos)); // Array de productos
-    formData.append('precio_total', precioTotal); // Precio como número
+    formData.append('proveedor', proveedor.nombre_marca); // Precio como número
+    formData.append('precio_total', precioTotal);
     formData.append('usuario', user._id); // Usuario como cadena de texto
-
-    // Agregar la imagen al FormData
-    // Agregar la imagen al FormData
     if (imagenPrueba) {
       formData.append('imagenPrueba', imagenPrueba);
     }
-
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
     // Envío de la solicitud
     axios.post(`${UrlReact}/pedidos/crear`, formData, configSubir)
       .then(response => {
@@ -146,7 +131,8 @@ export const RegistrarPedido = () => {
   };  
   
   const limpiarFormulario = () => {
-
+    setProductosAñadidos([]);
+    setProductosElegidos([]);
   }
 
   return (
@@ -174,12 +160,12 @@ export const RegistrarPedido = () => {
           <CustomAutocompletePedido productos={productos} productosAñadidos={productosAñadidos} setProductosAñadidos={setProductosAñadidos} inputValue={inputValue} setInputValue={setInputValue}/>
           <CustomListaProductosPedir productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad} setPrecioTotal={setPrecioTotal}/>
           {productosAñadidos.length && (
-            <CustomMensajePedido proveedor={proveedor} user={user} predicciones={predicciones}/>
+            <CustomMensajePedido proveedor={proveedor} user={user} predicciones={productosAñadidos}/>
           )}
           {productosAñadidos.length && (
             <>
               <Grid item xs={12} sm={8} >
-                <Typography variant="body1" sx={{ fontWeight: 'bold', color:'#e2e2e2' }}>Subirel archivo de prueba del pedido si es necesario:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', color:'#e2e2e2' }}>Subir el archivo de prueba del pedido si es necesario:</Typography>
                 <input
                   type="file"
                   name="imagenPrueba"

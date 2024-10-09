@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef,useMemo } from 'react'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Grid, Box, Typography } from '@mui/material';
-import { Search, Description, ProductionQuantityLimits, Group, AddBusiness, AttachMoney, VerifiedUser, CalendarMonth, Filter9Plus, DateRange, Dangerous } from '@mui/icons-material';
+import { Search, Description, ProductionQuantityLimits, Group, AddBusiness, VerifiedUser, CalendarMonth, Filter9Plus, DateRange, Dangerous } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import CustomTypography from '../components/CustomTypography';
@@ -196,13 +196,13 @@ export const ListarAlmacen = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} sx={{marginTop: 'auto',}}>
                 <CustomActualizarUser number={12} label="Datos del Producto" defaultValue={producto?
-                      `Producto:\t\t${producto.nombre}\nProveedor:\t\t${producto.proveedor.nombre_marca}\nTipo:\t\t\t${producto.tipo.nombre}\nCapacidad:\t\t${producto.capacidad_presentacion}\nPrecio de compra:\t${producto.precioCompra}` 
+                      `Producto:\t\t${producto.nombre}\nProveedor:\t\t${producto.proveedor.nombre_marca}\nTipo:\t\t\t${producto.tipo.nombre}\nCapacidad:\t\t${producto.capacidad_presentacion}\nPrecio de compra:\t${producto.precioCompra}Bs` 
                       : ''} rows={5}
                       multiline= {true} readOnly = {true} icon={<ProductionQuantityLimits />} />
                 <CustomActualizarUser number={12} label="Categoria" defaultValue={categoria.nombre} readOnly={true} icon={<AddBusiness />} />
                 <Grid container spacing={2}> 
                   <Grid item xs={12} sm={6} sx={{marginTop: 'auto',}}>
-                    <CustomActualizarUser number={12} label="Precio" defaultValue={precioVenta} readOnly={true} icon={<AttachMoney />} />
+                    <CustomActualizarUser number={12} label="Precio" defaultValue={precioVenta} readOnly={true} icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />
                   </Grid>
                   <Grid item xs={12} sm={6} sx={{marginTop: 'auto',}}>
                     <CustomActualizarUser number={12} label="Presentacion o Unidad" defaultValue={Math.floor(cantidad_stock / producto.capacidad_presentacion) + ' o ' + cantidad_stock} readOnly={true} icon={<Description />} />
@@ -262,6 +262,7 @@ export const ListarAlmacen = () => {
             <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
               <ReporteExcelAlmacen
                 data={almacen}
+                firma_Usuario={usuario}
                 fileName="Reporte del almacen"
                 sheetName="almacen"
                 sx={{ mt: 2 }}

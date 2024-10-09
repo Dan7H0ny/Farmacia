@@ -294,6 +294,7 @@ export const ListarCliente = () => {
           <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
             <ReporteExcelCliente
               data={clientes}
+              firma_Usuario={usuario}
               fileName="Reporte de Clientes"
               sheetName="Clientes"
               sx={{ mt: 2 }}

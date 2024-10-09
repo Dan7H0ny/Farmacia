@@ -62,7 +62,7 @@ const CustomTablaAlmacen = ({ usuarios, buscar, botonMostrar, botonActualizar })
                     {x.estado ? <VerifiedUser color="success" /> : <Dangerous color="error" />}
                   </TableCell>
                   <TableCell className="ocultar-en-movil2">{Math.floor(x.cantidad_stock / x.producto.capacidad_presentacion)+ ' o ' +x.cantidad_stock}</TableCell>
-                  <TableCell className="ocultar-en-movil">{x.precioVenta.toFixed(2)}</TableCell>
+                  <TableCell className="ocultar-en-movil">{x.precioVenta.toFixed(2)} Bs</TableCell>
                   <TableCell>
                     <Button variant="contained" onClick={() => botonMostrar(x)} sx={{ backgroundColor: "#0f1b35", color: "#e2e2e2", border: '2px solid #e2e2e2' }}>
                       <Visibility />

@@ -18,7 +18,7 @@ router.post('/mostrar/predicciones',  verificacion, async (req, res) => {
     if (predicciones.length === 0) {
       return res.status(404).json({ message: 'No se encontraron predicciones' });
     }
-    res.json(productosConDiaAgotamiento);
+    res.json(predicciones);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al obtener las predicciones' });

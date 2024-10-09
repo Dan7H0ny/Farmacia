@@ -1,13 +1,13 @@
 import React from 'react';
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import { createRoot } from 'react-dom/client';
 import Swal from 'sweetalert2';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import CustomActualizarUser from '../components/CustomActualizarUser';
-import { DateRange, ProductionQuantityLimits, Person, AttachMoney, AddBusiness } from '@mui/icons-material';
+import { DateRange, ProductionQuantityLimits, Person, AddBusiness } from '@mui/icons-material';
 
-const ReporteExcelVenta = ({ data, fileName, sheetName }) => {
+const ReporteExcelVenta = ({ data, firma_Usuario, fileName, sheetName }) => {
 
   const btnImprimir = () => {
 
@@ -26,8 +26,8 @@ const ReporteExcelVenta = ({ data, fileName, sheetName }) => {
         <CustomActualizarUser number={12} id="nombreCliente" label="Nombre del Cliente" type="text" icon={<Person />} />
         <CustomActualizarUser number={6} id="nombreProducto" label="Nombre del Producto" type="text" icon={<ProductionQuantityLimits />} />
         <CustomActualizarUser number={6} id="nombreProveedor" label="Nombre del Proveedor" type="text" icon={<AddBusiness />} />
-        <CustomActualizarUser number={6} id="precioMinimo" label="Precio Minimo Total" type="number" icon={<AttachMoney />} />
-        <CustomActualizarUser number={6} id="precioMaximo" label="Precio Maximo Total" type="number" icon={<AttachMoney />} />
+        <CustomActualizarUser number={6} id="precioMinimo" label="Precio Minimo Total" type="number" icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />
+        <CustomActualizarUser number={6} id="precioMaximo" label="Precio Maximo Total" type="number" icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>} />
         <CustomActualizarUser number={6} id="fechaInicio" label="Fecha de Inicio" type="date" icon={<DateRange />} />
         <CustomActualizarUser number={6} id="fechaFin" label="Fecha Fin" type="date" icon={<DateRange />} />
       </Grid>
@@ -213,6 +213,33 @@ const ReporteExcelVenta = ({ data, fileName, sheetName }) => {
           
           // Establecer el ancho de la columna estático
           column.width = headerWidth;
+        });
+        // Agregar una fila en blanco
+        worksheet.addRow([]);
+
+        // Agregar una fila con "Fecha de impresión" y "Firma del usuario"
+        const fechaImpresion = `Fecha de impresión: ${formatDateTime(new Date())}`;
+        const firmaUsuario = `Firma del ${firma_Usuario.nombre} ${firma_Usuario.apellido}:________________________`;
+
+        // Agregar la fila con los valores, asegurando que las celdas intermedias estén vacías
+        const filaImpresion = worksheet.addRow([fechaImpresion, "", "", "", firmaUsuario]);
+
+        // Combinar las celdas A-F para "Fecha de impresión"
+        worksheet.mergeCells(`A${filaImpresion.number}:D${filaImpresion.number}`);
+
+        // Combinar las celdas G-K para "Firma del usuario"
+        worksheet.mergeCells(`E${filaImpresion.number}:K${filaImpresion.number}`);
+
+        // Estilos para la fila de impresión y firma
+        filaImpresion.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          cell.font = { bold: true }; // Texto en negrita
+          cell.alignment = { horizontal: 'left', vertical: 'middle' }; // Alinear el texto a la izquierda y centrado verticalmente
+          cell.border = {
+            top: { style: 'thin', color: { argb: '000000' } },
+            left: { style: 'thin', color: { argb: '000000' } },
+            bottom: { style: 'thin', color: { argb: '000000' } },
+            right: { style: 'thin', color: { argb: '000000' } }
+          };
         });
 
         // Ajustar la altura de las filas basado en el número de líneas de texto con padding

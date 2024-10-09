@@ -21,11 +21,15 @@ const CustomTablaPedidos = ({ pedidos, buscar, botonAceptar, botonRechazar, boto
   };
 
   const filtrarDatos = pedidos.filter(elemento => {
-    const { proveedor} = elemento;
+    const { proveedor, productos} = elemento;
     const busqueda = buscar.toLowerCase();
+    const productoCoincide = productos.some(producto => 
+      producto.nombre.toLowerCase().includes(busqueda)
+    );
 
     return (
-      proveedor.toLowerCase().includes(busqueda) 
+      proveedor.toLowerCase().includes(busqueda) ||
+      productoCoincide
     );
   });
 
@@ -58,43 +62,43 @@ const CustomTablaPedidos = ({ pedidos, buscar, botonAceptar, botonRechazar, boto
                 <TableCell>Estado</TableCell>
                 <TableCell>Aceptar</TableCell>
                 <TableCell>Rechazar</TableCell>
-                <TableCell>Editar</TableCell>
+                <TableCell>Mostrar</TableCell>
               </TableRow>
             </TableHead>
             <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', border: '2px solid #e2e2e2' } }}>
               {paginaDatos.map((x, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1 + currentPage * rowsPerPage}</TableCell>
-                  <TableCell>{x.proveedor}</TableCell>
-                  <TableCell>
+                  <TableCell sx={{width: '30%' }}>{x.proveedor}</TableCell>
+                  <TableCell sx={{width: '30%' }}>
                     {x.productos.map((productoItem, prodIndex) => (
                       <div key={prodIndex}>
                         { productoItem.nombre }
                       </div>
                     ))}
                   </TableCell>
-                  <TableCell sx={{width: 100 }}>
+                  <TableCell sx={{width: '10%' }}>
                     {x.productos.map((productoItem, prodIndex) => (
                       <div key={prodIndex}>
                         {productoItem.cantidad_producto}
                       </div>
                     ))}
                   </TableCell>
-                  <TableCell sx={{width: 150 }}>{x.precio_total.toFixed(2)  + ' Bs'}</TableCell>
-                  <TableCell sx={{width: 100 }}>
+                  <TableCell sx={{width: '10%' }}>{x.precio_total.toFixed(2)  + ' Bs'}</TableCell>
+                  <TableCell sx={{width: '5%' }}>
                     {getEstadoIcon(x.estado)}
                   </TableCell>
-                  <TableCell sx={{width: 150 }}>
+                  <TableCell sx={{width: '5%' }}>
                     <Button variant="contained" color="success" onClick={() => botonAceptar(x)} sx={{ backgroundColor: "success", color: "#e2e2e2", border: '2px solid #e2e2e2' }}>
                       <CheckCircleOutline />
                     </Button>
                   </TableCell>                  
-                  <TableCell sx={{width: 150 }}>
+                  <TableCell sx={{width: '5%' }}>
                     <Button variant="contained" color="error" onClick={() => botonRechazar(x)} sx={{ backgroundColor: "#ff2301", color: "#e2e2e2", border: '2px solid #e2e2e2' }}>
                       <HighlightOff />
                     </Button>
                   </TableCell>
-                  <TableCell sx={{width: 150 }}>
+                  <TableCell sx={{width: '5%' }}>
                     <Button variant="contained" onClick={() => botonMostrar(x)} sx={{ color: "#e2e2e2", border: '2px solid #e2e2e2' }}>
                       <Visibility />
                     </Button>

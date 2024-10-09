@@ -4,8 +4,16 @@ import { Search } from '@mui/icons-material';
 import ReporteExcelPrediccion from '../../Reports/ReporteExcelPrediccion';
 import CustomRegisterUser from '../CustomRegisterUser';
 
-const InfoTable = ({ predicciones }) => {
+const InfoTable = ({ predicciones, usuario }) => {
   const [searchTerm, setSearchTerm] = useState('');
+
+  function formatDateTime(date) {
+    const optionsDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    const formattedDate = date.toLocaleDateString('es-ES', optionsDate);
+    const formattedTime = date.toLocaleTimeString('es-ES', optionsTime);
+    return `${formattedDate} ${formattedTime}`;
+  }
 
   // Filtra las predicciones basadas en el término de búsqueda
   const filteredPredicciones = predicciones.filter(prediccion =>
@@ -14,7 +22,6 @@ const InfoTable = ({ predicciones }) => {
     (prediccion.diaAgotamiento !== undefined && prediccion.diaAgotamiento !== null && prediccion.diaAgotamiento.toString().includes(searchTerm))
   );
    
-
   return (
     <Paper style={{ padding: '20px', borderRadius: '15px', backgroundColor: '#0f1b35', border: '2px solid #e2e2e2', boxSizing: 'border-box' }}>
       <Typography variant="h6" component="div" align="center" gutterBottom style={{ color: '#e2e2e2' }}>
@@ -37,6 +44,7 @@ const InfoTable = ({ predicciones }) => {
           <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
             <ReporteExcelPrediccion
               data={filteredPredicciones}
+              firma_Usuario={usuario}
               fileName="Reporte de las predicciones"
               sheetName="Predicciones"
               sx={{
@@ -64,6 +72,7 @@ const InfoTable = ({ predicciones }) => {
               <TableCell style={headerCellStyle}>Datos Historicos</TableCell>
               <TableCell style={headerCellStyle}>Día Agotamiento</TableCell>
               <TableCell style={headerCellStyle}>Porcentaje de Error</TableCell>
+              <TableCell style={headerCellStyle}>Fecha de registro</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -77,11 +86,12 @@ const InfoTable = ({ predicciones }) => {
                   <TableCell style={bodyCellStyle}>{prediccion.datosHistoricos}</TableCell>
                   <TableCell style={bodyCellStyle}>{prediccion.diaAgotamiento ?? 'N/A'}</TableCell>
                   <TableCell style={bodyCellStyle}>{prediccion.porcentajeError.toFixed(2)}%</TableCell>
+                  <TableCell style={bodyCellStyle}>{formatDateTime(new Date(prediccion.fecha))}</TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} style={bodyCellStyle} align="center">
+                <TableCell colSpan={8} style={bodyCellStyle} align="center">
                   No existen datos
                 </TableCell>
               </TableRow>

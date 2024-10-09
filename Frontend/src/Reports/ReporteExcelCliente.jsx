@@ -10,7 +10,7 @@ import CustomSelectC from '../components/CustomSelectC';
 import CustomSwal from '../components/CustomSwal';
 import {Person, Badge, Numbers, DateRange, Extension } from '@mui/icons-material';
 
-const ReporteExcelCliente = ({ data, fileName, sheetName }) => {
+const ReporteExcelCliente = ({ data, firma_Usuario, fileName, sheetName }) => {
   const [ complementos, setComplementos ] = useState([]);
   const identidadSelect = useRef();
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
@@ -159,7 +159,33 @@ const ReporteExcelCliente = ({ data, fileName, sheetName }) => {
           });
           column.width = maxLength < 10 ? 10 : maxLength; // Ajustar el ancho mínimo si es necesario
         });
+        // Agregar una fila en blanco
+        worksheet.addRow([]);
 
+        // Agregar una fila con "Fecha de impresión" y "Firma del usuario"
+        const fechaImpresion = `Fecha de impresión: ${formatDateTime(new Date())}`;
+        const firmaUsuario = `Firma del ${firma_Usuario.nombre} ${firma_Usuario.apellido}:________________________`;
+
+        // Agregar la fila con los valores, asegurando que las celdas intermedias estén vacías
+        const filaImpresion = worksheet.addRow([fechaImpresion, "", "", "", "", "", firmaUsuario]);
+
+        // Combinar las celdas A-F para "Fecha de impresión"
+        worksheet.mergeCells(`A${filaImpresion.number}:F${filaImpresion.number}`);
+
+        // Combinar las celdas G-K para "Firma del usuario"
+        worksheet.mergeCells(`G${filaImpresion.number}:K${filaImpresion.number}`);
+
+        // Estilos para la fila de impresión y firma
+        filaImpresion.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          cell.font = { bold: true }; // Texto en negrita
+          cell.alignment = { horizontal: 'left', vertical: 'middle' }; // Alinear el texto a la izquierda y centrado verticalmente
+          cell.border = {
+            top: { style: 'thin', color: { argb: '000000' } },
+            left: { style: 'thin', color: { argb: '000000' } },
+            bottom: { style: 'thin', color: { argb: '000000' } },
+            right: { style: 'thin', color: { argb: '000000' } }
+          };
+        });
         // Ajustar la altura de las filas basado en el número de líneas de texto
         worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
           let maxHeight = 30; // Altura base para las filas

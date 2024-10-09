@@ -18,12 +18,26 @@ const Dashboard = () => {
   const [productos, setProductos] = useState([]);
   const [predicciones, setPredicciones] = useState([]);
   const [tableDatos, setTableDatos] = useState([]);
+  const [usuario, setUsuario] = useState('');
   const navigate = useNavigate();
+  const usuario_ = localStorage.getItem('id');
 
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
   const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
   const token = obtenerToken();
   const configInicial = useMemo(() => ({ headers: { Authorization: `Bearer ${token}` }}), [token]);
+
+  useEffect(() => {
+    axios.get(`${UrlReact}/usuario/buscar/${usuario_}`, configInicial)
+      .then(response => {
+        if (!token) {
+          CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
+          navigate('/Menu/Administrador')
+        }
+        else {setUsuario(response);}
+      })
+      .catch(error => { console.log(error);});
+  }, [navigate, token, configInicial, UrlReact, usuario_]);
 
   useEffect(() => {
     axios.post(`${UrlReact}/prediccion/mostrar/predicciones`, configInicial)
@@ -36,7 +50,6 @@ const Dashboard = () => {
         CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.mensaje ? error.response.data.mensaje : 'Error desconocido',});
       });
   }, [UrlReact, configInicial]);
-  
   
   useEffect(() => {
     if (!token) {
@@ -85,7 +98,7 @@ const Dashboard = () => {
 
   return (
     <div id="caja_contenido" >
-      <CustomTypography text={'Dashboard'} />
+      <CustomTypography text={'PANEL DE CONTROL'} />
       <Grid container spacing={3}>
         <Grid item xs={12} sm={7} >  
           <Grid container spacing={1}>
@@ -118,7 +131,7 @@ const Dashboard = () => {
         </Grid>
         {tableDatos && (
           <Grid item xs={12} sm={12}>
-            <InfoTable predicciones={tableDatos}/>
+            <InfoTable predicciones={tableDatos} usuario={usuario}/>
           </Grid>
         )} 
       </Grid>

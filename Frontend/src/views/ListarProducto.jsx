@@ -321,6 +321,7 @@ export const ListarProducto = () => {
             <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
               <ReporteExcelProducto
                 data={productos}
+                firma_Usuario={user}
                 fileName="Reporte de Productos"
                 sheetName="productos"
                 sx={{ mt: 2 }}

@@ -202,6 +202,28 @@ export const RegistrarPedido = () => {
           )}
           
         </Grid>
+        <Grid item xs={12} sm={6} sx={{padding: 'auto',}}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              size="large"
+              type="button" // Cambiado de 'submit' a 'button' si no es un formulario
+              onClick={() => navigate(`/Menu/Administrador/Venta/Listar`)}
+              sx={{
+                backgroundColor: '#e2e2e2',
+                color: '#0f1b35',
+                marginTop: 2.5,
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#1a7b13',
+                  color: '#e2e2e2',
+                  border: '2px solid #e2e2e2',
+                  },
+                }}
+              >Volver a la lista de ventas
+            </Button>
+          </Grid> 
           <Button
             fullWidth
             variant="contained"

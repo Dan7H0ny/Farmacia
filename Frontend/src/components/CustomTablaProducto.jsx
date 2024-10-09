@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, Grid, TablePagination, Button, Box } from '@mui/material';
-import { Visibility, ModeEdit, ProductionQuantityLimits } from '@mui/icons-material';
+import { Visibility, ModeEdit } from '@mui/icons-material';
 import '../assets/css/tabla.css';
 
 const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar, botonPedir }) => {
@@ -47,7 +47,6 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar, 
               <TableCell>Precio</TableCell>
               <TableCell>Detalles</TableCell>
               <TableCell>Editar</TableCell>
-              <TableCell>Pedir</TableCell>
             </TableRow>
           </TableHead>
           <TableBody className="text-center align-baseline" sx={{ '& .MuiTableCell-root': {color: '#e2e2e2', backgroundColor: "#0f1b35", textAlign: 'center', border: '2px solid #e2e2e2' } }}>
@@ -58,7 +57,7 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar, 
                 <TableCell className="ocultar-en-movil2">{x.proveedor.nombre_marca}</TableCell>
                 <TableCell className="ocultar-en-movil">{x.tipo.nombre}</TableCell>
                 <TableCell className="ocultar-en-movil">{x.capacidad_presentacion}</TableCell>
-                <TableCell>{x.precioCompra}</TableCell>
+                <TableCell>{x.precioCompra.toFixed(2)} Bs</TableCell>
                 <TableCell >
                   <Button variant="contained" onClick={() => botonMostrar(x) } sx={{backgroundColor: "#0f1b35", color:" #e2e2e2", border: '2px solid #e2e2e2'}}>
                     <Visibility />
@@ -67,11 +66,6 @@ const CustomTablaProducto = ({ usuarios, buscar, botonMostrar, botonActualizar, 
                 <TableCell >
                   <Button variant="contained" color="success" onClick={() => botonActualizar(x)} sx={{backgroundColor: "#0f1b35", color:" #e2e2e2", border: '2px solid #e2e2e2'}}>
                     <ModeEdit  />
-                  </Button>
-                </TableCell>
-                <TableCell >
-                  <Button variant="contained" color="success" onClick={() => botonPedir(x)} sx={{backgroundColor: "#0f1b35", color:" #e2e2e2", border: '2px solid #e2e2e2'}}>
-                    <ProductionQuantityLimits  />
                   </Button>
                 </TableCell>
               </TableRow>

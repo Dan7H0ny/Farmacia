@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import { createRoot } from 'react-dom/client';
+import { ReportePedido } from '../Reports/ReportePedido';
 
 const MySwal = withReactContent(Swal);
 
@@ -339,14 +340,14 @@ export const ListarPedidos = () => {
               <Grid item>
                 {imagenPrueba && (
                   <Button variant="contained" onClick={() => descargarArchivo(pedido._id, 'imagenPrueba')}>
-                    Descargar Imagen Prueba
+                    Descargar el archivo de prueba del pedido
                   </Button>
                 )}
               </Grid>
               <Grid item>
                 {imagenVerificado && (
                   <Button variant="contained" onClick={() => descargarArchivo(pedido._id, 'imagenVerificado')}>
-                    Descargar Imagen Verificado
+                    Descargar el archivo de entrega del pedido
                   </Button>
                 )}
               </Grid>
@@ -377,11 +378,11 @@ export const ListarPedidos = () => {
                 )}
               </Grid>
             </Grid>
-  
+                
             {/* Botones adicionales: Imprimir, Eliminar, Atras */}
             <Grid container spacing={2} justifyContent="center" alignItems="center" mt={4}>
               <Grid item>
-                <Button variant="contained" onClick={() => window.print()} sx={{backgroundColor:'green'}}>
+                <Button variant="contained" onClick={() => ReportePedido(response, usuario)} sx={{backgroundColor:'green'}}>
                   Imprimir
                 </Button>
               </Grid>
@@ -398,7 +399,6 @@ export const ListarPedidos = () => {
             </Grid>
           </Grid>
         );
-  
         Swal.fire({
           title: 'DATOS DEL PRODUCTO EN EL ALMACEN',
           html: container,
@@ -496,9 +496,7 @@ export const ListarPedidos = () => {
           ...configInicial,
       });
       setPedidos(prevPedidos => prevPedidos.filter(p => p._id !== pedidoId));
-      
-
-        CustomSwal({ icono: 'success', titulo: 'Pedido Rechazado', mensaje: response.mensaje });
+      CustomSwal({ icono: 'success', titulo: 'Pedido Rechazado', mensaje: response.mensaje });
       }
     } catch (error) {
       CustomSwal({ icono: 'error', titulo: 'No se ha completado el proceso', mensaje: error.mensaje });
@@ -513,7 +511,7 @@ export const ListarPedidos = () => {
         <form id="Form-1" className="custom-form" style={{ padding: 15}}>
           <Grid container spacing={2} >
             <CustomRegisterUser
-              number={8}
+              number={12}
               label="Buscar"  
               placeholder= 'Buscar por producto, categoria y fecha de caducidad'
               type= 'text'
@@ -522,14 +520,6 @@ export const ListarPedidos = () => {
               required={false}
               icon={<Search/>}
             />
-            {/* <Grid item xs={12} sm={4} sx={{ '& .MuiTextField-root': { color: '#e2e2e2', backgroundColor: "#0f1b35", } }}>
-              <ReporteExcelAlmacen
-                data={almacen}
-                fileName="Reporte del almacen"
-                sheetName="almacen"
-                sx={{ mt: 2 }}
-              />
-            </Grid> */}
           </Grid>
         </form>
         <CustomTablaPedidos pedidos={pedidos} buscar={buscar} botonAceptar={btnConfirmar} botonRechazar={btnRechazar} botonMostrar={botonMostrar}/>

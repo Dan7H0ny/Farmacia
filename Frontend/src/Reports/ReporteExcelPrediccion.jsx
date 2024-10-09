@@ -7,9 +7,17 @@ import { saveAs } from 'file-saver';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import {Numbers, ProductionQuantityLimits, Category, WarningAmber, Inventory, CalendarToday } from '@mui/icons-material';
 
-const ReporteExcelPrediccion = ({ data, fileName, sheetName }) => {
+const ReporteExcelPrediccion = ({ data, firma_Usuario, fileName, sheetName }) => {
 
   const btnImprimir = () => {
+
+    function formatDateTime(date) {
+      const optionsDate = { day: '2-digit', month: '2-digit', year: 'numeric' };
+      const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+      const formattedDate = date.toLocaleDateString('es-ES', optionsDate);
+      const formattedTime = date.toLocaleTimeString('es-ES', optionsTime);
+      return `${formattedDate} ${formattedTime}`;
+    }
 
     const container = document.createElement('div');
     const root = createRoot(container);
@@ -172,6 +180,34 @@ const ReporteExcelPrediccion = ({ data, fileName, sheetName }) => {
             if (cellLength > maxLength) maxLength = cellLength;
           });
           column.width = maxLength < 10 ? 10 : maxLength; // Ajustar el ancho mínimo si es necesario
+        });
+
+        // Agregar una fila en blanco
+        worksheet.addRow([]);
+
+        // Agregar una fila con "Fecha de impresión" y "Firma del usuario"
+        const fechaImpresion = `Fecha de impresión: ${formatDateTime(new Date())}`;
+        const firmaUsuario = `Firma del ${firma_Usuario.nombre} ${firma_Usuario.apellido}:________________________`;
+
+        // Agregar la fila con los valores, asegurando que las celdas intermedias estén vacías
+        const filaImpresion = worksheet.addRow([fechaImpresion, "", "", "", firmaUsuario]);
+
+        // Combinar las celdas A-F para "Fecha de impresión"
+        worksheet.mergeCells(`A${filaImpresion.number}:D${filaImpresion.number}`);
+
+        // Combinar las celdas G-K para "Firma del usuario"
+        worksheet.mergeCells(`E${filaImpresion.number}:G${filaImpresion.number}`);
+
+        // Estilos para la fila de impresión y firma
+        filaImpresion.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          cell.font = { bold: true }; // Texto en negrita
+          cell.alignment = { horizontal: 'left', vertical: 'middle' }; // Alinear el texto a la izquierda y centrado verticalmente
+          cell.border = {
+            top: { style: 'thin', color: { argb: '000000' } },
+            left: { style: 'thin', color: { argb: '000000' } },
+            bottom: { style: 'thin', color: { argb: '000000' } },
+            right: { style: 'thin', color: { argb: '000000' } }
+          };
         });
 
         // Ajustar la altura de las filas basado en el número de líneas de texto

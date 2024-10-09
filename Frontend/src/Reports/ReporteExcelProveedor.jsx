@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 import CustomActualizarUser from '../components/CustomActualizarUser';
 import { DateRange, Person, Approval } from '@mui/icons-material';
 
-const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
+const ReporteExcelUsuario = ({ data, firma_Usuario, fileName, sheetName }) => {
 
   const btnImprimir = () => {
 
@@ -126,6 +126,34 @@ const ReporteExcelUsuario = ({ data, fileName, sheetName }) => {
             if (cellLength > maxLength) maxLength = cellLength;
           });
           column.width = maxLength < 10 ? 10 : maxLength; // Ajustar el ancho mínimo si es necesario
+        });
+
+        // Agregar una fila en blanco
+        worksheet.addRow([]);
+
+        // Agregar una fila con "Fecha de impresión" y "Firma del usuario"
+        const fechaImpresion = `Fecha de impresión: ${formatDateTime(new Date())}`;
+        const firmaUsuario = `Firma del ${firma_Usuario.nombre} ${firma_Usuario.apellido}:________________________`;
+
+        // Agregar la fila con los valores, asegurando que las celdas intermedias estén vacías
+        const filaImpresion = worksheet.addRow([fechaImpresion, "", "", "", "", firmaUsuario]);
+
+        // Combinar las celdas A-F para "Fecha de impresión"
+        worksheet.mergeCells(`A${filaImpresion.number}:E${filaImpresion.number}`);
+
+        // Combinar las celdas G-K para "Firma del usuario"
+        worksheet.mergeCells(`F${filaImpresion.number}:J${filaImpresion.number}`);
+
+        // Estilos para la fila de impresión y firma
+        filaImpresion.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          cell.font = { bold: true }; // Texto en negrita
+          cell.alignment = { horizontal: 'left', vertical: 'middle' }; // Alinear el texto a la izquierda y centrado verticalmente
+          cell.border = {
+            top: { style: 'thin', color: { argb: '000000' } },
+            left: { style: 'thin', color: { argb: '000000' } },
+            bottom: { style: 'thin', color: { argb: '000000' } },
+            right: { style: 'thin', color: { argb: '000000' } }
+          };
         });
 
         // Ajustar la altura de las filas basado en el número de líneas de texto

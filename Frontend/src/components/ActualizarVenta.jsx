@@ -24,6 +24,7 @@ export const ActualizarVenta = () => {
   const rol = localStorage.getItem('rol');
   const navigate = useNavigate();
 
+  const [tiposSeleccionados, setTiposSeleccionados] = useState({});
   const UrlReact = process.env.REACT_APP_CONEXION_BACKEND;
   const obtenerToken = () => { const token = localStorage.getItem('token'); return token;}; 
   const token = obtenerToken();
@@ -37,35 +38,47 @@ export const ActualizarVenta = () => {
         const detalles = response.productos.map(producto => {
           return axios.get(`${UrlReact}/almacen/buscar/${producto.producto}`, configInicial)
             .then(res => {
-              return { ...res, productoId:producto.producto, cantidadProducto: producto.cantidad_producto};
-            })
+              return { ...res, productoId: producto.producto, cantidadProducto: producto.cantidad_producto, estadoActual: producto.estado, tipoActual: producto.tipo };
+            });
         });
         Promise.all(detalles)
           .then(productosDetallados => {
             // Construir un objeto para almacenar las cantidades iniciales
             const cantidadesIniciales = {};
+            const tiposIniciales = {};
             productosDetallados.forEach(producto => {
-              cantidadesIniciales[producto._id] = producto.cantidadProducto;
+              if (producto.estadoActual) {
+                cantidadesIniciales[producto._id] = producto.cantidadProducto;
+                tiposIniciales[producto._id] = 'Unidades'; // Asignación corregida
+              } else {
+                cantidadesIniciales[producto._id] = producto.cantidadProducto / producto.producto.capacidad_presentacion;
+                tiposIniciales[producto._id] = producto.tipoActual; // Asignación corregida
+              }
             });
-
             // Actualizar productosDetallados con la cantidad_stock actualizada
             const productosActualizados = productosDetallados.map(producto => {
-              const cantidadProducto = cantidadesIniciales[producto._id] || 0; // Valor por defecto 0 si no existe
+              const cantidadProducto = cantidadesIniciales[producto._id] || 0;
+              let NuevaCantidad;
+              if(producto.estadoActual){
+                NuevaCantidad = producto.cantidad_stock + cantidadProducto
+              }
+              else{
+                NuevaCantidad = producto.cantidad_stock + (cantidadProducto * producto.producto.capacidad_presentacion);
+              }
               return {
                 ...producto,
-                cantidad_stock: producto.cantidad_stock + cantidadProducto // Actualiza cantidad_stock
+                cantidad_stock: NuevaCantidad
               };
             });
-
             // Actualizar el estado
             setProductosAñadidos(productosActualizados);
             setCantidad(cantidadesIniciales);
+            setTiposSeleccionados(tiposIniciales);
           })
           .catch(error => {
-            console.error('Error al cargar detalles de productos:', error);
-            CustomSwal({ icono: 'error', titulo: 'Error al cargar detalles de productos', mensaje: error.mensaje || error.message });
+            CustomSwal({ icono: 'error', titulo: 'Error al cargar detalles de productos', mensaje: error.mensaje });
           });
-
+  
         // Configurar cliente y precio total
         const clienteCompleto = response.cliente;
         setIdCliente(clienteCompleto);
@@ -76,7 +89,9 @@ export const ActualizarVenta = () => {
         CustomSwal({ icono: 'error', titulo: 'Error al obtener la venta', mensaje: error.mensaje || error.message });
         navigate('/Menu/Administrador');
       });
-  }, [ventaId, configInicial, UrlReact, navigate]);
+  }, [UrlReact, ventaId, configInicial, navigate]); // Array vacío para ejecutar solo una vez
+  
+  
 
   useEffect(() => {
     // Actualizar productosElegidos basándonos en la cantidad actualizada
@@ -86,8 +101,21 @@ export const ActualizarVenta = () => {
       const tipoProducto = producto?.producto?.tipo?.nombre || 'Tipo no disponible';
       const proveedorProducto = producto?.producto?.proveedor?.nombre_marca || 'Proveedor no disponible';
       const categoriaProducto = producto?.categoria?.nombre || 'Categoría no disponible';
-      const cantidadProducto = cantidad[producto._id] || 1;
-      const precioVentaProducto = producto?.precioVenta || 0;
+  
+      // Definir estado y asegurarse de que sea 'Unidades' si no está definido
+      const tipoSeleccionado = tiposSeleccionados[producto._id] || 'Unidades'; // Usar 'Unidades' si no existe
+      const estado = tipoSeleccionado === 'Unidades'; // true si es 'Unidades', de lo contrario false
+      // Definir cantidadProducto antes de la condición
+      let cantidadProducto;
+  
+      // Asignar valor a cantidadProducto según el estado
+      if (estado) {
+        cantidadProducto = cantidad[producto._id] || 1; // Unidades
+      } else {
+        cantidadProducto = (cantidad[producto._id] || 1) * producto.producto.capacidad_presentacion; // Cajas
+      }
+  
+      const precioVentaProducto = (producto?.precioVenta || 0) * cantidadProducto;
   
       return {
         producto: producto._id,
@@ -95,12 +123,14 @@ export const ActualizarVenta = () => {
         tipo: tipoProducto,
         proveedor: proveedorProducto,
         categoria: categoriaProducto,
+        estado: estado,
         cantidad_producto: cantidadProducto,
         precio_venta: precioVentaProducto,
       };
     });
+  
     setProductosElegidos(updatedProductosElegidos);
-  }, [cantidad, productosAñadidos]);
+  }, [cantidad, productosAñadidos, tiposSeleccionados]);
   
   useEffect(() => {
     // Calcular el precio total basado en los productos y cantidades
@@ -181,7 +211,7 @@ export const ActualizarVenta = () => {
         <Grid container spacing={2}>
           <CustomAutocompleteCliente clientes={clientes} setClientes={setClientes} idcliente={idcliente} setIdCliente={setIdCliente} inputCliente={inputCliente} setInputCliente={setInputCliente} usuario_={usuario_}/>
           <CustomAutocompleteProducto productos={productos} productosAñadidos={productosAñadidos} setProductosAñadidos={setProductosAñadidos} inputValue={inputValue} setInputValue={setInputValue}/>
-          <CustomListaProductos productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad} setPrecioTotal={setPrecioTotal}/>
+          <CustomListaProductos productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad} setPrecioTotal={setPrecioTotal} tiposSeleccionados={tiposSeleccionados} setTiposSeleccionados={setTiposSeleccionados}/>
           <CustomRegisterUser
             number={12}
             label="Precio Total"

@@ -44,6 +44,22 @@ router.post('/crear', verificacion, upload.single('imagenPrueba'), async (req, r
     if (!Array.isArray(productos) || productos.length === 0) {
       return res.status(400).json({ mensaje: 'La lista de productos no es válida o está vacía, añada productos' });
     }
+    // Verificar que todos los productos estén en el almacén
+    const idsProductos = productos.map(item => item.producto); // Extraer los IDs de los productos
+
+    const productosEnAlmacen = await Almacen.find({ producto: { $in: idsProductos } }); // Buscar productos en el almacén
+
+    // Crear un conjunto de IDs de productos en el almacén
+    const idsProductosEnAlmacen = new Set(productosEnAlmacen.map(item => item.producto.toString()));
+
+    // Verificar si hay productos que no están en el almacén
+    const productosNoEncontrados = productos.filter(item => !idsProductosEnAlmacen.has(item.producto));
+
+    if (productosNoEncontrados.length > 0) {
+      return res.status(404).json({
+        mensaje: 'No se ecncuentran los productos en el almacen'
+      });
+    }
 
     // Crear un nuevo pedido 
     const nuevoPedido = new Pedido({
@@ -138,6 +154,7 @@ router.put('/actualizar/:id', verificacion, upload.single('imagenVerificado'), a
   const { productos, estado, correo, password } = req.body;
   const imagenVerificado = req.file ? req.file.filename : null;
   try {
+    const ProductosHechos = JSON.parse(productos);
     const usuarioEncontrado = await Usuario.findOne({ correo });
     if (!usuarioEncontrado) {
       return res.status(404).json({ mensaje: 'Credenciales incorrectas' });
@@ -154,21 +171,22 @@ router.put('/actualizar/:id', verificacion, upload.single('imagenVerificado'), a
         return res.status(404).json({ mensaje: 'Este pedido ya ha sido modificado' });
       }
 
-      const productosSobrantes = []; // Array para acumular los productos sobrantes
-
+      const productosSobrantes = []; 
+      
       if (estado === 'Confirmado') {
-        for (const item of productos) {
+        for (const item of ProductosHechos) {
           const { producto, cantidad } = item;
           const productoEnAlmacen = await Almacen.findOne({ producto: producto }).populate({
             path: 'producto',
             select: 'nombre capacidad_presentacion',
           });
-
+        
           if (productoEnAlmacen) {
             const pedidoOriginal = pedido.productos.find(p => p.producto.toString() === producto.toString());
+        
             if (pedidoOriginal) {
               const cantidadDisponible = pedidoOriginal.cantidad_producto;
-
+        
               if (cantidad < cantidadDisponible) {
                 const cantidadRestante = cantidadDisponible - cantidad;
                 productosSobrantes.push({
@@ -179,15 +197,25 @@ router.put('/actualizar/:id', verificacion, upload.single('imagenVerificado'), a
                   precioCompra: pedidoOriginal.precioCompra,
                 });
               }
-
+        
+              // Actualiza la cantidad del pedido
               pedidoOriginal.cantidad_producto = cantidad; 
               const precioTotalPorProducto = cantidad * pedidoOriginal.precioCompra;
               
+              // Actualiza el precio total del pedido
               pedido.precio_total = pedido.precio_total - (cantidadDisponible * pedidoOriginal.precioCompra) + precioTotalPorProducto;
+        
+              // Actualiza la cantidad en el almacén
+              const capacidadPresentacion = productoEnAlmacen.producto.capacidad_presentacion || 1; // Por si acaso la capacidad es nula
+              productoEnAlmacen.cantidad_stock += cantidad * capacidadPresentacion; // Suma la cantidad correspondiente
+              console.log(productoEnAlmacen.cantidad_stock,  productoEnAlmacen.producto.capacidad_presentacion )
+              // Guarda los cambios en el almacén
+              await productoEnAlmacen.save();
             } 
+          } else {
+            return res.status(404).json({ mensaje: 'Este producto no se encuentra en el Almacen' });
           } 
-        }
-
+        }        
         if (productosSobrantes.length > 0) {
           const nuevoPedido = new Pedido({
             proveedor: pedido.proveedor,
@@ -226,29 +254,6 @@ router.put('/actualizar/:id', verificacion, upload.single('imagenVerificado'), a
     }
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al actualizar el pedido', error });
-  }
-});
-
-router.delete('/eliminar/:id', verificacion, async (req, res) => {
-  const { id } = req.params;
-  const { correo, password } = req.body;
-
-  try {
-      const usuarioEncontrado = await Usuario.findOne({ correo });
-      if (!usuarioEncontrado) {
-          return res.status(404).json({ mensaje: 'Credenciales incorrectas' });
-      }
-
-      const match = await bcryptjs.compare(password, usuarioEncontrado.password);
-      if (match) {
-          await Pedido.findByIdAndDelete(id);
-          return res.status(200).json({ mensaje: 'Pedido Eliminado' });
-      } else {
-          return res.status(403).json({ mensaje: 'Contraseña incorrecta' });
-      }
-  } catch (error) {
-      console.error(error); // Agrega log para el error
-      res.status(500).json({ mensaje: 'Error al eliminar el pedido', error });
   }
 });
 

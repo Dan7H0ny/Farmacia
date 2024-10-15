@@ -29,6 +29,7 @@ router.post('/crear', verificacion, async (req, res) => {
         tipo: item.tipo,
         proveedor: item.proveedor,
         categoria: item.categoria,
+        estado: item.estado,
         cantidad_producto: item.cantidad_producto,
         precio_venta: item.precio_venta,
       };
@@ -140,6 +141,7 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
         tipo: item.tipo,
         proveedor: item.proveedor,
         categoria: item.categoria,
+        estado: item.estado,
         cantidad_producto: item.cantidad_producto,
         precio_venta: item.precio_venta,
       };

@@ -27,6 +27,7 @@ export const RegistrarVenta = () => {
   const configInicial = useMemo(() => ({headers: { Authorization: `Bearer ${token}` }}), [token]);
 
   const [cantidad, setCantidad] = useState({});
+  const [tiposSeleccionados, setTiposSeleccionados] = useState({});
   const [precioTotal, setPrecioTotal] = useState(0);
 
   useEffect(() => {
@@ -37,8 +38,21 @@ export const RegistrarVenta = () => {
       const tipoProducto = producto?.producto?.tipo?.nombre || 'Tipo no disponible';
       const proveedorProducto = producto?.producto?.proveedor?.nombre_marca || 'Proveedor no disponible';
       const categoriaProducto = producto?.categoria?.nombre || 'Categoría no disponible';
-      const cantidadProducto = cantidad[producto._id] || 1;
-      const precioVentaProducto = producto?.precioVenta || 0;
+  
+      // Definir estado y asegurarse de que sea 'Unidades' si no está definido
+      const tipoSeleccionado = tiposSeleccionados[producto._id] || 'Unidades'; // Usar 'Unidades' si no existe
+      const estado = tipoSeleccionado === 'Unidades'; // true si es 'Unidades', de lo contrario false
+      // Definir cantidadProducto antes de la condición
+      let cantidadProducto;
+  
+      // Asignar valor a cantidadProducto según el estado
+      if (estado) {
+        cantidadProducto = cantidad[producto._id] || 1; // Unidades
+      } else {
+        cantidadProducto = (cantidad[producto._id] || 1) * producto.producto.capacidad_presentacion; // Cajas
+      }
+  
+      const precioVentaProducto = (producto?.precioVenta || 0) * cantidadProducto;
   
       return {
         producto: producto._id,
@@ -46,12 +60,16 @@ export const RegistrarVenta = () => {
         tipo: tipoProducto,
         proveedor: proveedorProducto,
         categoria: categoriaProducto,
+        estado: estado,
         cantidad_producto: cantidadProducto,
         precio_venta: precioVentaProducto,
       };
     });
+  
     setProductosElegidos(updatedProductosElegidos);
-  }, [cantidad, productosAñadidos]);
+  }, [cantidad, productosAñadidos, tiposSeleccionados]);
+  
+  
 
   useEffect(() => {
     axios.get(`${UrlReact}/almacen/mostrar`, configInicial)
@@ -61,7 +79,6 @@ export const RegistrarVenta = () => {
           navigate('/Menu/Administrador');
         } else {
           const productosFiltrados = response.filter(producto => producto.estado === true);
-          console.log(productosFiltrados)
           setProductos(productosFiltrados);
         }
       })
@@ -131,7 +148,7 @@ export const RegistrarVenta = () => {
         <Grid container spacing={3}>
           <CustomAutocompleteCliente clientes={clientes} setClientes={setClientes} idcliente={idcliente} setIdCliente={setIdCliente} inputCliente={inputCliente} setInputCliente={setInputCliente} usuario_={usuario_}/>
           <CustomAutocompleteProducto productos={productos} productosAñadidos={productosAñadidos} setProductosAñadidos={setProductosAñadidos} inputValue={inputValue} setInputValue={setInputValue}/>
-          <CustomListaProductos productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad} setPrecioTotal={setPrecioTotal}/>
+          <CustomListaProductos productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad} setPrecioTotal={setPrecioTotal} tiposSeleccionados={{}} setTiposSeleccionados={setTiposSeleccionados}/>
           <Grid item xs={12} sm={8}></Grid>
           <CustomRegisterUser
             number={4}

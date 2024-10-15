@@ -132,10 +132,11 @@ router.post('/registrarToken', async (req, res) => {
 
 async function enviarNotificaciones() {
   const messages = [];
-  const tokensToRemove = []; // Lista para tokens inválidos
+  const tokensToRemove = [];
 
   try {
-    const notificacionesActivas = await Notificacion.find({ 'notificaciones.estado': true }).populate('notificaciones.prediccion');
+    const notificacionesActivas = await Notificacion.find({ 'notificaciones.estado': true })
+      .populate('notificaciones.prediccion');
 
     if (notificacionesActivas.length > 0) {
       const tokensSet = new Set(notificacionesActivas.map(notificacion => notificacion.token));
@@ -150,47 +151,33 @@ async function enviarNotificaciones() {
       productosActivos.forEach(producto => {
         tokens.forEach(token => {
           messages.push({
-            to: token,
-            sound: 'default',
-            body: `El producto: ${producto.nombreProducto} se agotará en ${producto.diaAgotamiento} días!`,
+            token: token,
+            notification: {
+              title: 'Producto por agotarse',
+              body: `El producto: ${producto.nombreProducto} se agotará en ${producto.diaAgotamiento} días!`,
+            },
             data: { nombreProducto: producto.nombreProducto, info: 'Productos por agotarse' },
           });
         });
       });
 
-      const chunks = expo.chunkPushNotifications(messages);
-      for (let chunk of chunks) {
-        try {
-          const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-          ticketChunk.forEach(ticket => {
-            if (ticket.status === 'error') {
-              if (ticket.details && ticket.details.error === 'DeviceNotRegistered') {
-                tokensToRemove.push(ticket.to); // Agregar token a la lista para eliminarlo
-              }
-            }
-          });
-        } catch (error) {
-          console.error('Error al enviar notificaciones:', error);
-        }
+      if (tokensToRemove.length > 0) {
+        await Notificacion.updateMany(
+          { token: { $in: tokensToRemove } },
+          { $pull: { notificaciones: { token: { $in: tokensToRemove } } } }
+        );
       }
     } else {
       console.log('No hay notificaciones activas para enviar.');
-    }
-
-    // Eliminar tokens inválidos
-    if (tokensToRemove.length > 0) {
-      await Notificacion.updateMany(
-        { token: { $in: tokensToRemove } },
-        { $pull: { notificaciones: { token: { $in: tokensToRemove } } } }
-      );
     }
   } catch (error) {
     console.error('Error al obtener o enviar notificaciones:', error);
   }
 }
 
+
 //* * * * *  0 */8 * * *
-cron.schedule('0 */8 * * *', () => {
+cron.schedule('* * * * *', () => {
   enviarNotificaciones();
 });
 

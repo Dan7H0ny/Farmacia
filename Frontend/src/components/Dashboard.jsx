@@ -103,13 +103,13 @@ const Dashboard = () => {
         <Grid item xs={12} sm={7} >  
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} >
-              <InfoCard title="CLIENTES" value={clientes} icon={<Person2TwoTone/>} color={'#15b79f'} />
+              <InfoCard title="CLIENTES REGISTRADOS" value={clientes} icon={<Person2TwoTone/>} color={'#15b79f'} />
             </Grid>
             <Grid item xs={12} sm={12} >
-              <InfoCard title="PROVEEDORES" value={proveedores} icon={<ExtensionSharp/>} color={'#fb9c0c'} />
+              <InfoCard title="PROVEEDORES REGISTRADOS" value={proveedores} icon={<ExtensionSharp/>} color={'#fb9c0c'} />
             </Grid>
             <Grid item xs={12} sm={12} >
-              <InfoCard title="ALMACEN" value={productos} icon={<ProductionQuantityLimits/>} color={'#635bff'} />
+              <InfoCard title="PRODUCTOS ALMACENADOS" value={productos} icon={<ProductionQuantityLimits/>} color={'#635bff'} />
             </Grid>
             {predicciones && (
               <Grid item xs={12} sm={12}>

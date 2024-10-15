@@ -62,6 +62,7 @@ const cargarVentas = async () => {
           tipo: producto.producto.tipo.nombre, // Asegúrate de que 'tipo' tiene el campo 'nombre'
           proveedor: producto.producto.proveedor.nombre_marca, // Asegúrate de que 'proveedor' tiene el campo 'nombre_marca'
           categoria: producto.categoria.nombre, // Asegúrate de que 'categoria' tiene el campo 'nombre'
+          estado: true,
           cantidad_producto: cantidadProducto,
           precio_venta: parseFloat(producto.precioVenta)
         });

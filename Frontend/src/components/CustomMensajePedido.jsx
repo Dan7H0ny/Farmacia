@@ -8,22 +8,26 @@ const CustomMensajePedido = ({ proveedor, user, predicciones }) => {
   };
   // Formatear predicciones como una lista de productos con cantidades
   const listaProductos = predicciones.map(
-    (prediccion, index) => `${index + 1}. Producto: ${prediccion.nombre}, Cantidad: ${prediccion.cantidadEstimada}`
+    (prediccion, index) => `${index + 1}. Producto: ${prediccion.nombre}, Cantidad: ${prediccion.cantidad_producto}`
   ).join('\n');
 
   // Mensaje para correo
   const mensajeCorreo = `Estimada empresa (${proveedor.nombre_marca})
 
-Estoy interesado en obtener más información sobre el siguiente PRODUCTO, a continuación los datos del producto:
-  
+Se necesitan los siguientes productos:
+____________________________________________
+                        LISTA DE PRODUCTOS                        
+____________________________________________
+
 ${listaProductos}
 
+____________________________________________
 Agradezco su pronta respuesta, me despido.
 
 Saludos!
 
 Atentamente:
-________________________________________________________________
+____________________________________________
 Lic: ${user.nombre} ${user.apellido}
 Cel: ${user.telefono}`;
 

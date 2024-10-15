@@ -9,7 +9,7 @@ export const ReportePedido = (pedido, usuario) => {
 
   const opciones = {
     titulo: 'Reporte del pedido',
-    nombreArchivo: `Reporte del peiddo de (${pedido.proveedor}).pdf`,
+    nombreArchivo: `Reporte del pedido de (${pedido.proveedor}).pdf`,
     logo: logoBase64,
     firma: `Lic. ${usuario.nombre} ${usuario.apellido}`,
     fechaImpresion: formatDateTime(new Date()),

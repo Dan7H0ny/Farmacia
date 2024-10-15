@@ -195,7 +195,6 @@ export const ListarPedidos = () => {
         if (result.isConfirmed) {
           const { cantidades, password } = result.value;
           const formData = new FormData();
-  
           formData.append('productos', JSON.stringify(cantidades));
           formData.append('estado', 'Confirmado');
           formData.append('correo', usuario.correo);
@@ -387,11 +386,6 @@ export const ListarPedidos = () => {
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" color="error" onClick={() => eliminarPedido(pedido._id)}>
-                  Eliminar
-                </Button>
-              </Grid>
-              <Grid item>
                 <Button variant="contained" onClick={() => Swal.close()}>
                   Atrás
                 </Button>
@@ -435,74 +429,6 @@ export const ListarPedidos = () => {
         console.error('Error al descargar el archivo:', error);
       });
   };
-  const eliminarPedido = async (pedidoId) => {
-    try {
-      const result = await MySwal.fire({
-        title: '¿Estás seguro de realizar esta operación?',
-        html: (
-          <Grid container spacing={2} sx={{ marginTop: 2, backgroundColor: '#0f1b35', padding: 2, borderRadius: 1 }}>
-            <Grid item xs={12}>
-              <TextField
-                label="Contraseña del usuario actual"
-                type="password"
-                fullWidth
-                id="passwordInput"
-                sx={{
-                  backgroundColor: '#e2e2e2',
-                  '& .MuiInputBase-root': {
-                    backgroundColor: '#e2e2e2', // Fondo del campo
-                    color: '#0f1b35', // Color del texto
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: '#0f1b35', // Color de la etiqueta
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: '#0f1b35', // Color del borde
-                    },
-                  },
-                }}
-              />
-            </Grid>
-          </Grid>
-        ),
-        showCancelButton: true,
-        cancelButtonText: 'Cancelar',
-        confirmButtonText: 'Aceptar Pedido',
-        customClass: {
-          popup: 'customs-swal-popup',
-          title: 'customs-swal-title',
-          confirmButton: 'swal2-confirm custom-swal2-confirm',
-          cancelButton: 'swal2-cancel custom-swal2-cancel',
-        },
-        preConfirm: () => {
-          const password = document.getElementById('passwordInput').value;
-          if (!password) {
-            Swal.showValidationMessage('Debe ingresar una contraseña');
-            return false;
-          }
-
-          return { password };
-        }
-      });
-
-      if (result.isConfirmed) {
-        const { password } = result.value;
-        const response = await axios.delete(`${UrlReact}/pedidos/eliminar/${pedidoId}`, {
-          data: {
-              correo: usuario.correo,
-              password,
-          },
-          ...configInicial,
-      });
-      setPedidos(prevPedidos => prevPedidos.filter(p => p._id !== pedidoId));
-      CustomSwal({ icono: 'success', titulo: 'Pedido Rechazado', mensaje: response.mensaje });
-      }
-    } catch (error) {
-      CustomSwal({ icono: 'error', titulo: 'No se ha completado el proceso', mensaje: error.mensaje });
-    }
-  };
-  
  
   return (
     <div id="caja_contenido">

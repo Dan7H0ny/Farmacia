@@ -160,7 +160,7 @@ export const RegistrarPedido = () => {
           <CustomAutocompletePedido productos={productos} productosAñadidos={productosAñadidos} setProductosAñadidos={setProductosAñadidos} inputValue={inputValue} setInputValue={setInputValue}/>
           <CustomListaProductosPedir productosAñadidos={productosAñadidos} setCantidad={setCantidad} cantidad={cantidad} setPrecioTotal={setPrecioTotal}/>
           {productosAñadidos.length && (
-            <CustomMensajePedido proveedor={proveedor} user={user} predicciones={productosAñadidos}/>
+            <CustomMensajePedido proveedor={proveedor} user={user} predicciones={productosElegidos}/>
           )}
           {productosAñadidos.length && (
             <>
@@ -200,49 +200,46 @@ export const RegistrarPedido = () => {
               />
             </>
           )}
-          
-        </Grid>
-        <Grid item xs={12} sm={6} sx={{padding: 'auto',}}>
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              size="large"
-              type="button" // Cambiado de 'submit' a 'button' si no es un formulario
-              onClick={() => navigate(`/Menu/Administrador/Venta/Listar`)}
-              sx={{
-                backgroundColor: '#e2e2e2',
-                color: '#0f1b35',
-                marginTop: 2.5,
-                fontWeight: 'bold',
-                '&:hover': {
-                  backgroundColor: '#1a7b13',
-                  color: '#e2e2e2',
-                  border: '2px solid #e2e2e2',
-                  },
-                }}
-              >Volver a la lista de ventas
-            </Button>
-          </Grid> 
+          <Grid item xs={12} sm={12}>
           <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            size="large"
-            type="submit"
-            sx={{
-              backgroundColor: '#e2e2e2',
-              color: '#0f1b35',
-              marginTop: 2.5,
-              fontWeight: 'bold',
-              '&:hover': {
-                backgroundColor: '#1a7b13',
-                color: '#e2e2e2',
-                border: '2px solid #e2e2e2',
-                },
-              }}
-            >Registrar Pedido
-          </Button>
+                fullWidth
+                variant="contained"
+                color="primary"
+                type="submit"
+                sx={{
+                  backgroundColor: '#e2e2e2',
+                  color: '#0f1b35',
+                  fontWeight: 'bold',
+                  '&:hover': {
+                    backgroundColor: '#1a7b13',
+                    color: '#e2e2e2',
+                    border: '2px solid #e2e2e2',
+                    },
+                  }}
+                >Registrar Pedido
+              </Button>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                size="large"
+                type="button" // Cambiado de 'submit' a 'button' si no es un formulario
+                onClick={() => navigate(`/Menu/Administrador/Proveedor/Listar`)}
+                sx={{
+                  backgroundColor: '#e2e2e2',
+                  color: '#0f1b35',
+                  marginTop: 2.5,
+                  fontWeight: 'bold',
+                  '&:hover': {
+                    backgroundColor: '#1a7b13',
+                    color: '#e2e2e2',
+                    border: '2px solid #e2e2e2',
+                    },
+                  }}
+                >Volver a la lista de proveedores
+              </Button>
+          </Grid>
+        </Grid>
         </form>
       </Box>
     </div>

@@ -37,6 +37,63 @@ async function obtenerVentasDiarias() {
   }
 }
 
+function calcularSumaErroresCuadraticos(yReal, yPredicho) {
+  let sumaErrores = 0;
+  for (let i = 0; i < yReal.length; i++) {
+    const error = (yReal[i] || 0) - (yPredicho[i] || 0); // Asigna 0 si yReal[i] o yPredicho[i] son NaN o undefined
+    sumaErrores += Math.pow(error, 2);
+  }
+  return sumaErrores;
+}
+
+// Función para calcular AIC
+function calcularAIC(sumaErrores, numParametros, n) {
+  return n * Math.log(sumaErrores / n) + 2 * numParametros;
+}
+
+// Función para seleccionar automáticamente el mejor modelo ARIMA
+function seleccionarMejorModeloARIMA(y, maxP = 6, maxD = 1, maxQ = 0) {
+  let mejorModelo = null;
+  let mejorAIC = Infinity; // El AIC debe ser lo más bajo posible
+  let mejorP = 0, mejorD = 0, mejorQ = 0;
+  console.log('Iniciando selección del mejor modelo ARIMA...');
+  for (let p = 0; p <= maxP; p++) {
+    for (let d = 0; d <= maxD; d++) {
+      for (let q = 0; q <= maxQ; q++) {console.log(`Entrenando modelo ARIMA(p=${p}, d=${d}, q=${q})...`);
+        try {
+          // Entrenar el modelo ARIMA con diferentes combinaciones de p, d, q
+          const arima = new ARIMA({ p, d, q, verbose: false });
+          arima.train(y);
+
+          // Predicción con el modelo entrenado (en este caso, en modo entrenamiento)
+          const yPredicho = arima.predict(y.length)[0]; // Usa las mismas entradas para predicción
+
+          // Calcular la suma de errores cuadráticos
+          const sumaErrores = calcularSumaErroresCuadraticos(y, yPredicho);
+
+          // Calcular el AIC para esta combinación de p, d, q
+          const numParametros = p + d + q;
+          const aic = calcularAIC(sumaErrores, numParametros, y.length);
+
+          // Si este modelo tiene un AIC más bajo, lo seleccionamos como el mejor
+          if (aic < mejorAIC) {
+            mejorAIC = aic;
+            mejorModelo = arima;
+            mejorP = p;
+            mejorD = d;
+            mejorQ = q;
+          }
+        } catch (error) {
+          console.log(`Error al entrenar ARIMA(p=${p}, d=${d}, q=${q}):`, error.message);
+        }
+      }
+    }
+  }
+  console.log('Selección del mejor modelo completada.');
+  console.log(`Mejor modelo ARIMA(p=${mejorP}, d=${mejorD}, q=${mejorQ}) con AIC=${mejorAIC}`);
+  return mejorModelo;
+}
+
 async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
   const datosHistoricos = ventasPorProducto[productoId] || [];
   if (datosHistoricos.length === 0) {
@@ -44,20 +101,33 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
   }
 
   const y = datosHistoricos.map(venta => venta.totalVentas);
-  const arima = new ARIMA({ p: 3, d: 2, q: 1, verbose: false });
-  arima.train(y);
-  const predicciones = arima.predict(diasAPredecir);
+
+  // Selección automática del mejor modelo ARIMA
+  const mejorModeloArima = seleccionarMejorModeloARIMA(y);
+
+  if (!mejorModeloArima) {
+    throw new Error('No se pudo encontrar un modelo ARIMA adecuado.');
+  }
+
+  // Predicción con el mejor modelo
+  const predicciones = mejorModeloArima.predict(diasAPredecir);
 
   const producto = await Almacen.findById(productoId).populate('producto', 'nombre').populate('categoria', 'nombre');
   const capacidadTotalInicial = calcularCapacidadTotalInicial(producto);
 
-  const primeraPrediccion = predicciones[0].map(valor => Math.max(Math.round(valor), 0));
+  // Asegurarse de que las predicciones sean enteros positivos
+  const primeraPrediccion = predicciones[0].map(valor => {
+    const num = Math.round(valor);
+    return isNaN(num) ? 0 : Math.max(num, 0); // Reemplaza NaN por 0
+  });
+  
 
   let capacidadTotal = capacidadTotalInicial;
   let agotado = false;
   let diaAgotamiento;
 
   const erroresAbsolutosMedios = calcularErrorAbsolutoMedio(primeraPrediccion, datosHistoricos);
+  const porcentajeError = isNaN(erroresAbsolutosMedios) ? 0 : parseFloat(erroresAbsolutosMedios);
 
   for (let i = 0; i < primeraPrediccion.length; i++) {
     const ventaDiaActual = primeraPrediccion[i];
@@ -71,14 +141,15 @@ async function predecirVentas(ventasPorProducto, productoId, diasAPredecir) {
 
   return {
     producto: producto._id,
-    nombreCategoria: producto.categoria.nombre, 
-    nombreProducto: producto.producto.nombre, 
-    prediccion: { ventas: primeraPrediccion, stockRestante: producto.cantidad_stock }, 
+    nombreCategoria: producto.categoria.nombre,
+    nombreProducto: producto.producto.nombre,
+    prediccion: { ventas: primeraPrediccion, stockRestante: producto.cantidad_stock },
     diaAgotamiento,
     datosHistoricos: datosHistoricos.length,
-    porcentajeError: parseFloat(erroresAbsolutosMedios),
+    porcentajeError: porcentajeError,
   };
 }
+
 
 function calcularErrorAbsolutoMedio(predicciones, datosHistoricos) {
   let sumaErrores = 0;
@@ -119,19 +190,26 @@ async function predecirVentasParaTodosLosProductosARIMA(diasAPredecir) {
   
     const productos = await Almacen.find({});
     const predicciones = await Promise.all(
-      productos.map(producto => predecirVentas(ventasPorProducto, producto._id, diasAPredecir))
-    )
-  
-    const productosConDiaAgotamiento = predicciones.map(prediccion => ({
-      ...prediccion,
-      diaAgotamiento: prediccion.diaAgotamiento,
-    }));
-  
+      productos.map(async producto => {
+        const productoId = producto._id;
+        // Verificar si hay datos históricos antes de llamar a predecirVentas
+        if (!ventasPorProducto[productoId] || ventasPorProducto[productoId].length === 0) {
+          console.log(`No hay datos históricos para el producto con ID ${productoId}. Ignorando este producto.`);
+          return null; // O puedes retornar un objeto vacío o similar si prefieres
+        }
+        return await predecirVentas(ventasPorProducto, productoId, diasAPredecir);
+      })
+    );
+
+    // Filtrar las predicciones para eliminar los productos sin datos históricos
+    const productosConDiaAgotamiento = predicciones.filter(prediccion => prediccion !== null);
+
     return productosConDiaAgotamiento;
   } catch (error) {
     console.error('Error al predecir ventas para todos los productos:', error);
     throw error;
   }
 }
+
 
 module.exports = { predecirVentasParaTodosLosProductosARIMA};

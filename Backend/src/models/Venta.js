@@ -27,6 +27,10 @@ const ventaSchema = new mongoose.Schema({
       type: String,
       required: true
     },
+    estado: {
+      type: Boolean,
+      required: true
+    },
     cantidad_producto: {
       type: Number,
       required: true

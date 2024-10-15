@@ -80,7 +80,7 @@ router.put('/actualizar/:id', verificacion, async (req, res) => {
 
 router.get('/mostrar/por-proveedor/:id', verificacion, async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     // Encuentra los productos del proveedor
     const productosEncontrados = await Producto.find({ proveedor: id })
@@ -98,10 +98,22 @@ router.get('/mostrar/por-proveedor/:id', verificacion, async (req, res) => {
     // Encuentra almacenes relacionados con los productos encontrados
     const idsProductos = productosEncontrados.map(prod => prod._id);
     const almacenes = await Almacen.find({ producto: { $in: idsProductos } });
-    const idsAlmacen = almacenes.map(almacen => almacen._id);
+
+    // Extraer los IDs de los productos que están en el almacén
+    const idsProductosEnAlmacen = almacenes.map(almacen => almacen.producto.toString());
+
+    // Filtrar los productos encontrados para incluir solo aquellos que están en el almacén
+    const productosFiltrados = productosEncontrados.filter(producto => 
+      idsProductosEnAlmacen.includes(producto._id.toString())
+    );
+
+    // Si no se encuentran productos en el almacén
+    if (!productosFiltrados.length) {
+      return res.status(404).json({ mensaje: 'No hay productos en el almacén para este proveedor' });
+    }
 
     // Encuentra las predicciones relacionadas
-    const predicciones = await Prediccion.find({ productos: { $in: idsAlmacen } })
+    const predicciones = await Prediccion.find({ productos: { $in: almacenes.map(a => a._id) } })
       .populate({
         path: 'productos',
         populate: {
@@ -111,7 +123,7 @@ router.get('/mostrar/por-proveedor/:id', verificacion, async (req, res) => {
       });
 
     // Crear una lista de productos con la cantidad estimada
-    const productosConCantidadEstimada = productosEncontrados.map(producto => {
+    const productosConCantidadEstimada = productosFiltrados.map(producto => {
       // Buscar la predicción correspondiente para este producto
       const prediccion = predicciones.find(p => p.productos && p.productos.producto._id.toString() === producto._id.toString());
 
@@ -132,6 +144,7 @@ router.get('/mostrar/por-proveedor/:id', verificacion, async (req, res) => {
         cantidadEstimada,
       };
     });
+
     // Enviar respuesta con productos con cantidad estimada
     res.json(productosConCantidadEstimada);
   } catch (error) {
@@ -139,5 +152,6 @@ router.get('/mostrar/por-proveedor/:id', verificacion, async (req, res) => {
     res.status(500).json({ mensaje: 'Error al obtener los productos y calcular cantidad estimada', error });
   }
 });
+
 
 module.exports= router;

@@ -159,7 +159,7 @@ export const RegistrarVenta = () => {
             required={true}
             readOnly={true}
             icon={<Typography variant="body1" sx={{ fontWeight: 'bold' }}>Bs</Typography>}
-          /> 
+          />
         </Grid>
           <Button
             fullWidth

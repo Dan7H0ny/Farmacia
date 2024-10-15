@@ -111,9 +111,12 @@ router.get('/mostrar/por-proveedor/:id', verificacion, async (req, res) => {
     if (!productosFiltrados.length) {
       return res.status(404).json({ mensaje: 'No hay productos en el almacén para este proveedor' });
     }
-
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0); 
+    const mañana = new Date(hoy);
+    mañana.setDate(hoy.getDate() + 1);
     // Encuentra las predicciones relacionadas
-    const predicciones = await Prediccion.find({ productos: { $in: almacenes.map(a => a._id) } })
+    const predicciones = await Prediccion.find({ productos: { $in: almacenes.map(a => a._id) }, fecha: {$gte:hoy, $lt:mañana} })
       .populate({
         path: 'productos',
         populate: {

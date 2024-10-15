@@ -9,14 +9,17 @@ import InfoDonutChart from './dashboard/InfoDonutChart';
 import InfoExtraerDatos from './dashboard/InfoExtraerDatos';
 import InfoMeses from './dashboard/InfoMeses';
 import InfoTable from './dashboard/InfoTable';
-import { Grid} from '@mui/material';
+import { Grid, Typography} from '@mui/material';
 import {Person2TwoTone, ExtensionSharp, ProductionQuantityLimits } from '@mui/icons-material';
+import InfoComparacionBar from './dashboard/InfoComparacionBar';
+import InfoComparacion from './dashboard/InfoComparacion';
 
 const Dashboard = () => {
   const [clientes, setClientes] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [productos, setProductos] = useState([]);
   const [predicciones, setPredicciones] = useState([]);
+  const [comparacion, setComparacion] = useState([]);
   const [tableDatos, setTableDatos] = useState([]);
   const [usuario, setUsuario] = useState('');
   const navigate = useNavigate();
@@ -50,7 +53,7 @@ const Dashboard = () => {
         CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.mensaje ? error.response.data.mensaje : 'Error desconocido',});
       });
   }, [UrlReact, configInicial]);
-  
+
   useEffect(() => {
     if (!token) {
       CustomSwal({ icono: 'error', titulo: 'El token es invalido', mensaje: 'Error al obtener el token de acceso'});
@@ -95,12 +98,11 @@ const Dashboard = () => {
         navigate('/Menu/Administrador')
       });
   }, [navigate, token, configInicial, UrlReact]);
-
   return (
     <div id="caja_contenido" >
       <CustomTypography text={'PANEL DE CONTROL'} />
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={7} >  
+        <Grid item xs={12} sm={5} >  
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} >
               <InfoCard title="CLIENTES REGISTRADOS" value={clientes} icon={<Person2TwoTone/>} color={'#15b79f'} />
@@ -111,21 +113,25 @@ const Dashboard = () => {
             <Grid item xs={12} sm={12} >
               <InfoCard title="PRODUCTOS ALMACENADOS" value={productos} icon={<ProductionQuantityLimits/>} color={'#635bff'} />
             </Grid>
-            {predicciones && (
-              <Grid item xs={12} sm={12}>
-                <InfoExtraerDatos setPredicciones={setPredicciones} />
-                <InfoBarChar predicciones={predicciones} />
-              </Grid>
-            )}
-          </Grid>
-        </Grid>
-        <Grid item xs={12} sm={5}>
-          <Grid container spacing={3}>  
             <Grid item xs={12} sm={12}> 
               <InfoDonutChart/>
             </Grid>
             <Grid item xs={12} sm={12}> 
               <InfoMeses/>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} sm={7}>
+          <Grid container spacing={2}>  
+            {predicciones && (
+              <Grid item xs={12} sm={12}>
+                <InfoBarChar predicciones={predicciones} titulo={<Typography variant="h6" component="div">5 PRODUCTOS PREVISTOS PARA VENDER EN LOS SIGUIENTES DÍAS</Typography>}/>
+                <InfoExtraerDatos setPredicciones={setPredicciones} />
+              </Grid>
+            )}
+            <Grid item xs={12} sm={12}>
+              <InfoComparacion tableDatos={tableDatos} setComparacion={setComparacion}/>
+              <InfoComparacionBar comparacion={comparacion}/>
             </Grid>
           </Grid>
         </Grid>

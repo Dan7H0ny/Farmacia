@@ -1,7 +1,6 @@
 const Pedido = require('../models/Pedido');
 const express = require('express');
 const router = express.Router();
-const Producto = require('../models/Producto');
 const Usuario = require('../models/Usuario');
 const Almacen = require('../models/Almacen');
 const verificacion = require('../middlewares/verificacion');

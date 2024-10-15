@@ -52,7 +52,7 @@ function calcularAIC(sumaErrores, numParametros, n) {
 }
 
 // Función para seleccionar automáticamente el mejor modelo ARIMA
-function seleccionarMejorModeloARIMA(y, maxP = 6, maxD = 1, maxQ = 0) {
+function seleccionarMejorModeloARIMA(y, maxP = 6, maxD = 1, maxQ = 1) {
   let mejorModelo = null;
   let mejorAIC = Infinity; // El AIC debe ser lo más bajo posible
   let mejorP = 0, mejorD = 0, mejorQ = 0;

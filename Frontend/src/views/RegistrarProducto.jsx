@@ -9,6 +9,7 @@ import CustomSwal from '../components/CustomSwal';
 import CustomRegisterUser from '../components/CustomRegisterUser';
 import CustomSelectCom from '../components/CustomSelectCom';
 import CustomSelectProveedor from '../components/CustomSelectProveedor';
+import HelpIcon from '../components/HelpIcon';
 
 export const RegistrarProducto = () => {
   const [nombre, setNombre] = useState('');
@@ -124,7 +125,12 @@ export const RegistrarProducto = () => {
             />
             <CustomRegisterUser
               number={4}
-              label="Precio" 
+              label={
+              <>                
+                <span>Precio</span>
+                <HelpIcon message="Este es el precio de la compra. Ingrese el monto correspondiente." />
+              </>
+              } 
               placeholder= 'Ingrese el precio de la compra'
               type= 'Number'
               required={true}

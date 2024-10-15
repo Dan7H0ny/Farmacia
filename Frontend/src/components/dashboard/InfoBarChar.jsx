@@ -6,7 +6,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const InfoBarChar = ({ predicciones }) => {
+const InfoBarChar = ({ predicciones, titulo }) => {
   const [loading, setLoading] = useState(true);
   const [noData, setNoData] = useState(false);
 
@@ -107,7 +107,6 @@ const InfoBarChar = ({ predicciones }) => {
 
   return (
     <Card style={{
-      borderRadius: '15px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
       padding: '20px',
       backgroundColor: '#0f1b35',
@@ -116,14 +115,12 @@ const InfoBarChar = ({ predicciones }) => {
     }}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6" component="div">
-            PRODUCTOS PREVISTOS PARA VENDER EN LOS SIGUIENTES DÍAS
-          </Typography>
+          {titulo}
           <IconButton onClick={RefrescarPagina} style={{ color: '#e2e2e2' }}>
             <RefreshIcon />
           </IconButton>
         </Box>
-        <div style={{ height: '400px', position: 'relative' }}>
+        <div style={{ height: '350px', position: 'relative' }}>
           {loading ? (
             <Box display="flex" justifyContent="center" alignItems="center" style={{ height: '100%' }}>
               <CircularProgress style={{ color: '#e2e2e2' }} />

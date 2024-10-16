@@ -87,7 +87,7 @@ const Dashboard = () => {
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <Text style={styles.title}>
-              {mostrarCaducidad ? 'Productos Próximos a Caducar' : 'Productos con Bajo Stock'}
+              {mostrarCaducidad ? '5 Productos Próximos a Caducar' : '5 Productos con Bajo Stock'}
             </Text>
             {dataMain.data && (
               <PieChart

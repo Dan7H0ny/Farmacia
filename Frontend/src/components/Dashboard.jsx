@@ -50,6 +50,7 @@ const Dashboard = () => {
         setTableDatos(response);
       })
       .catch(error => {
+        console.log(error)
         CustomSwal({ icono: 'error', titulo: 'Error al obtener los productos', mensaje: error.mensaje ? error.response.data.mensaje : 'Error desconocido',});
       });
   }, [UrlReact, configInicial]);

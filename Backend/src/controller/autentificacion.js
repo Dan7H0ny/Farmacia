@@ -110,7 +110,7 @@ router.post('/enviarpin', async (req, res) => {
         <p>Se recomienda cambiar la contraseña después de ingresar.</p>
         <p>Puede hacer clic en el botón de abajo para ir a la página de restablecimiento de contraseña:</p>
         <div style="text-align: center; margin: 20px 0;">
-          <a href="http://localhost:3000/restablecer-contraseña/${usuarioEncontrado._id}" style="text-decoration: none;">
+          <a href="https://antony.ajayuhost.com/api/restablecer-contraseña/${usuarioEncontrado._id}" style="text-decoration: none;">
             <button style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer;">Restablecer Contraseña</button>
           </a>
         </div>
